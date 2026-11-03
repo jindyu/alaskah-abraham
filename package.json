@@ -9,7 +9,9 @@
     "preview": "vite preview --port 5174",
     "test": "vitest run",
     "sync:assets": "node tools/migrate/sync-assets.mjs",
-    "qa": "node tools/qa/qa-book1.mjs"
+    "qa": "node tools/qa/qa-book1.mjs",
+    "qa:abraham": "node tools/qa/qa-abraham.mjs",
+    "deploy": "node tools/deploy/deploy.mjs"
   },
   "dependencies": {
     "three": "^0.186.1"
