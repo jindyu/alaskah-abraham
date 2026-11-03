@@ -1,0 +1,2537 @@
+{
+  "id": "abraham_3",
+  "title": "아브라함 3권 · 별과 언약",
+  "chapterCount": 6,
+  "chapters": [
+    {
+      "slug": "01_covenant_of_stars",
+      "title": "제1장 · 별과 언약",
+      "summary": "하나님이 아브람에게 하늘의 별처럼 많은 자손을 약속하시고, 쪼갠 제물 사이로 지나가는 언약을 맺으신다.",
+      "characters": [
+        "아브람"
+      ],
+      "location": "아브람의 장막",
+      "tags": [
+        "언약",
+        "별",
+        "쪼갠 제물",
+        "창세기 15장",
+        "미드라시"
+      ],
+      "stepCount": 98,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_tent"
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.09411765,
+            "g": 0.1254902,
+            "b": 0.2901961,
+            "a": 0.42
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abram_young",
+          "dir": "up",
+          "id": "abram",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제1장 · 별과 언약"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이 후에 여호와의 말씀이 이상 중에 아브람에게 임하여 말씀하셨다: 아브람아 두려워하지 말라.",
+          "voice_key": "narrator_7b491462a6c526c9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_7b491462a6c526c9.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "나는 네 방패요 너의 지극히 큰 상급이다.",
+          "voice_key": "narrator_342343700c329457",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_342343700c329457.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abram",
+          "mood": "question"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "주 여호와여, 무엇을 내게 주시려 하나이까. 나는 자식이 없나이다…",
+          "voice_key": "abram_f20c919698892509",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/abram_f20c919698892509.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "나의 상속자는 다메섹 사람 엘리에셀이니이다.",
+          "voice_key": "abram_15c00fd5d0249716",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/abram_15c00fd5d0249716.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "내 집에서 길리운 자가 내 상속자가 될 것이니이다.",
+          "voice_key": "abram_dabcb9303a848731",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/abram_dabcb9303a848731.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 사람이 네 상속자가 아니라, 네 몸에서 날 자가 네 상속자가 될 것이다.",
+          "voice_key": "narrator_114d1798c59e51eb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_114d1798c59e51eb.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.8980392,
+            "b": 0.5411765,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "up",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.2,
+          "position": {
+            "x": 272,
+            "y": 200
+          },
+          "zoom": {
+            "x": 0.5,
+            "y": 0.5
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하늘을 우러러 뭇 별을 셀 수 있나 보라. 네 자손이 이와 같을 것이다.",
+          "voice_key": "narrator_8656c33e56e21f01",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_8656c33e56e21f01.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_divine_presence"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 4,
+            "y": 2
+          },
+          "character": "star",
+          "dir": "down",
+          "id": "star1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 1
+          },
+          "character": "star",
+          "dir": "down",
+          "id": "star2",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 2
+          },
+          "character": "star",
+          "dir": "down",
+          "id": "star3",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 4
+          },
+          "character": "star",
+          "dir": "down",
+          "id": "star4",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 4
+          },
+          "character": "star",
+          "dir": "down",
+          "id": "star5",
+          "scale": 1
+        },
+        {
+          "step_type": "spin_actor",
+          "clockwise": true,
+          "id": "star1",
+          "seconds_per_turn": 4,
+          "turns": 0
+        },
+        {
+          "step_type": "spin_actor",
+          "clockwise": true,
+          "id": "star3",
+          "seconds_per_turn": 5,
+          "turns": 0
+        },
+        {
+          "step_type": "spin_actor",
+          "clockwise": true,
+          "id": "star5",
+          "seconds_per_turn": 4.5,
+          "turns": 0
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+          },
+          "duration": 0.25
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "…셀 수 없다면, 셀 수 없는 대로 믿겠습니다.",
+          "voice_key": "abram_aeca097cf89043e4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/abram_aeca097cf89043e4.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브람이 여호와를 믿으니, 여호와께서 이를 그의 의로 여기셨다.",
+          "voice_key": "narrator_194f0cc445df19da",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_194f0cc445df19da.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "despawn",
+          "id": "star1"
+        },
+        {
+          "step_type": "despawn",
+          "id": "star2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "star3"
+        },
+        {
+          "step_type": "despawn",
+          "id": "star4"
+        },
+        {
+          "step_type": "despawn",
+          "id": "star5"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.9,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "down",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와께서 암소와 암염소와 숫양을 삼 년 된 것으로, 산비둘기와 집비둘기 새끼로 가져오게 하시고,",
+          "voice_key": "narrator_7ff9f043baf446d9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_7ff9f043baf446d9.ogg"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "down",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 6,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "down",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그것들을 쪼개어 마주 놓게 하셨다.",
+          "voice_key": "narrator_83031fabce5bede9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_83031fabce5bede9.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브람이 그 위로 솔개가 내릴 때마다 쫓았다.",
+          "voice_key": "narrator_95927bebeb8ef9e2",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_95927bebeb8ef9e2.ogg"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "up",
+          "face_during": "",
+          "id": "abram",
+          "speed": 56,
+          "to": {
+            "x": 8,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.25
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 솔개들을, 훗날 이 약속을 짓밟으려는 이방 나라들의 그림자로 풀이한다 —",
+          "voice_key": "narrator_f099aa0a88723802",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_f099aa0a88723802.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브람이 그것들을 쫓아낸 것처럼, 그의 자손도 매 세대 그 약속을 다시 지켜내야 한다는 뜻이라고 풀이한다.",
+          "voice_key": "narrator_1f1c3d2b47db20d5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_1f1c3d2b47db20d5.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "down",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "해질 때에 아브람이 깊이 잠들었는데,",
+          "voice_key": "narrator_0253e43567552779",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_0253e43567552779.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.09411765,
+            "g": 0.1254902,
+            "b": 0.2901961,
+            "a": 0.42
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "캄캄함이 임하고 심한 두려움이 그에게 임하였다.",
+          "voice_key": "narrator_82bb5dbeb17b0c5f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_82bb5dbeb17b0c5f.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.5
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "abram",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 자손이 이방에서 나그네가 되어 그들을 섬기겠고, 그들은 사백 년 동안 네 자손을 괴롭힐 것이다.",
+          "voice_key": "narrator_db360a3dd14ce7b9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_db360a3dd14ce7b9.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 내가 그 섬기는 나라를 징벌할 것이며, 네 자손은 큰 재물을 이끌고 나올 것이다.",
+          "voice_key": "narrator_c9f96aeeaed0ce10",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_c9f96aeeaed0ce10.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "…사백 년이라니. 내 자손 중 누구도, 그 세월을 다 보지는 못하겠군요.",
+          "voice_key": "abram_88abf0644fea2bcd",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/abram_88abf0644fea2bcd.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "해가 져서 어두울 때에 연기 나는 화로가 보이며 타는 횃불이 쪼갠 고기 사이로 지나갔다.",
+          "voice_key": "narrator_f08c2d0eabfe6c8a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_f08c2d0eabfe6c8a.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 4,
+            "y": 9
+          },
+          "key": "fire_ignite"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 4,
+            "y": 9
+          },
+          "character": "star",
+          "dir": "right",
+          "id": "torch1",
+          "scale": 0.8,
+          "tint": {
+            "r": 0.9411765,
+            "g": 0.5019608,
+            "b": 0.12156863,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "torch1",
+          "speed": 24,
+          "to": {
+            "x": 12,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.9411765,
+            "g": 0.5019608,
+            "b": 0.12156863,
+            "a": 1
+          },
+          "duration": 0.4
+        },
+        {
+          "step_type": "despawn",
+          "id": "torch1"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그날 여호와께서 아브람과 언약을 세워 말씀하셨다:",
+          "voice_key": "narrator_ff0ae17b0a8c04a5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_ff0ae17b0a8c04a5.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_covenant_chime"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 이 땅을 애굽 강에서부터 큰 강 유브라데까지 네 자손에게 준다.",
+          "voice_key": "narrator_c696c6aef3899c00",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/01_covenant_of_stars/narrator_c696c6aef3899c00.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+          },
+          "duration": 0.35
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "02_hagar_and_ishmael",
+      "title": "제2장 · 하갈과 이스마엘",
+      "summary": "사래의 권유로 하갈이 이스마엘을 낳고, 광야로 도망친 하갈이 천사를 만난다.",
+      "characters": [
+        "사래",
+        "하갈",
+        "이스마엘"
+      ],
+      "location": "장막 / 광야",
+      "tags": [
+        "하갈",
+        "이스마엘",
+        "창세기 16장"
+      ],
+      "stepCount": 65,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_tent"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 9
+          },
+          "character": "abram_young",
+          "dir": "right",
+          "id": "abram",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "character": "sarai",
+          "dir": "up",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "character": "hagar",
+          "dir": "up",
+          "id": "hagar",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제2장 · 하갈과 이스마엘"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사래는 아브람에게 자식을 낳아주지 못하였다. 사래에게는 애굽에서 데려온 여종 하갈이 있었다.",
+          "voice_key": "narrator_cd5ddb923112efbf",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_cd5ddb923112efbf.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "sarah",
+          "speed": 24,
+          "to": {
+            "x": 7,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "sarah",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "여호와께서 나의 출산을 허락하지 아니하시니, 원하건대 내 여종에게 들어가시오.",
+          "voice_key": "sarah_d7968c494cf1e6a7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_d7968c494cf1e6a7.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "내가 그로 말미암아 자식을 얻을까 하나이다.",
+          "voice_key": "sarah_dbe427ebae953f66",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_dbe427ebae953f66.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "…그대의 말대로 하겠소.",
+          "voice_key": "abram_f29a183db74965be",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/abram_f29a183db74965be.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈이 아브람으로 말미암아 임신하자, 그가 자기 여주인을 멸시하였다.",
+          "voice_key": "narrator_8c893b2960046432",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_8c893b2960046432.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "hagar",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "hagar"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "hagar",
+          "mood": "silence",
+          "speaker": "하갈",
+          "text": "…내 여주인은 낳지 못하나, 나는 낳았다.",
+          "voice_key": "hagar_6fe3a6585f30027e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/hagar_6fe3a6585f30027e.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "sarah",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "내가 받는 이 모욕은 당신이 받아야 옳도다!",
+          "voice_key": "sarah_e229d72d667c1871",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_e229d72d667c1871.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "silence",
+          "speaker": "아브람",
+          "text": "…그대의 여종이니, 그대 손에 있소. 그대 눈에 좋은 대로 행하시오.",
+          "voice_key": "abram_8d5bab62695a59d6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/abram_8d5bab62695a59d6.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.3
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "right",
+          "face_during": "",
+          "id": "hagar",
+          "speed": 84,
+          "to": {
+            "x": 13,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사래가 하갈을 학대하니, 하갈이 사래 앞에서 도망하였다.",
+          "voice_key": "narrator_aaab9098a06ba9e8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_aaab9098a06ba9e8.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.2
+        },
+        {
+          "step_type": "despawn",
+          "id": "hagar"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_desert_exile"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_desert_day"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 8
+          },
+          "character": "hagar",
+          "dir": "down",
+          "id": "hagar",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "광야의 샘물"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 400,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.3,
+            "y": 1.3
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와의 사자가 광야의 샘물 곁에서 하갈을 만나 말했다:",
+          "voice_key": "narrator_752a0e15beddfe96",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_752a0e15beddfe96.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_angel_appear"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "hagar"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "hagar",
+          "mood": "talk",
+          "speaker": "하갈",
+          "text": "…주께서는 나를 살피시는 하나님이시로다.",
+          "voice_key": "hagar_552a137ac3958641",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/hagar_552a137ac3958641.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 여주인에게로 돌아가서 그 수하에 복종하라.",
+          "voice_key": "narrator_3b5f08ddfb867149",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_3b5f08ddfb867149.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 네 씨를 크게 번성하여 그 수가 많아 셀 수 없게 하겠다.",
+          "voice_key": "narrator_acd0d6faaddf8505",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_acd0d6faaddf8505.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그의 이름을 이스마엘이라 하라. 여호와께서 네 고통을 들으셨기 때문이다.",
+          "voice_key": "narrator_089c44bda9ee51c8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_089c44bda9ee51c8.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈은 그 샘을 브엘라해로이 — \"나를 살피시는 살아계신 분의 우물\" — 이라 불렀다.",
+          "voice_key": "narrator_c3db6cfef374d07e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_c3db6cfef374d07e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이 우물이 훗날 이삭이 머물던 곳이자 이스마엘이 다시 아버지의 집으로 돌아오는 길목이 된다고 전한다.",
+          "voice_key": "narrator_d1ca1d39ae2c74ea",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_d1ca1d39ae2c74ea.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 432,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 8
+          },
+          "character": "ishmael",
+          "dir": "down",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "hagar",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈이 아브람에게 아들을 낳으니, 아브람이 그 이름을 이스마엘이라 하였다.",
+          "voice_key": "narrator_607d0841db0f15fb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_607d0841db0f15fb.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그때 아브람의 나이 팔십육 세였다.",
+          "voice_key": "narrator_09bf2774439e6b44",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/narrator_09bf2774439e6b44.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "03_ishmael_of_the_wild",
+      "title": "제3장 · 이스마엘, 들의 사람",
+      "summary": "소년으로 자란 이스마엘이 활 쏘는 자가 되고, 아브람은 그를 아끼면서도 그 안에 이는 거친 기운을 알아본다.",
+      "characters": [
+        "아브람",
+        "이스마엘",
+        "하갈"
+      ],
+      "location": "아브람의 장막 인근 들판",
+      "tags": [
+        "이스마엘",
+        "미드라시",
+        "창세기 16:12"
+      ],
+      "stepCount": 55,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_pastoral_home"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_desert_day"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 14,
+            "y": 7
+          },
+          "character": "ishmael",
+          "dir": "left",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 16,
+            "y": 8
+          },
+          "character": "hagar",
+          "dir": "left",
+          "id": "hagar",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제3장 · 이스마엘, 들의 사람"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "세월이 흘러 이스마엘은 소년이 되었다. 활을 메고 광야를 누비며 자랐다.",
+          "voice_key": "narrator_3cadd8613f4f4d32",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_3cadd8613f4f4d32.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 14,
+            "y": 7
+          },
+          "character": "bow",
+          "dir": "left",
+          "id": "ishmael_bow",
+          "scale": 1
+        },
+        {
+          "step_type": "attach_actor",
+          "id": "ishmael_bow",
+          "offset": {
+            "x": -9,
+            "y": -6
+          },
+          "to": "ishmael"
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "left",
+          "face_during": "",
+          "id": "ishmael",
+          "speed": 84,
+          "to": {
+            "x": 11,
+            "y": 5
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.35
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 11,
+            "y": 5
+          },
+          "key": "arrow_release"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "right",
+          "face_during": "",
+          "id": "ishmael",
+          "speed": 84,
+          "to": {
+            "x": 14,
+            "y": 7
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "detach_actor",
+          "id": "ishmael_bow"
+        },
+        {
+          "step_type": "despawn",
+          "id": "ishmael_bow"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "hagar",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "hagar"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "hagar",
+          "mood": "talk",
+          "speaker": "하갈",
+          "text": "저 아이는 장막 안에 오래 있지를 못합니다. 들이 저 아이의 집인가 봅니다.",
+          "voice_key": "hagar_f9186e2bb84e1b58",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/hagar_f9186e2bb84e1b58.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_tent"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "abram_young",
+          "dir": "right",
+          "id": "abram",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "ishmael",
+          "dir": "left",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와의 사자가 하갈에게 이미 일러둔 말이 있었다 — 그가 사람 중에 들나귀 같이 되리니,",
+          "voice_key": "narrator_c3754177419d8015",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_c3754177419d8015.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 손이 모든 사람을 치겠고 모든 사람의 손이 그를 칠 것이며, 그가 모든 형제와 대항해서 살리라.",
+          "voice_key": "narrator_023ae11ec2eca788",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_023ae11ec2eca788.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abram"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "talk",
+          "speaker": "아브람",
+          "text": "…네가 자라서 무엇이 되고 싶으냐.",
+          "voice_key": "abram_9d6cc89224a2bd6c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/abram_9d6cc89224a2bd6c.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "ishmael"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ishmael",
+          "mood": "talk",
+          "speaker": "이스마엘",
+          "text": "아버지처럼, 자유로운 사람이 되고 싶습니다. 누구에게도 매이지 않는.",
+          "voice_key": "ishmael_3bec4b8ff4a6c337",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/ishmael_3bec4b8ff4a6c337.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.7,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.3,
+            "y": 1.3
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 6,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abram",
+          "speed": 24,
+          "to": {
+            "x": 7,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.7,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브람은 그 대답에 웃었지만, 그 웃음 뒤에는 옅은 근심이 있었다.",
+          "voice_key": "narrator_8294279390d50dea",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_8294279390d50dea.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.8,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abram",
+          "mood": "talk",
+          "speaker": "아브람",
+          "text": "…들에서 사는 것도 나쁘지 않다. 다만 형제를 향해 활을 겨누는 일만은 없기를 바란다.",
+          "voice_key": "abram_c6c7d641268b3903",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/abram_c6c7d641268b3903.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이스마엘이 훗날 다시 아버지의 집으로 돌아와 뉘우쳤다고 전한다 —",
+          "voice_key": "narrator_42796a7ed8ad0266",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_42796a7ed8ad0266.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "훗날 아브라함을 장사할 때 성경이 굳이 \"그의 아들 이삭과 이스마엘이\" 함께라 적어둔 것이,",
+          "voice_key": "narrator_dee97d3308b3856f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_dee97d3308b3856f.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 뉘우침을 은근히 인정한 것이라 풀이한다.",
+          "voice_key": "narrator_2990351ee614c7f9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_2990351ee614c7f9.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘은 열세 살이 될 때까지 아브람의 유일한 아들로 자랐다.",
+          "voice_key": "narrator_b2e34a0542691795",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/03_ishmael_of_the_wild/narrator_b2e34a0542691795.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "04_circumcision_and_new_name",
+      "title": "제4장 · 할례와 새 이름",
+      "summary": "하나님이 아브람과 사래의 이름을 아브라함과 사라로 바꾸시고, 할례의 언약을 세우신다.",
+      "characters": [
+        "아브라함",
+        "사라"
+      ],
+      "location": "아브라함의 장막",
+      "tags": [
+        "개명",
+        "할례",
+        "창세기 17장"
+      ],
+      "stepCount": 48,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_tent"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abram_young",
+          "dir": "up",
+          "id": "abram",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "sarai",
+          "dir": "up",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제4장 · 할례와 새 이름"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브람의 나이 구십구 세 때에, 여호와께서 그에게 나타나 말씀하셨다:",
+          "voice_key": "narrator_1ee94674b50d8483",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_1ee94674b50d8483.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_divine_presence"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "나는 전능한 하나님이다. 너는 내 앞에서 행하여 완전하라.",
+          "voice_key": "narrator_7ffd77d4ffa49d77",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_7ffd77d4ffa49d77.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 이름을 다시는 아브람이라 하지 않고 아브라함이라 할 것이니,",
+          "voice_key": "narrator_4b7b855f4a761bf6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_4b7b855f4a761bf6.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이는 내가 너를 여러 민족의 아비가 되게 하기 때문이다.",
+          "voice_key": "narrator_9d2b6be624e80eca",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_9d2b6be624e80eca.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_name_proclamation"
+        },
+        {
+          "step_type": "despawn",
+          "id": "abram"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "up",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.5,
+          "id": "abraham",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…아브라함.",
+          "voice_key": "abraham_e081309f358ed102",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/abraham_e081309f358ed102.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.8509804,
+            "g": 0.6901961,
+            "b": 0.2901961,
+            "a": 1
+          },
+          "duration": 0.4
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 아내 사래는 이름을 사라라 하라. 그가 열국의 어미가 될 것이다.",
+          "voice_key": "narrator_e24b3af0c652780e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_e24b3af0c652780e.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "sarah"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "sarai",
+          "dir": "up",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "sarah",
+          "mood": "silence",
+          "speaker": "사라",
+          "text": "…사라.",
+          "voice_key": "sarah_0b1af7743a959d94",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/sarah_0b1af7743a959d94.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.8509804,
+            "g": 0.6901961,
+            "b": 0.2901961,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.3
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…그래, 그 이름이 그대에게 어울리오.",
+          "voice_key": "abraham_f9f552eff204ab6e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/abraham_f9f552eff204ab6e.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "너희 중 남자는 다 할례를 받으라. 이것이 나와 너희 사이의 언약의 표징이다.",
+          "voice_key": "narrator_6652d6ab2b635466",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_6652d6ab2b635466.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 272,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.25,
+            "y": 1.25
+          }
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_covenant_chime"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…이 늙은 몸에 새기라 하시니, 그리하겠습니다.",
+          "voice_key": "abraham_149d25174deeed1a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/abraham_149d25174deeed1a.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 아브라함이 왜 하필 아흔아홉이 되어서야 이 명을 받았는지 묻는다 —",
+          "voice_key": "narrator_899deb3c8e29918b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_899deb3c8e29918b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "너무 이른 나이였다면 하루라도 더 빨리 순종할 수 없었음에 아쉬워했을 것이요,",
+          "voice_key": "narrator_03e02cbd004b5260",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_03e02cbd004b5260.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이 나이까지 이르러서야 받았기에, 그 순종의 무게가 온전히 그의 것이 되었다고 풀이한다.",
+          "voice_key": "narrator_f38995f59711b88a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_f38995f59711b88a.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 그날에 이스마엘과 집의 모든 남자와 함께 할례를 받았다.",
+          "voice_key": "narrator_ca97a9c92f0a189a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_ca97a9c92f0a189a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 그때 구십구 세, 이스마엘은 열세 살이었다.",
+          "voice_key": "narrator_4315d43aecd93b61",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/04_circumcision_and_new_name/narrator_4315d43aecd93b61.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "05_abrahams_laughter",
+      "title": "제5장 · 아브라함의 웃음",
+      "summary": "아브라함이 엎드려 웃으며 백 세에 자식을 얻을지 의심하고, 이스마엘을 위해서도 간구한다.",
+      "characters": [
+        "아브라함"
+      ],
+      "location": "아브라함의 장막",
+      "tags": [
+        "웃음",
+        "이스마엘",
+        "창세기 17:17",
+        "미드라시"
+      ],
+      "stepCount": 43,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_tent"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제5장 · 아브라함의 웃음"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 다시 말씀하셨다: 내가 사라에게 복을 주어 그에게 아들을 낳아 줄 것이니,",
+          "voice_key": "narrator_19e9a807c922835a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_19e9a807c922835a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그가 열국의 어미가 되어 민족의 열왕이 그에게서 나올 것이다.",
+          "voice_key": "narrator_4aee0e6892e1dcd5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_4aee0e6892e1dcd5.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 엎드려 웃으며 마음속으로 생각했다:",
+          "voice_key": "narrator_c341945b5a5d253e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_c341945b5a5d253e.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "key": "foley_cloth_rustle"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.3
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…백 세 된 사람이 어찌 자식을 낳을까. 사라는 구십 세인데 어찌 낳을까.",
+          "voice_key": "abraham_d9a70b8966cdac39",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/abraham_d9a70b8966cdac39.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 아브라함의 이 웃음은 책망받지 않았으나 훗날 사라의 웃음은 책망받았다고 구별해 전한다 —",
+          "voice_key": "narrator_fce281eaf8a9464b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_fce281eaf8a9464b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 기쁨으로 웃었으나, 사라는 의심으로 웃었기 때문이라는 것이다.",
+          "voice_key": "narrator_efa0daa01518d1d0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_efa0daa01518d1d0.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.7,
+          "position": {
+            "x": 304,
+            "y": 360
+          },
+          "zoom": {
+            "x": 1.25,
+            "y": 1.25
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…이스마엘이나 하나님 앞에 살기를 원하나이다.",
+          "voice_key": "abraham_b484d3ba431369f3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/abraham_b484d3ba431369f3.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.7,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 아내 사라가 네게 아들을 낳을 것이니 그 이름을 이삭이라 하라.",
+          "voice_key": "narrator_772d1c8d2e29b677",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_772d1c8d2e29b677.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 그와 내 언약을 세워 그 후손에게 영원한 언약이 되게 하겠다.",
+          "voice_key": "narrator_47231f1ddb1da431",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_47231f1ddb1da431.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_covenant_chime"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘에 대하여는 내가 네 말을 들었으니, 그에게도 복을 주어 그로 번성하고 창대하게 하여",
+          "voice_key": "narrator_7c87c3f6bd054763",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_7c87c3f6bd054763.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그가 열두 두령을 낳게 하고 그로 큰 나라를 이루게 하겠다.",
+          "voice_key": "narrator_73e497ba3921bd1a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_73e497ba3921bd1a.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…고맙습니다. 그 아이도, 잊지 않으셨군요.",
+          "voice_key": "abraham_50cdc752c948400f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/abraham_50cdc752c948400f.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 내 언약은 내년 이맘때 사라가 네게 낳을 이삭과 세우겠다.",
+          "voice_key": "narrator_f4f783746c8bf505",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_f4f783746c8bf505.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.8980392,
+            "b": 0.5411765,
+            "a": 1
+          },
+          "duration": 0.35
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 아브라함과 말씀을 마치시고 그를 떠나 올라가셨다.",
+          "voice_key": "narrator_8905b0d5946975eb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/05_abrahams_laughter/narrator_8905b0d5946975eb.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "06_recovery_and_waiting",
+      "title": "제6장 · 회복과 기다림",
+      "summary": "할례를 받은 지 사흘, 아브라함이 통증 중에도 장막 문에 앉아 나그네를 기다린다.",
+      "characters": [
+        "아브라함"
+      ],
+      "location": "마므레",
+      "tags": [
+        "회복",
+        "환대",
+        "브릿지",
+        "창세기 랍바"
+      ],
+      "stepCount": 32,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "MAMRE",
+          "location": ""
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_pastoral_home"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_field_day"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 328
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "제6장 · 회복과 기다림"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "할례를 받은 지 사흘째 — 전해오는 이야기는 이날이 통증이 가장 심한 날이었다고 전한다.",
+          "voice_key": "narrator_e904d5add3bccc7b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_e904d5add3bccc7b.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 그날, 아무 나그네도 지나가지 않도록 태양을 평소보다 뜨겁게 하셨다고도 전한다 —",
+          "voice_key": "narrator_da11b2eb7d900d16",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_da11b2eb7d900d16.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "늙은 몸으로 손님을 대접하느라 무리하지 않게 하려는 배려였다는 것이다.",
+          "voice_key": "narrator_7939524e9bf9e48b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_7939524e9bf9e48b.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 아브라함은 손님이 오지 않는 것을 오히려 서운해하였다.",
+          "voice_key": "narrator_b6c9d80fb145f2ae",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_b6c9d80fb145f2ae.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…평생 낯선 이를 대접하며 살았는데, 오늘은 그 문 앞이 이토록 비어 있구나.",
+          "voice_key": "abraham_67b1be77b266438a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/abraham_67b1be77b266438a.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그는 통증 중에도 자리에서 일어나 장막 문에 나와 앉았다. 마므레 상수리나무 아래, 대낮의 열기 속이었다.",
+          "voice_key": "narrator_4aa348cdb2743aa4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_4aa348cdb2743aa4.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "혹시 지나가는 나그네가 있을까, 눈을 들어 길 쪽을 살폈다.",
+          "voice_key": "narrator_a47f157f7fe9a044",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_a47f157f7fe9a044.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abraham",
+          "mood": "question"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 432,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.2
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그리고 그날, 그의 눈에 무언가 보이기 시작했다.",
+          "voice_key": "narrator_8c40509d2f11df05",
+          "voice_path": "res://assets/audio/voice/ko/abraham_3/06_recovery_and_waiting/narrator_8c40509d2f11df05.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_divine_presence"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.3
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    }
+  ]
+}

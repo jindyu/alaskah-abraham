@@ -1,0 +1,85 @@
+{
+  "id": "abraham_intro",
+  "title": "아브라함 · 인트로",
+  "chapterCount": 1,
+  "chapters": [
+    {
+      "slug": "00_story_intro",
+      "title": "\"믿음의 조상",
+      "summary": "",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "stepCount": 11,
+      "steps": [
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.09411765,
+            "g": 0.1254902,
+            "b": 0.2901961,
+            "a": 0.42
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_ancient_memory"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 1,
+          "fade_in": true
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "title",
+          "text": "\"믿음의 조상"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.6
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "\"우르의 풀무불에서 막벨라 굴까지",
+          "type_first_line": true
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 1,
+          "fade_in": false
+        }
+      ]
+    }
+  ]
+}

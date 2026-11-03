@@ -1,0 +1,24 @@
+{
+  "name": "alaskah-abraham",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5174",
+    "build": "tsc --noEmit && vitest run && vite build",
+    "preview": "vite preview --port 5174",
+    "test": "vitest run",
+    "sync:assets": "node tools/migrate/sync-assets.mjs",
+    "qa": "node tools/qa/qa-book1.mjs"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "puppeteer-core": "^24.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0",
+    "vitest": "^3.0.8"
+  }
+}

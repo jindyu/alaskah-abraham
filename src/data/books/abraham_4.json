@@ -1,0 +1,3301 @@
+{
+  "id": "abraham_4",
+  "title": "아브라함 4권 · 소돔의 불",
+  "chapterCount": 5,
+  "chapters": [
+    {
+      "slug": "01_three_visitors",
+      "title": "제1장 · 세 나그네",
+      "summary": "회복 중인 아브라함이 세 나그네를 대접하니, 그중 하나가 이삭의 출생을 예고하고 아브라함이 소돔을 위해 간구한다.",
+      "characters": [
+        "아브라함",
+        "사라",
+        "나그네"
+      ],
+      "location": "마므레",
+      "tags": [
+        "나그네",
+        "이삭 예고",
+        "중보기도",
+        "창세기 18장",
+        "미드라시"
+      ],
+      "stepCount": 61,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "MAMRE",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 328
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 10
+          },
+          "character": "sarai",
+          "dir": "down",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "title",
+          "text": "제1장 · 세 나그네"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와께서 마므레 상수리나무들이 있는 곳에서 아브라함에게 나타나셨다.",
+          "voice_key": "narrator_b993c7db52cd1bf1",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_b993c7db52cd1bf1.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "대낮에 그가 장막 문에 앉았다가, 눈을 들어 본즉 사람 셋이 서 있었다.",
+          "voice_key": "narrator_e2e7a9fae7e56cc0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_e2e7a9fae7e56cc0.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 5
+          },
+          "character": "visitor",
+          "dir": "down",
+          "id": "visitor1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 5
+          },
+          "character": "visitor",
+          "dir": "down",
+          "id": "visitor2",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 5
+          },
+          "character": "visitor",
+          "dir": "down",
+          "id": "visitor3",
+          "scale": 1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 셋을 미가엘, 가브리엘, 라파엘이라 전한다 —",
+          "voice_key": "narrator_630a679d6ba0bc9a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_630a679d6ba0bc9a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "미가엘은 이삭의 소식을, 라파엘은 아브라함을 치유하고 롯을 구할 사명을,",
+          "voice_key": "narrator_5eba9f09947f424e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_5eba9f09947f424e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "가브리엘은 소돔을 멸할 사명을 각각 지고 있었다고 한다.",
+          "voice_key": "narrator_abdc191a73927359",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_abdc191a73927359.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 통증을 무릅쓰고 몸소 달려나가 그들을 맞았다.",
+          "voice_key": "narrator_c35371bcb55f2d09",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_c35371bcb55f2d09.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내 주여, 내가 주께 은혜를 입었사오면,",
+          "voice_key": "abraham_559534f4ac7f9250",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_559534f4ac7f9250.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "원하건대 종을 떠나 지나가지 마시옵고 잠시 쉬어 가소서.",
+          "voice_key": "abraham_f52bf8e66231377b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_f52bf8e66231377b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 급히 사라에게 가서 고운 가루로 떡을 만들게 하고,",
+          "voice_key": "narrator_2a7b291c377dfa3a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_2a7b291c377dfa3a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "기름진 송아지를 잡아 대접하려 하였다.",
+          "voice_key": "narrator_b42b071373742ace",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_b42b071373742ace.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 그가 잡으려던 송아지가 겁을 먹고 달아나 굴속에 숨었고,",
+          "voice_key": "narrator_68e666eac7ea3634",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_68e666eac7ea3634.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 몸소 그 굴까지 쫓아 들어가 데려왔다고도 전한다 — 손님 대접에 그만큼 정성을 다하였다는 것이다.",
+          "voice_key": "narrator_218124279b8d9267",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_218124279b8d9267.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "네 아내 사라가 어디 있느냐.",
+          "voice_key": "visitor_36574f53f8277de8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_36574f53f8277de8.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_divine_call"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "내년 이맘때 내가 반드시 네게로 돌아오리니, 네 아내 사라에게 아들이 있으리라.",
+          "voice_key": "visitor_0790330e82dc6367",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_0790330e82dc6367.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "sarah",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라가 장막 뒤에서 듣고 속으로 웃으며 생각했다,",
+          "voice_key": "narrator_33c4950ee05751c5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_33c4950ee05751c5.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 늙었고 내 주인도 늙었으니, 내게 무슨 낙이 있을까.",
+          "voice_key": "narrator_eb0aab4567571074",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_eb0aab4567571074.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "여호와께 능하지 못한 일이 있겠느냐.",
+          "voice_key": "visitor_0c57e5ba7832c2b1",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_0c57e5ba7832c2b1.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "up",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…내년 이맘때. 그 말씀, 마음에 새기겠습니다.",
+          "voice_key": "abraham_dd4869b633148572",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_dd4869b633148572.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "despawn",
+          "id": "visitor2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "visitor3"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 사람들이 소돔을 향하여 일어나니,",
+          "voice_key": "narrator_6575ab64fa91b28f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_6575ab64fa91b28f.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와께서 말씀하셨다: 소돔과 고모라에 대한 부르짖음이 크고 그 죄악이 심히 무거우니.",
+          "voice_key": "narrator_046f1c4b20173da3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_046f1c4b20173da3.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.5,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "주께서 의인을 악인과 함께 멸하시리이까…",
+          "voice_key": "abraham_977d83328f9bab9e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_977d83328f9bab9e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "그 성 중에 의인 오십 명이 있을지라도 멸하시리이까.",
+          "voice_key": "abraham_079e8299c8b3790a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_079e8299c8b3790a.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "abraham",
+          "mood": "question"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…혹 오십 명에서 다섯이 부족하면, 그 다섯 부족함으로 온 성을 멸하시리이까.",
+          "voice_key": "abraham_f54ccffb2f1942a4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_f54ccffb2f1942a4.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "내가 거기서 사십오 명을 찾으면 멸하지 아니하리라.",
+          "voice_key": "visitor_135392e7b57acdec",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_135392e7b57acdec.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…거기서 사십 명을 찾으시면.",
+          "voice_key": "abraham_416bbf1d4285744f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/abraham_416bbf1d4285744f.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "그 사십 명을 위하여 멸하지 아니하리라.",
+          "voice_key": "visitor_05de4343b9ae1d0e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_05de4343b9ae1d0e.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 그렇게 서른, 스물, 마침내 열 명까지 낮추어 간구하였다.",
+          "voice_key": "narrator_a9a897e73ba8fc02",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_a9a897e73ba8fc02.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "내가 그 열 명을 위하여도 멸하지 아니하리라.",
+          "voice_key": "visitor_0253127c516886c7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/visitor_0253127c516886c7.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "visitor1"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 그 성에는 열 명의 의인조차 없었다.",
+          "voice_key": "narrator_9628080132ba34ab",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/01_three_visitors/narrator_9628080132ba34ab.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "02_the_laws_of_sodom",
+      "title": "제2장 · 소돔의 법",
+      "summary": "소돔의 재판관들이 나그네를 학대하는 것을 법으로 정해 놓았고, 가난한 자를 먹인 롯의 딸이 벌을 받는다.",
+      "characters": [
+        "롯",
+        "롯의 딸",
+        "소돔 재판관",
+        "가난한 나그네"
+      ],
+      "location": "소돔",
+      "tags": [
+        "소돔",
+        "미드라시",
+        "탈무드",
+        "산헤드린"
+      ],
+      "stepCount": 50,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "SODOM_CITY",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": 5
+          },
+          "character": "sodom_judge",
+          "dir": "down",
+          "id": "sodom_judge",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 5
+          },
+          "character": "sodom_judge",
+          "dir": "down",
+          "id": "sodom_judge2",
+          "scale": 1,
+          "tint": {
+            "r": 0.7882353,
+            "g": 0.7058824,
+            "b": 0.5411765,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 9
+          },
+          "character": "villager",
+          "dir": "right",
+          "id": "beggar",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 6
+          },
+          "character": "lot",
+          "dir": "down",
+          "id": "lot",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "title",
+          "text": "제2장 · 소돔의 법"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "소돔에는 법이 있었다 — 그러나 그 법은 지키기 위한 것이 아니라, 나그네를 쫓기 위한 것이었다.",
+          "voice_key": "narrator_050cd6d9bf13309e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_050cd6d9bf13309e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 성의 재판관들 이름까지 전한다 —",
+          "voice_key": "narrator_f1a06d1572aaf86a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_f1a06d1572aaf86a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "\"거짓 재판관\", \"악한 자\", \"거짓 증인\", \"굽게 하는 자\" — 이름부터가 그들의 하는 일이었다.",
+          "voice_key": "narrator_cadf9e31a25595fb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_cadf9e31a25595fb.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "sodom_judge"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sodom_judge",
+          "mood": "talk",
+          "speaker": "소돔 재판관",
+          "text": "이 성의 법은 명백하다 — 나그네를 재우는 자는 재산을 몰수한다.",
+          "voice_key": "sodom_judge_e663c660586cd258",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/sodom_judge_e663c660586cd258.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "sodom_judge2"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sodom_judge2",
+          "mood": "question",
+          "speaker": "소돔 재판관",
+          "text": "굶주려도 죄, 먹여도 죄 — 이게 우리 법 아니냐?",
+          "voice_key": "sodom_judge_b7223b716bd00e4c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/sodom_judge_b7223b716bd00e4c.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "나그네가 오면 침상에 눕히고, 침상보다 길면 다리를 잘라 맞추고,",
+          "voice_key": "narrator_4b18c0fd3842f07c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_4b18c0fd3842f07c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "침상보다 짧으면 몸을 늘여 맞추었다고 전한다 — 어느 쪽이든 나그네는 살아남지 못했다.",
+          "voice_key": "narrator_80174db9a835d6f9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_80174db9a835d6f9.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.4
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "beggar",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 9
+          },
+          "character": "lot_daughter",
+          "dir": "left",
+          "id": "lot_daughter",
+          "scale": 1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "롯에게는 딸이 있었다. 어느 날 그 딸이 성문 밖에서 굶주려 쓰러진 나그네를 보고,",
+          "voice_key": "narrator_9cbd91dff40f039c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_9cbd91dff40f039c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "물 길으러 갈 때마다 몰래 빵을 그 옷 속에 숨겨다 먹였다.",
+          "voice_key": "narrator_abc1ea38cc5f9925",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_abc1ea38cc5f9925.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "lot_daughter"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "lot_daughter",
+          "mood": "talk",
+          "speaker": "롯의 딸",
+          "text": "…아무에게도 말하지 마세요. 이 성에서는 이것도 죄가 됩니다.",
+          "voice_key": "lot_daughter_d3cb9f1c40376125",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/lot_daughter_d3cb9f1c40376125.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "beggar"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "beggar",
+          "mood": "talk",
+          "speaker": "가난한 나그네",
+          "text": "…감사합니다. 이 은혜, 잊지 않겠습니다.",
+          "voice_key": "beggar_d22eb96ec8b35bf5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/beggar_d22eb96ec8b35bf5.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 오래가지 못해 들통이 났다. 재판관들이 그 죄를 벌하기로 하였다.",
+          "voice_key": "narrator_7262a2eebbed07dd",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_7262a2eebbed07dd.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "sodom_judge"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sodom_judge",
+          "mood": "talk",
+          "speaker": "소돔 재판관",
+          "text": "가난한 자를 먹인 죄다. 온몸에 꿀을 발라 성벽 위에 두라.",
+          "voice_key": "sodom_judge_7ebdac3dcfd05824",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/sodom_judge_7ebdac3dcfd05824.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "sodom_judge2"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sodom_judge2",
+          "mood": "question",
+          "speaker": "소돔 재판관",
+          "text": "이게 죄가 아니면, 대체 뭐가 죄란 말이냐?",
+          "voice_key": "sodom_judge_2fad185d088b207e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/sodom_judge_2fad185d088b207e.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "lot"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "lot",
+          "mood": "silence",
+          "speaker": "롯",
+          "text": "…제 딸입니다. 부디…",
+          "voice_key": "lot_742acdc5cfff9126",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/lot_742acdc5cfff9126.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "lot",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "sodom_judge"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sodom_judge",
+          "mood": "talk",
+          "speaker": "소돔 재판관",
+          "text": "법은 법이다, 재판장 롯.",
+          "voice_key": "sodom_judge_641d4e80750969e3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/sodom_judge_641d4e80750969e3.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 8,
+          "duration": 0.5
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "벌은 벌을 넘는 잔혹이었다. 전해오는 이야기는 이 일을 하늘이 마침내 지켜보다 못한 순간으로 꼽는다.",
+          "voice_key": "narrator_c1d66c2efcb22ca4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_c1d66c2efcb22ca4.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "롯은 이 성에 살면서도 그 법에 동의한 적이 없었다. 그러나 성문에 앉아 재판하는 자리까지 올랐으니,",
+          "voice_key": "narrator_911cf75d3673498c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_911cf75d3673498c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그가 완전히 발을 뺄 수 없었던 것도 사실이었다.",
+          "voice_key": "narrator_ba84fafd350ec4eb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/02_the_laws_of_sodom/narrator_ba84fafd350ec4eb.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "03_fall_of_sodom",
+      "title": "제3장 · 소돔의 멸망",
+      "summary": "천사들이 롯의 가족을 구해내고, 소돔과 고모라가 유황과 불로 멸망한다.",
+      "characters": [
+        "롯",
+        "나그네",
+        "롯의 아내",
+        "롯의 두 딸"
+      ],
+      "location": "소돔",
+      "tags": [
+        "소돔",
+        "심판",
+        "창세기 19장"
+      ],
+      "stepCount": 239,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "SODOM_CITY",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 10
+          },
+          "character": "lot",
+          "dir": "up",
+          "id": "lot",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "down",
+          "id": "visitor1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "down",
+          "id": "visitor2",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 0.7,
+          "key": "bgm_danger_pursuit"
+        },
+        {
+          "step_type": "title",
+          "text": "제3장 · 소돔의 멸망"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "두 천사가 저녁 때 소돔에 이르니, 롯이 성문에 앉았다가 그들을 보고 일어나 영접하며",
+          "voice_key": "narrator_a3beba6420db4c2e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_a3beba6420db4c2e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "얼굴을 땅에 대고 절하였다.",
+          "voice_key": "narrator_424138a113d24775",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_424138a113d24775.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": 9
+          },
+          "character": "villager",
+          "dir": "right",
+          "id": "villager1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 9
+          },
+          "character": "villager",
+          "dir": "right",
+          "id": "villager2",
+          "scale": 1,
+          "tint": {
+            "r": 0.92,
+            "g": 0.85,
+            "b": 0.76,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "villager3",
+          "scale": 1,
+          "tint": {
+            "r": 0.8,
+            "g": 0.86,
+            "b": 0.95,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 9
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "villager4",
+          "scale": 1,
+          "tint": {
+            "r": 0.85,
+            "g": 0.92,
+            "b": 0.82,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": 11
+          },
+          "character": "villager",
+          "dir": "right",
+          "id": "villager5",
+          "scale": 1,
+          "tint": {
+            "r": 0.96,
+            "g": 0.9,
+            "b": 0.78,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 11
+          },
+          "character": "villager",
+          "dir": "right",
+          "id": "villager6",
+          "scale": 1,
+          "tint": {
+            "r": 0.91,
+            "g": 0.82,
+            "b": 0.85,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 11
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "villager7",
+          "scale": 1,
+          "tint": {
+            "r": 0.85,
+            "g": 0.83,
+            "b": 0.93,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 11
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "villager8",
+          "scale": 1,
+          "tint": {
+            "r": 0.97,
+            "g": 0.94,
+            "b": 0.8,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 성 백성이 롯의 집을 에워싸고 나그네를 내놓으라 협박하였다.",
+          "voice_key": "narrator_0dcf907e18525780",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_0dcf907e18525780.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 8,
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "이 성에 네게 속한 자가 또 있느냐? 성 밖으로 이끌어 내라.",
+          "voice_key": "visitor_711c3af787032061",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/visitor_711c3af787032061.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "우리가 이 곳을 멸하려 하노니.",
+          "voice_key": "visitor_872b32c8acff2339",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/visitor_872b32c8acff2339.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager1"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager3"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager4"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager5"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager6"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager7"
+        },
+        {
+          "step_type": "despawn",
+          "id": "villager8"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "새벽이 되자 천사가 롯을 재촉하여: 일어나 네 아내와 두 딸을 이끌어 내라.",
+          "voice_key": "narrator_1ba4b95638b7f384",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_1ba4b95638b7f384.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이 성의 죄악으로 함께 멸망할까 염려되었기 때문이다.",
+          "voice_key": "narrator_868a8424e563c2da",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_868a8424e563c2da.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "lot"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "lot",
+          "mood": "silence",
+          "speaker": "롯",
+          "text": "…이 성이 그래도, 내 집이었는데.",
+          "voice_key": "lot_6dab99c96fbcc69b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/lot_6dab99c96fbcc69b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "롯이 지체하자, 그 사람들이 롯과 그 아내와 두 딸의 손을 잡아 인도하여 성 밖에 두었다.",
+          "voice_key": "narrator_13baa4400a88479e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_13baa4400a88479e.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 10
+          },
+          "character": "lot_wife",
+          "dir": "down",
+          "id": "lot_wife",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 10
+          },
+          "character": "lot_daughter",
+          "dir": "down",
+          "id": "lot_daughter",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 11
+          },
+          "character": "lot_daughter",
+          "dir": "down",
+          "id": "lot_daughter2",
+          "scale": 1,
+          "tint": {
+            "r": 0.8509804,
+            "g": 0.75686276,
+            "b": 0.7294118,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "move_actors",
+          "async": true,
+          "moves": "[{",
+          "face_during": "",
+          "id": "lot",
+          "speed": 120,
+          "to": {
+            "x": 3,
+            "y": 10
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "도망하여 생명을 구하라. 뒤를 돌아보거나 들에 머물지 말고 산으로 도망하라.",
+          "voice_key": "visitor_c674c3a0e813c0fb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/visitor_c674c3a0e813c0fb.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "lot"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "lot",
+          "mood": "talk",
+          "speaker": "롯",
+          "text": "…소알이라는 작은 성까지만 피하게 하소서. 산까지는 이르지 못하고 재앙을 만날까 하나이다.",
+          "voice_key": "lot_2a6ff592c7446050",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/lot_2a6ff592c7446050.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "visitor1",
+          "mood": "talk",
+          "speaker": "나그네",
+          "text": "내가 이 일도 네 소원대로 하리니, 그 성을 멸하지 아니하리라. 그리로 속히 도망하라.",
+          "voice_key": "visitor_b8b936019e9c74e6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/visitor_b8b936019e9c74e6.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "visitor1"
+        },
+        {
+          "step_type": "despawn",
+          "id": "visitor2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_wife"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_daughter"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_daughter2"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.3
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.2,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.42,
+            "y": 0.42
+          }
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.78431374,
+            "g": 0.74509805,
+            "b": 0.15686275,
+            "a": 0.3
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 0.5,
+          "key": "bgm_judgment_fire"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "brimstone_fall"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와께서 하늘로부터 유황과 불을 소돔과 고모라에 비같이 내리사,",
+          "voice_key": "narrator_7fa04ba08e8e4ff3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_7fa04ba08e8e4ff3.ogg"
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.74509805,
+            "g": 0.27450982,
+            "b": 0.039215688,
+            "a": 0.22
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": -2,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor0",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor0",
+          "speed": 520,
+          "to": {
+            "x": 2,
+            "y": 2
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 2,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor1",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor1",
+          "speed": 520,
+          "to": {
+            "x": 6,
+            "y": 1
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor2",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor2",
+          "speed": 520,
+          "to": {
+            "x": 10,
+            "y": 2
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor3",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor3",
+          "speed": 520,
+          "to": {
+            "x": 14,
+            "y": 1
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 0,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor4",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor4",
+          "speed": 520,
+          "to": {
+            "x": 4,
+            "y": 5
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor5",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor5",
+          "speed": 520,
+          "to": {
+            "x": 12,
+            "y": 5
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": -2,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor6",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor6",
+          "speed": 520,
+          "to": {
+            "x": 2,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 3,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor7",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor7",
+          "speed": 520,
+          "to": {
+            "x": 7,
+            "y": 10
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor8",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor8",
+          "speed": 520,
+          "to": {
+            "x": 11,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor9",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor9",
+          "speed": 520,
+          "to": {
+            "x": 15,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 1,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor10",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor10",
+          "speed": 520,
+          "to": {
+            "x": 5,
+            "y": 13
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor11",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor11",
+          "speed": 520,
+          "to": {
+            "x": 9,
+            "y": 13
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor12",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor12",
+          "speed": 520,
+          "to": {
+            "x": 13,
+            "y": 12
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": -1,
+            "y": -2
+          },
+          "character": "meteor",
+          "dir": "down",
+          "id": "meteor13",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "meteor13",
+          "speed": 520,
+          "to": {
+            "x": 3,
+            "y": 7
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.085
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.25
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 2,
+            "y": 2
+          },
+          "key": "explosion_01"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 2,
+            "y": 2
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact0",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor0"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 6,
+            "y": 1
+          },
+          "key": "explosion_02"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 6,
+            "y": 1
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact1",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor1"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10,
+            "y": 2
+          },
+          "key": "explosion_03"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 10,
+            "y": 2
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact2",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor2"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 14,
+            "y": 1
+          },
+          "key": "brimstone_fall"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 14,
+            "y": 1
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact3",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor3"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 4,
+            "y": 5
+          },
+          "key": "explosion_01"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 4,
+            "y": 5
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact4",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor4"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 12,
+            "y": 5
+          },
+          "key": "explosion_02"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 12,
+            "y": 5
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact5",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor5"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 2,
+            "y": 9
+          },
+          "key": "explosion_03"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 2,
+            "y": 9
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact6",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor6"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 7,
+            "y": 10
+          },
+          "key": "brimstone_fall"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 7,
+            "y": 10
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact7",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor7"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 11,
+            "y": 9
+          },
+          "key": "explosion_01"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 11,
+            "y": 9
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact8",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor8"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 15,
+            "y": 8
+          },
+          "key": "explosion_02"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 15,
+            "y": 8
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact9",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor9"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 5,
+            "y": 13
+          },
+          "key": "explosion_03"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 5,
+            "y": 13
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact10",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor10"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 9,
+            "y": 13
+          },
+          "key": "brimstone_fall"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 9,
+            "y": 13
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact11",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor11"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 13,
+            "y": 12
+          },
+          "key": "explosion_01"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 13,
+            "y": 12
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact12",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor12"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.09
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.16
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 3,
+            "y": 7
+          },
+          "key": "explosion_02"
+        },
+        {
+          "step_type": "particles",
+          "amount": 16,
+          "at": {
+            "x": 3,
+            "y": 7
+          },
+          "effect": "impact_dust",
+          "id": "meteor_impact13",
+          "z_index": 2
+        },
+        {
+          "step_type": "despawn",
+          "id": "meteor13"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.09
+        },
+        {
+          "step_type": "set_map",
+          "id": "SODOM_CITY_RUINS",
+          "location": "소돔"
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.74509805,
+            "g": 0.27450982,
+            "b": 0.039215688,
+            "a": 0.22
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.42,
+            "y": 0.42
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 성들과 온 들과 거민을 멸하셨다.",
+          "voice_key": "narrator_542f27489730a3d5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_542f27489730a3d5.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "city_collapse"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.22745098,
+            "b": 0.078431375,
+            "a": 1
+          },
+          "duration": 0.55
+        },
+        {
+          "step_type": "shake",
+          "amount": 24,
+          "duration": 1.1
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.2,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.9,
+            "y": 0.9
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact0"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact1"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact2"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact3"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact4"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact5"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact6"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact7"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact8"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact9"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact10"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact11"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact12"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "meteor_impact13"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "FURNACE",
+          "location": "소돔과 고모라의 폐허"
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.74509805,
+            "g": 0.27450982,
+            "b": 0.039215688,
+            "a": 0.22
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 264
+          }
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 8
+          },
+          "character": "lot",
+          "dir": "left",
+          "id": "lot",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "lot_wife",
+          "dir": "left",
+          "id": "lot_wife",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 9
+          },
+          "character": "lot_daughter",
+          "dir": "left",
+          "id": "lot_daughter",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 9
+          },
+          "character": "lot_daughter",
+          "dir": "left",
+          "id": "lot_daughter2",
+          "scale": 1,
+          "tint": {
+            "r": 0.8509804,
+            "g": 0.75686276,
+            "b": 0.7294118,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.3
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "롯의 아내는 뒤를 돌아보았으므로 소금 기둥이 되었다.",
+          "voice_key": "narrator_48dbe0b3fe989ef6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_48dbe0b3fe989ef6.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "lot_wife"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_wife"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "lot_wife",
+          "dir": "right",
+          "id": "lot_wife",
+          "scale": 1,
+          "tint": {
+            "r": 0.75,
+            "g": 0.75,
+            "b": 0.7,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "rest_actor",
+          "breath_scale": {
+            "x": 1,
+            "y": 1
+          },
+          "id": "lot_wife",
+          "seconds": 2
+        },
+        {
+          "step_type": "move_actors",
+          "async": true,
+          "moves": "[{",
+          "face_during": "",
+          "id": "lot",
+          "speed": 120,
+          "to": {
+            "x": 3,
+            "y": 8
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 하필 소금 기둥인 이유를 이렇게 전한다 —",
+          "voice_key": "narrator_97828bdbc65c477b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_97828bdbc65c477b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 밤 나그네가 찾아왔을 때, 롯의 아내가 이웃에게 소금을 빌리러 보내어 대접을 못 하게 훼방했었다고 한다.",
+          "voice_key": "narrator_dc82eb2278d331f5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_dc82eb2278d331f5.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "나그네를 내쫓으려 소금을 아꼈던 자가, 결국 소금 그 자체가 된 것이다.",
+          "voice_key": "narrator_884f04f52b928228",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_884f04f52b928228.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_daughter"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_daughter2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "lot_wife"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "소알로 피한 롯과 두 딸은 훗날 그 성마저 두려워 산 굴로 들어가 살았다.",
+          "voice_key": "narrator_4b8909db00c1b66a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_4b8909db00c1b66a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 두 딸에게서 난 자손이 훗날 모압과 암몬 족속의 조상이 되었다.",
+          "voice_key": "narrator_b91a0c0966ec4d14",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/03_fall_of_sodom/narrator_b91a0c0966ec4d14.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "04_abrahams_dawn",
+      "title": "제4장 · 아브라함의 새벽",
+      "summary": "아브라함이 새벽에 일어나 소돔 쪽을 바라보니 그 땅에 연기가 옹기 가마 연기처럼 치솟는다.",
+      "characters": [
+        "아브라함"
+      ],
+      "location": "마므레",
+      "tags": [
+        "아브라함",
+        "연기",
+        "창세기 19:27-28",
+        "1권 풀무불"
+      ],
+      "stepCount": 34,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "MAMRE",
+          "location": ""
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 328
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "title",
+          "text": "제4장 · 아브라함의 새벽"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 그 아침에 일찍이 일어나 전에 여호와 앞에 섰던 곳에 이르러,",
+          "voice_key": "narrator_a390cf15c8dbe045",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_a390cf15c8dbe045.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 \"일찍이 일어나\"는 말버릇을 눈여겨본다 —",
+          "voice_key": "narrator_b3308fa094cf1028",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_b3308fa094cf1028.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈을 내보낼 때도, 훗날 이삭을 데리고 모리아로 떠날 때도 그는 늘 그렇게 일찍 일어났다.",
+          "voice_key": "narrator_d626f2a458cd810b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_d626f2a458cd810b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "기쁜 일이든 견디기 힘든 일이든, 그는 말씀 앞에서 지체한 적이 없었다는 것이다.",
+          "voice_key": "narrator_2e7bf921360ae8d5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_2e7bf921360ae8d5.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "소돔과 고모라와 그 온 들을 향하여 눈을 들어 바라본즉,",
+          "voice_key": "narrator_4d3c7f4c5dfa3cbb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_4d3c7f4c5dfa3cbb.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 땅에 연기가 옹기 가마 연기같이 치솟고 있었다.",
+          "voice_key": "narrator_9a6ff01125bbbe68",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_9a6ff01125bbbe68.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.8,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "sodom_distant_boom"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.5
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.78431374,
+            "g": 0.3529412,
+            "b": 0.101960786,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.5,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…옹기 가마 연기라.",
+          "voice_key": "abraham_4064b736ae9752a3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/abraham_4064b736ae9752a3.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 연기는 그가 젊어서 우르에서 보았던 또 다른 불을 떠올리게 했다 — 니므롯의 풀무불이었다.",
+          "voice_key": "narrator_70d14635d1f0d473",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_70d14635d1f0d473.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_ancient_memory"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그때는 그 자신이 불 속에 던져졌고 살아 나왔다. 오늘은 온 성이 그 불 속에 있었고, 아무도 나오지 못했다.",
+          "voice_key": "narrator_81017f5be4d9cc85",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_81017f5be4d9cc85.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…열 명이 없었구나.",
+          "voice_key": "abraham_558eb399e12c0410",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/abraham_558eb399e12c0410.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 하나님이 그 들의 성들을 멸하실 때에 아브라함을 생각하시고,",
+          "voice_key": "narrator_29498709e7818bcf",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_29498709e7818bcf.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "롯이 거주하는 그 성을 멸하실 때에 롯을 그 가운데에서 내보내셨다.",
+          "voice_key": "narrator_278f0e5bfc354061",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/04_abrahams_dawn/narrator_278f0e5bfc354061.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "05_abimelech_and_sarah",
+      "title": "제5장 · 아비멜렉과 사라",
+      "summary": "그랄 왕 아비멜렉이 사라를 데려갔다가 하나님의 경고로 그녀를 돌려보내고, 아브라함의 기도로 그 집이 낫는다.",
+      "characters": [
+        "아비멜렉",
+        "사라",
+        "아브라함"
+      ],
+      "location": "그랄",
+      "tags": [
+        "아비멜렉",
+        "창세기 20장"
+      ],
+      "stepCount": 46,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "PALACE",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 4
+          },
+          "character": "abimelech",
+          "dir": "down",
+          "id": "abimelech",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 4,
+            "y": 6
+          },
+          "character": "sarai",
+          "dir": "right",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "title",
+          "text": "제5장 · 아비멜렉과 사라"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 네겝으로 옮겨가 그랄에 우거하며, 그의 아내 사라를 자기 누이라 하였다.",
+          "voice_key": "narrator_752c7dcab06fc77f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_752c7dcab06fc77f.ogg"
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "down",
+          "face_during": "",
+          "id": "sarah",
+          "speed": 56,
+          "to": {
+            "x": 7,
+            "y": 5
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그랄 왕 아비멜렉이 사람을 보내어 사라를 데려갔더니,",
+          "voice_key": "narrator_02f5eae9ef0875bb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_02f5eae9ef0875bb.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 232
+          },
+          "zoom": {
+            "x": 1.2,
+            "y": 1.2
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 밤에 꿈에 아비멜렉에게 임하여 말씀하셨다:",
+          "voice_key": "narrator_eaaf8c9ac5474d4b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_eaaf8c9ac5474d4b.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_divine_call"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네가 데려간 이 여인으로 말미암아 네가 죽을 것이니, 그는 남편이 있는 여자이기 때문이다.",
+          "voice_key": "narrator_74150b4bf795acc0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_74150b4bf795acc0.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abimelech"
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "abimelech",
+          "mood": "surprise",
+          "speaker": "아비멜렉",
+          "text": "…내가 온전한 마음과 깨끗한 손으로 이렇게 하였나이다!",
+          "voice_key": "abimelech_609729f582f8a535",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/abimelech_609729f582f8a535.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.4
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 네 마음이 온전함을 알았으므로 너를 막아 내게 범죄하지 않게 하였으니,",
+          "voice_key": "narrator_4c3970ee6cbda577",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_4c3970ee6cbda577.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 여인을 돌려보내라.",
+          "voice_key": "narrator_b576eb5848b12f8a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_b576eb5848b12f8a.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이 일로 아비멜렉의 온 집 여인들의 태가 닫혀 있었다고 전한다 —",
+          "voice_key": "narrator_34a02623f6396699",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_34a02623f6396699.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라가 돌아가고 아브라함이 기도한 뒤에야 그 집이 다시 아이를 낳을 수 있었다는 것이다.",
+          "voice_key": "narrator_628e10ee6d92330c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_628e10ee6d92330c.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아비멜렉이 아침 일찍이 일어나 사라를 아브라함에게 돌려보내고,",
+          "voice_key": "narrator_3dd90a9006512862",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_3dd90a9006512862.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "양과 소와 종들을 그에게 주었다.",
+          "voice_key": "narrator_ce72146829186a61",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_ce72146829186a61.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abimelech",
+          "mood": "talk",
+          "speaker": "아비멜렉",
+          "text": "내 땅이 네 앞에 있으니, 네가 좋을 대로 거주하라.",
+          "voice_key": "abimelech_819c7d0c84eaec29",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/abimelech_819c7d0c84eaec29.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아비멜렉이 사라에게 은 천 개를 주며 말했다: 이것이 네게 대한 눈가림이 될 것이라 하니,",
+          "voice_key": "narrator_5f6a62030d1d6a30",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_5f6a62030d1d6a30.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이는 그녀의 결백을 온 사람 앞에 증명하는 것이었다.",
+          "voice_key": "narrator_a091f587cadb17ba",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_a091f587cadb17ba.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "despawn",
+          "id": "sarah"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "character": "abraham",
+          "dir": "up",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "character": "sarai",
+          "dir": "left",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.5,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…또 한 번 그대를 이런 위험에 빠뜨렸구려. 미안하오.",
+          "voice_key": "abraham_301cad4728ef29b0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/abraham_301cad4728ef29b0.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.5,
+          "id": "sarah",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "silence",
+          "speaker": "사라",
+          "text": "…이걸로, 벌써 두 번째군요.",
+          "voice_key": "sarah_4698d8024b203ec3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/sarah_4698d8024b203ec3.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…주여, 이 집을 고쳐 주소서.",
+          "voice_key": "abraham_159d4d8e505d2d4b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/abraham_159d4d8e505d2d4b.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.8980392,
+            "b": 0.5411765,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 하나님께 기도하자, 하나님이 아비멜렉과 그 아내와 여종들을 치료하시고 출산하게 하셨다.",
+          "voice_key": "narrator_00f4013b07590ec2",
+          "voice_path": "res://assets/audio/voice/ko/abraham_4/05_abimelech_and_sarah/narrator_00f4013b07590ec2.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    }
+  ]
+}

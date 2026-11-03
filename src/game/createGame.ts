@@ -1,0 +1,396 @@
+import * as THREE from 'three';
+import { PixelRenderer } from '../renderer/pixelRenderer';
+import { GraphicsInitError, GRAPHICS_FATAL_TEXT, showFatal } from './fatal';
+import { PAL } from '../world/palette';
+import { Hud, type Prompt } from '../ui/hud';
+import { mountTouchControls } from '../ui/touchControls';
+import { Interactions, type Interactable } from '../systems/interaction';
+import { PanelStack } from './panels';
+import { bindInput, type ClickApi } from './input';
+import { groundPoint, ndcOf, pickInteractable } from './worldClick';
+import { SaveLifecycle, saveFailText, type WriteOutcome } from './saveLifecycle';
+import { activeSlot, readSave, writeSaveDetail, type SaveData } from '../systems/save';
+import { AudioManager } from '../audio/audioManager';
+import { StageManager, type StageId } from '../world/stageManager';
+import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
+import { CrowdManager } from '../entities/crowd';
+import { Actor } from '../entities/actor';
+import type { ProtagonistId } from '../entities/cast';
+import { BOOKS } from '../data/books';
+import { getChapterContext } from '../systems/story';
+import { setupChapterActions } from '../systems/actions/bookActions';
+
+const SPEED = 4.2;
+const AUTOSAVE_SECONDS = 20;
+const ARRIVE = 0.18;
+
+export function createGame(): void {
+  const host = document.getElementById('game');
+  if (!host) return;
+
+  let pr: PixelRenderer;
+  try {
+    pr = new PixelRenderer(host);
+  } catch (e) {
+    showFatal(document, e instanceof GraphicsInitError ? GRAPHICS_FATAL_TEXT : undefined);
+    return;
+  }
+
+  const { scene } = pr;
+  scene.background = new THREE.Color(PAL.skyGrad[2]);
+  const sun = new THREE.DirectionalLight(0xfff0d0, 2.2);
+  sun.position.set(-8, 14, 6);
+  scene.add(sun, new THREE.HemisphereLight(0xcfe4f0, 0x8a6440, 1.1));
+
+  // ── 서브시스템 초기화 ──
+  const audio = new AudioManager();
+  const stageManager = new StageManager(scene);
+  const crowd = new CrowdManager();
+  scene.add(crowd.group);
+  const interactions = new Interactions();
+  const panels = new PanelStack();
+
+  // ── 저장 불러오기 ──
+  const slot = activeSlot();
+  const loaded = readSave(slot);
+  let curBook = loaded?.story?.book ?? 1;
+  let curChapter = loaded?.story?.chapter ?? 0;
+  let playSeconds = loaded?.playSeconds ?? 0;
+
+  // ── UI ──
+  const ui = { x: 0, y: 0 };
+  const proj = new THREE.Vector3();
+  const toUi = (x: number, y: number, z: number) => {
+    proj.set(x, y, z).project(pr.camera);
+    ui.x = (proj.x * 0.5 + 0.5) * hud.uiW;
+    ui.y = (1 - (proj.y * 0.5 + 0.5)) * hud.uiH;
+    return ui;
+  };
+  const hud = new Hud(host, toUi);
+  pr.resized(() => hud.resize(pr.size.w, pr.size.h, pr.size.scale));
+  const touch = mountTouchControls();
+  hud.touch = touch.visible;
+  if (touch.visible) touch.show();
+
+  // ── 컷신 엔진 ──
+  const cutsceneEngine = new CutsceneEngine({
+    scene,
+    renderer: pr,
+    hud,
+    audio,
+    crowd,
+    onMapChange: (mapId, _loc) => {
+      // 맵 ID와 StageId 매핑
+      let targetStage: StageId = 'ur_workshop';
+      if (mapId === 'PALACE_UR') targetStage = 'ur_palace';
+      else if (mapId === 'FURNACE') targetStage = 'ur_furnace';
+      else if (mapId === 'FIELD') targetStage = 'shechem_bethel';
+      else if (mapId === 'EGYPT') targetStage = 'egypt';
+      else if (mapId === 'SODOM') targetStage = 'sodom';
+      else if (mapId === 'BEERSHEBA') targetStage = 'beersheba';
+      else if (mapId === 'MORIAH') targetStage = 'moriah';
+      stageManager.loadStage(targetStage);
+    },
+    onChapterComplete: () => {
+      // 컷신 종료 후 플레이어블 액션 연결
+      setupInteractiveLoop();
+    },
+  });
+
+  // ── 플레이어 액터 ──
+  let currentHero: ProtagonistId = 'abram_young';
+  let playerActor = new Actor('player', currentHero);
+  scene.add(playerActor.root);
+
+  function setPlayableProtagonist(hero: ProtagonistId): void {
+    if (currentHero === hero) return;
+    currentHero = hero;
+    const oldPos = playerActor.root.position.clone();
+    scene.remove(playerActor.root);
+    playerActor.dispose();
+
+    playerActor = new Actor('player', hero);
+    playerActor.root.position.copy(oldPos);
+    scene.add(playerActor.root);
+  }
+
+  // ── 챕터 로딩 및 전환 라이프사이클 ──
+  function setupInteractiveLoop(): void {
+    setupChapterActions({
+      interactions,
+      hud,
+      audio,
+      bookIndex: curBook,
+      chapterIndex: curChapter,
+      onLoopComplete: () => {
+        advanceChapter();
+      },
+    });
+  }
+
+  function advanceChapter(): void {
+    const bookData = BOOKS[curBook];
+    if (!bookData) return;
+
+    if (curChapter + 1 < bookData.chapters.length) {
+      loadChapter(curBook, curChapter + 1);
+    } else if (curBook + 1 < BOOKS.length) {
+      loadChapter(curBook + 1, 0);
+    } else {
+      hud.celebrate('대단원', '아브라함의 모든 여정을 마쳤습니다');
+      loadChapter(7, 0); // 아우트로
+    }
+  }
+
+  function loadChapter(bookIdx: number, chapterIdx: number): void {
+    curBook = Math.max(0, Math.min(BOOKS.length - 1, bookIdx));
+    const bData = BOOKS[curBook];
+    curChapter = Math.max(0, Math.min(bData.chapters.length - 1, chapterIdx));
+
+    interactions.clear();
+    crowd.clear();
+    cutsceneEngine.stop();
+
+    const ctx = getChapterContext(curBook, curChapter);
+    setPlayableProtagonist(ctx.hero);
+
+    const stage = stageManager.loadStage(ctx.stageId);
+    playerActor.root.position.set(stage.spawn.x, 0, stage.spawn.z);
+    playerActor.setPose('stand');
+
+    hud.goal = ctx.defaultGoal;
+    audio.playBgm(stage.bgm);
+    audio.playAmbience(stage.ambience);
+
+    const chData = bData.chapters[curChapter];
+    if (chData && chData.steps && chData.steps.length > 0) {
+      cutsceneEngine.playSequence(chData.steps);
+    } else {
+      setupInteractiveLoop();
+    }
+  }
+
+  // ── 키보드 / 입력 라우팅 ──
+  // 1. 권/장 선택 오버레이 [Tab]
+  panels.addKey({
+    get open() { return hud.chapterSelect.open; },
+    key(e) {
+      if (e.code === 'Tab' || e.code === 'Escape') {
+        hud.chapterSelect.open = false;
+        return true;
+      }
+      if (e.code === 'ArrowLeft') {
+        hud.chapterSelect.bookIndex = (hud.chapterSelect.bookIndex + BOOKS.length - 1) % BOOKS.length;
+        hud.chapterSelect.chapterIndex = 0;
+        return true;
+      }
+      if (e.code === 'ArrowRight') {
+        hud.chapterSelect.bookIndex = (hud.chapterSelect.bookIndex + 1) % BOOKS.length;
+        hud.chapterSelect.chapterIndex = 0;
+        return true;
+      }
+      const chCount = BOOKS[hud.chapterSelect.bookIndex]?.chapters.length || 1;
+      if (e.code === 'ArrowUp') {
+        hud.chapterSelect.chapterIndex = (hud.chapterSelect.chapterIndex + chCount - 1) % chCount;
+        return true;
+      }
+      if (e.code === 'ArrowDown') {
+        hud.chapterSelect.chapterIndex = (hud.chapterSelect.chapterIndex + 1) % chCount;
+        return true;
+      }
+      if (e.code === 'Enter') {
+        const b = hud.chapterSelect.bookIndex;
+        const c = hud.chapterSelect.chapterIndex;
+        hud.chapterSelect.open = false;
+        loadChapter(b, c);
+        return true;
+      }
+      return true;
+    },
+  }, 10);
+
+  // 2. 일시정지 메뉴 [Esc]
+  panels.addKey({
+    get open() { return hud.pauseMenu.open; },
+    key(e) {
+      if (e.code === 'Escape') {
+        hud.pauseMenu.open = false;
+        return true;
+      }
+      if (e.code === 'ArrowUp') {
+        hud.pauseMenu.selectedItem = (hud.pauseMenu.selectedItem + 4) % 5;
+        return true;
+      }
+      if (e.code === 'ArrowDown') {
+        hud.pauseMenu.selectedItem = (hud.pauseMenu.selectedItem + 1) % 5;
+        return true;
+      }
+      if (e.code === 'Enter') {
+        const idx = hud.pauseMenu.selectedItem;
+        if (idx === 0 || idx === 4) {
+          hud.pauseMenu.open = false;
+        } else if (idx === 1) {
+          audio.bgmVol = audio.bgmVol > 0.1 ? 0 : 0.7;
+          hud.toast('audio', null, `BGM 볼륨: ${Math.round(audio.bgmVol * 100)}%`);
+        } else if (idx === 2) {
+          audio.sfxVol = audio.sfxVol > 0.1 ? 0 : 0.8;
+          hud.toast('audio', null, `SFX 볼륨: ${Math.round(audio.sfxVol * 100)}%`);
+        } else if (idx === 3) {
+          audio.voiceVol = audio.voiceVol > 0.1 ? 0 : 0.9;
+          hud.toast('audio', null, `보이스 볼륨: ${Math.round(audio.voiceVol * 100)}%`);
+        }
+        return true;
+      }
+      return true;
+    },
+  }, 10);
+
+  // 3. 컷신 대사 넘기기 [Space / Enter]
+  panels.addKey({
+    get open() { return cutsceneEngine.running; },
+    key(e) {
+      if (e.code === 'Space' || e.code === 'Enter') {
+        cutsceneEngine.advance();
+        return true;
+      }
+      return false;
+    },
+  }, 20);
+
+  // ── 월드 클릭 및 이동 바인딩 ──
+  const keys = new Set<string>();
+  const walk = { on: false, x: 0, z: 0, act: null as Interactable | null };
+  let aimed: Interactable | null = null;
+
+  const click: ClickApi = {
+    ground: (cx, cy) => {
+      const r = pr.renderer.domElement.getBoundingClientRect();
+      const n = ndcOf(cx, cy, r);
+      return groundPoint(pr.camera, n.x, n.y);
+    },
+    pick: (x, z) => pickInteractable(interactions.values(), x, z),
+    walkTo: (x, z) => {
+      if (cutsceneEngine.running) {
+        cutsceneEngine.advance();
+        return;
+      }
+      walk.on = true; walk.x = x; walk.z = z; walk.act = null;
+    },
+    walkToAct: (a) => {
+      if (cutsceneEngine.running) {
+        cutsceneEngine.advance();
+        return;
+      }
+      const p = a.pos(); walk.on = true; walk.x = p.x; walk.z = p.z; walk.act = a;
+    },
+    cancel: () => { walk.on = false; walk.act = null; },
+  };
+
+  bindInput(window, {
+    hud, keys, panels, click,
+    panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open,
+    transitioning: () => false,
+    aim: () => aimed,
+    onActError: () => hud.toast('act-error', null, '문제가 생겨 행동을 마치지 못했다', 0, 5),
+    openChapterSelect: () => {
+      hud.chapterSelect.bookIndex = curBook;
+      hud.chapterSelect.chapterIndex = curChapter;
+      hud.chapterSelect.open = !hud.chapterSelect.open;
+    },
+    openPause: () => {
+      hud.pauseMenu.open = !hud.pauseMenu.open;
+    },
+  });
+
+  // ── 첫 챕터 로딩 ──
+  loadChapter(curBook, curChapter);
+  if (loaded) hud.toast('load', null, `이어서 시작한다 (제${curBook}권 ${curChapter + 1}장)`);
+
+  // ── 저장 라이프사이클 ──
+  const snapshot = (): Omit<SaveData, 'version' | 'savedAt'> => ({
+    story: { book: curBook, chapter: curChapter, hero: currentHero },
+    player: { x: playerActor.root.position.x, z: playerActor.root.position.z },
+    playSeconds: Math.floor(playSeconds),
+  });
+  const write = (): WriteOutcome => {
+    const d = writeSaveDetail(snapshot(), slot);
+    return d.result === 'ok' ? true : d.result === 'conflict' ? 'conflict' : d.reason ?? false;
+  };
+  const lifecycle = new SaveLifecycle(
+    () => ({ disabled: false, leaving: false, started: true, locked: false, cutscene: cutsceneEngine.running }),
+    write,
+    (reason) => hud.toast('save-fail', null, saveFailText(reason), 0, 6),
+    () => hud.toast('save-conflict', null, '다른 탭에서 저장해 이 탭은 저장을 멈췄다', 0, 8),
+  );
+  lifecycle.bind(window, document);
+  let sinceSave = 0;
+
+  // ── 프레임 렌더 루프 ──
+  const prompt: Prompt = { x: 0, y: 0, label: '' };
+  const focus = new THREE.Vector3();
+  let last = performance.now();
+
+  const frame = (now: number) => {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    playSeconds += dt;
+    sinceSave += dt;
+    if (sinceSave >= AUTOSAVE_SECONDS) { sinceSave = 0; lifecycle.save(); }
+
+    // 컷신 및 군중 업데이트
+    if (cutsceneEngine.running) {
+      cutsceneEngine.update(dt);
+    }
+    crowd.update(dt);
+
+    const st = stageManager.stage;
+    const b = st ? st.bounds : { minX: -10, maxX: 10, minZ: -10, maxZ: 10 };
+    const p = playerActor.root.position;
+
+    // 플레이어 이동 (컷신 중이 아닐 때만)
+    if (!cutsceneEngine.running && !hud.chapterSelect.open && !hud.pauseMenu.open) {
+      let dx = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
+      let dz = (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0);
+
+      if (dx || dz) walk.on = false;
+      else if (walk.on) {
+        const wx = walk.x - p.x, wz = walk.z - p.z, wd = Math.hypot(wx, wz);
+        if (wd < ARRIVE + (walk.act ? walk.act.r : 0)) {
+          walk.on = false;
+          const a = walk.act; walk.act = null;
+          if (a) a.act();
+        } else { dx = wx / wd; dz = wz / wd; }
+      }
+
+      const isMoving = Boolean(dx || dz);
+      if (isMoving) {
+        const len = Math.hypot(dx, dz);
+        dx /= len; dz /= len;
+        playerActor.face(Math.atan2(dx, dz));
+        p.x = Math.max(b.minX + 0.5, Math.min(b.maxX - 0.5, p.x + dx * SPEED * dt));
+        p.z = Math.max(b.minZ + 0.5, Math.min(b.maxZ - 0.5, p.z + dz * SPEED * dt));
+      }
+      playerActor.updateAnimation(dt, isMoving);
+
+      aimed = interactions.nearest(p.x, p.z, playerActor.facing);
+    } else {
+      aimed = null;
+      playerActor.updateAnimation(dt, false);
+    }
+
+    let pp: Prompt | null = null;
+    if (aimed) {
+      const at = aimed.pos();
+      const s = toUi(at.x, aimed.height, at.z);
+      prompt.x = s.x; prompt.y = s.y; prompt.label = aimed.label() ?? '';
+      pp = prompt;
+    }
+
+    focus.set(p.x, 0.7, p.z);
+    pr.follow(focus);
+    pr.render();
+    hud.draw(dt, pp);
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
+}

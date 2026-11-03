@@ -1,0 +1,173 @@
+{
+  "id": "abraham_outro",
+  "title": "아브라함 · 아우트로",
+  "chapterCount": 1,
+  "chapters": [
+    {
+      "slug": "99_story_outro",
+      "title": "아 브 라 함",
+      "summary": "",
+      "characters": [],
+      "location": "",
+      "tags": [],
+      "stepCount": 31,
+      "steps": [
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.09411765,
+            "g": 0.1254902,
+            "b": 0.2901961,
+            "a": 0.42
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_cave"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 1,
+          "fade_in": true
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "우르의 풀무불에서 시작된 한 사람의 걸음은,"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "약속의 땅과 언약과 시험을 지나 막벨라 굴에서 멈췄다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "fx_covenant_chime"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 하늘의 별처럼 많으리라던 그 약속은,"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이제 겨우 시작되었을 뿐이다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 하나님을 믿었고, 하나님은 그 믿음을 의로 여기셨다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "모리아에서 하나님이 친히 준비하신 숫양은 이삭을 대신해 죽었다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "성경은 그 약속이 마침내 아브라함의 자손 예수 그리스도 안에서"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "모든 민족에게 이르는 복이 되었다고 전한다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "우리도 그리스도를 믿음으로 값없이 의롭다 하심을 얻는다."
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "ending_resolve"
+        },
+        {
+          "step_type": "title",
+          "text": "아 브 라 함"
+        },
+        {
+          "step_type": "wait",
+          "duration": 2.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 1.2,
+          "fade_in": false
+        }
+      ]
+    }
+  ]
+}

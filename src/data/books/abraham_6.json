@@ -1,0 +1,2919 @@
+{
+  "id": "abraham_6",
+  "title": "아브라함 6권 · 막벨라",
+  "chapterCount": 7,
+  "chapters": [
+    {
+      "slug": "01_death_of_sarah",
+      "title": "제1장 · 사라의 죽음",
+      "summary": "사탄이 이삭이 번제로 죽었다는 거짓 소식을 전하니, 그 충격으로 사라가 헤브론에서 죽는다.",
+      "characters": [
+        "아브라함",
+        "사라"
+      ],
+      "location": "헤브론",
+      "tags": [
+        "사라의 죽음",
+        "사탄",
+        "미드라시",
+        "창세기 23장"
+      ],
+      "stepCount": 44,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "sarai",
+          "dir": "down",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "left",
+          "id": "stranger",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "title",
+          "text": "제1장 · 사라의 죽음"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 사라의 마지막 날을 이렇게 전한다.",
+          "voice_key": "narrator_76bbe5703d405d79",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_76bbe5703d405d79.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함과 이삭이 모리아산에 오른 사이, 사탄이 노인의 모습으로 사라를 찾아왔다.",
+          "voice_key": "narrator_f49c38b974829d74",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_f49c38b974829d74.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "sarah",
+          "mood": "question"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "stranger"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "…소식을 들으셨소? 아브라함이 아들을 데리고 산에 올라 번제로 바쳤다 하오.",
+          "voice_key": "stranger_43e5fd3041db3e04",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/stranger_43e5fd3041db3e04.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 8,
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "…뭐라 하였소.",
+          "voice_key": "sarah_284e7b2f30d2e8df",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/sarah_284e7b2f30d2e8df.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "silence",
+          "speaker": "사라",
+          "text": "…내 노년의 웃음이었던 그 아이가…",
+          "voice_key": "sarah_654cbe9c6ac449ab",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/sarah_654cbe9c6ac449ab.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭이 실제로는 살아 돌아오고 있었으나, 그 거짓 소식은 이미 사라의 심장에 꽂혀 있었다.",
+          "voice_key": "narrator_6637ae16863d8402",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_6637ae16863d8402.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "stranger"
+        },
+        {
+          "step_type": "shake",
+          "amount": 12,
+          "duration": 0.7
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.78431374,
+            "g": 0.11764706,
+            "b": 0.11764706,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.6,
+          "position": {
+            "x": 272,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라가 그 자리에서 놀라움과 슬픔을 이기지 못하고 숨을 거두었다.",
+          "voice_key": "narrator_20a39dd5dbd384cc",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_20a39dd5dbd384cc.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "sting_grief"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "despawn",
+          "id": "sarah"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.6,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라는 백이십칠 세까지 살았다.",
+          "voice_key": "narrator_66d8fc9b245c1e07",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_66d8fc9b245c1e07.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라가 가나안 땅 헤브론에서 죽자,",
+          "voice_key": "narrator_1d2fb0bc0592c358",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_1d2fb0bc0592c358.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…내가 돌아왔소, 사라. 너무 늦었구려.",
+          "voice_key": "abraham_1d3c3712f3037b50",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/abraham_1d3c3712f3037b50.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 돌아와 그 소식을 듣고, 들어가서 사라를 위하여 슬퍼하며 애통하였다.",
+          "voice_key": "narrator_dad7a014500d333d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/01_death_of_sarah/narrator_dad7a014500d333d.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.4
+        },
+        {
+          "step_type": "wait",
+          "duration": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "02_ephrons_bargain",
+      "title": "제2장 · 에브론의 흥정",
+      "summary": "아브라함이 헷 족속 에브론에게 막벨라 굴을 사려 하니, 겸손을 가장한 에브론이 결국 값을 다 받아낸다.",
+      "characters": [
+        "아브라함",
+        "에브론"
+      ],
+      "location": "헤브론 성문",
+      "tags": [
+        "에브론",
+        "막벨라 굴",
+        "창세기 23장"
+      ],
+      "stepCount": 63,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "HEBRON_GATE",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 336,
+            "y": 200
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 3
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 3
+          },
+          "character": "smith",
+          "dir": "left",
+          "id": "ephron",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "title",
+          "text": "제2장 · 에브론의 흥정"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "나는 나그네요 우거하는 자로소이다. 청하건대 내게 매장할 소유지를 주어,",
+          "voice_key": "abraham_2a2e1a511e203f9d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/abraham_2a2e1a511e203f9d.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내 죽은 자를 내 앞에서 장사하게 하소서.",
+          "voice_key": "abraham_d20037af78246fb0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/abraham_d20037af78246fb0.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "ephron"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ephron",
+          "mood": "talk",
+          "speaker": "에브론",
+          "text": "내 주여 내게 들으소서. 그 밭을 내가 당신에게 드리고 그 속의 굴도 내가 당신에게 드리되,",
+          "voice_key": "ephron_5a7c977185e102a9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/ephron_5a7c977185e102a9.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ephron",
+          "mood": "talk",
+          "speaker": "에브론",
+          "text": "내 동족 앞에서 당신에게 드리니 당신의 죽은 자를 장사하소서.",
+          "voice_key": "ephron_c9083da101e053e6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/ephron_c9083da101e053e6.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "에브론의 말은 후하게 들렸으나, 그 속에는 값을 더 부풀리려는 셈이 있었다.",
+          "voice_key": "narrator_d076fc5658b2b88a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_d076fc5658b2b88a.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "당신이 합당히 여기면 청하오니 내 손에서 그 밭 값을 받으소서. 내가 그리하고 내 죽은 자를 거기 장사하겠나이다.",
+          "voice_key": "abraham_0180811d858a2a96",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/abraham_0180811d858a2a96.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 3
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 9,
+            "y": 3
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 432,
+            "y": 168
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "ephron"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ephron",
+          "mood": "talk",
+          "speaker": "에브론",
+          "text": "…내 주여 내 말을 들으소서. 땅 값은 은 사백 세겔이나 그것이 나와 당신 사이에 무슨 문제리이까.",
+          "voice_key": "ephron_45355dea62c1ad23",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/ephron_45355dea62c1ad23.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "\"그것이 무슨 문제리이까\" — 겸손을 가장한 말이었으나, 그 값은 결코 적지 않았다.",
+          "voice_key": "narrator_37710abb0331552d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_37710abb0331552d.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "당대 상인들 사이에 통용되던 은, 곧 후하게 쳐도 후한 값이었다.",
+          "voice_key": "narrator_9022d06dc7148ae5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_9022d06dc7148ae5.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 336,
+            "y": 200
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 대목의 글자 하나까지 눈여겨본다 — 히브리어 본문에서 \"에브론\"이라는",
+          "voice_key": "narrator_865c42b7e80194be",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_865c42b7e80194be.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이름이 여기서만 유독 글자 하나(바브)가 빠진 채 적혀 있으니, 돈을 받고 나자 그 이름조차",
+          "voice_key": "narrator_8d75dab13f76613c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_8d75dab13f76613c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "\"작아졌다\"는 뜻으로 랍비 전승은 풀이한다.",
+          "voice_key": "narrator_af640ec56106b420",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_af640ec56106b420.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "abraham",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…값을 알면서도 모른 척하는군. 그래도 좋다 — 이 땅만은 누구도 시비 걸지 못하게 확실히 해야 하니.",
+          "voice_key": "abraham_a9773bc0591a0306",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/abraham_a9773bc0591a0306.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…그 값대로 달아 드리리다.",
+          "voice_key": "abraham_db4431b859e15c47",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/abraham_db4431b859e15c47.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11.5,
+            "y": 3.8
+          },
+          "character": "silver_scale",
+          "dir": "down",
+          "id": "silver_scale",
+          "scale": 1
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 11.5,
+            "y": 3.8
+          },
+          "key": "silver_weigh"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 에브론의 말을 따라 헷 족속이 통용하는 상인의 저울로 은 사백 세겔을 달아 주었다.",
+          "voice_key": "narrator_2d716e01b707d1c8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_2d716e01b707d1c8.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "despawn",
+          "id": "silver_scale"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 굳이 값을 다 치른 것은, 훗날 누구도 이 땅에 대해 시비를 걸지 못하게 하려는 뜻이었다 — 선물이 아니라 소유로 만든 것이다.",
+          "voice_key": "narrator_746fc1cf0d83ec8a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_746fc1cf0d83ec8a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이렇게 마므레 앞 막벨라에 있는 밭과 그 속의 굴과 그 밭에 둘린 모든 나무가",
+          "voice_key": "narrator_7cc04b6d7df71c91",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_7cc04b6d7df71c91.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "seal_contract"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "성 문에 들어온 모든 자 앞에서 아브라함의 소유로 확정되었더라.",
+          "voice_key": "narrator_2fe960d2a35afe6c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_2fe960d2a35afe6c.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "burial_earth"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 후에 아브라함이 그의 아내 사라를 그 밭 굴에 장사하였더라.",
+          "voice_key": "narrator_92f968b09d8be5ef",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/02_ephrons_bargain/narrator_92f968b09d8be5ef.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": true
+        },
+        {
+          "step_type": "set_map",
+          "id": "MACHPELAH",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 232
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 6
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "title",
+          "text": "막벨라 굴"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "bubble",
+          "duration": 1.2,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "03_isaacs_comfort",
+      "title": "제3장 · 이삭의 위로",
+      "summary": "어머니를 잃은 이삭이 브엘라헤로이 — 하갈이 천사를 만났던 그 우물 — 근처로 옮겨 슬픔을 달랜다.",
+      "characters": [
+        "이삭"
+      ],
+      "location": "브엘라헤로이",
+      "tags": [
+        "이삭",
+        "애도",
+        "브릿지"
+      ],
+      "stepCount": 28,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 8
+          },
+          "character": "isaac_young",
+          "dir": "down",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "title",
+          "text": "제3장 · 이삭의 위로"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "어머니를 잃은 이삭은 오래 슬퍼하였다.",
+          "voice_key": "narrator_642b1090c45d107a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/narrator_642b1090c45d107a.ogg"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "isaac",
+          "speed": 24,
+          "to": {
+            "x": 11,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "isaac",
+          "speed": 24,
+          "to": {
+            "x": 12,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "isaac",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "talk",
+          "speaker": "이삭",
+          "text": "…어머니가 계시던 장막에는, 이제 그 그림자만 남았습니다.",
+          "voice_key": "isaac_a9e92bf8d65f7f33",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/isaac_a9e92bf8d65f7f33.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭은 브엘라헤로이 근처로 옮겨 거하였다 — 하갈이 광야에서 쫓겨났을 때",
+          "voice_key": "narrator_5bb9ffa1813bfc03",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/narrator_5bb9ffa1813bfc03.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "천사를 만나 \"나를 살피시는 하나님\"이라 이름 불렀던 바로 그 우물이었다.",
+          "voice_key": "narrator_eefc3cc56fbcc8f7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/narrator_eefc3cc56fbcc8f7.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 368,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "talk",
+          "speaker": "이삭",
+          "text": "…이곳이라면, 버려진 자에게도 하나님이 보고 계셨다는 것을 기억할 수 있겠지요.",
+          "voice_key": "isaac_9f7ef28d5e64c6f0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/isaac_9f7ef28d5e64c6f0.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 432,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "슬픔은 쉬이 가시지 않았다. 그러나 그의 아버지는 아직 할 일이 남아 있었다 —",
+          "voice_key": "narrator_262290267d4caf0c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/narrator_262290267d4caf0c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭에게 아내를 찾아 주는 일이었다.",
+          "voice_key": "narrator_7c40fbe01dcad0f2",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/03_isaacs_comfort/narrator_7c40fbe01dcad0f2.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "04_a_bride_for_isaac",
+      "title": "제4장 · 이삭의 신부를 구하라",
+      "summary": "늙은 아브라함이 종 엘리에셀에게 허벅지 밑에 손을 넣고 맹세하게 하여, 고향에서 이삭의 아내를 구해오라 명한다.",
+      "characters": [
+        "아브라함",
+        "엘리에셀"
+      ],
+      "location": "아브라함의 장막",
+      "tags": [
+        "엘리에셀",
+        "맹세",
+        "창세기 24장"
+      ],
+      "stepCount": 39,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "eliezer",
+          "dir": "left",
+          "id": "eliezer",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_pastoral_home"
+        },
+        {
+          "step_type": "title",
+          "text": "제4장 · 이삭의 신부를 구하라"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 나이가 많아 늙었고, 여호와께서 그에게 범사에 복을 주셨더라.",
+          "voice_key": "narrator_40db22dee5a1cdc3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/narrator_40db22dee5a1cdc3.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…내가 얼마나 더 볼 수 있을지 모르겠다. 이삭의 짝은, 내 눈으로 보고 싶구나.",
+          "voice_key": "abraham_b20b8a3bbb03a4b4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_b20b8a3bbb03a4b4.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 240,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.2,
+            "y": 1.2
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내 집의 오래된 종이여, 청하노니 네 손을 내 허벅지 밑에 넣고 맹세하라.",
+          "voice_key": "abraham_9c7880c5c375deee",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_9c7880c5c375deee.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내 아들을 위하여 가나안 족속 중에서 아내를 택하지 말고,",
+          "voice_key": "abraham_32adaac28599e60c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_32adaac28599e60c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내 고향 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라.",
+          "voice_key": "abraham_e7ad0f1b45fa4645",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_e7ad0f1b45fa4645.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "…혹 여인이 나를 따라 이 땅으로 오려 하지 아니하면, 내가 주인의 아들을 주인이 나오신 땅으로 돌아가게 하리이까.",
+          "voice_key": "eliezer_1d484050e9aed91d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/eliezer_1d484050e9aed91d.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "삼가 내 아들을 그리로 데리고 돌아가지 말라.",
+          "voice_key": "abraham_3466ca4165085f39",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_3466ca4165085f39.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "여호와께서 그의 사자를 네 앞서 보내실지라. 네가 거기서 내 아들을 위하여 아내를 택할 것이니라.",
+          "voice_key": "abraham_48f9add9b2c9b39a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/abraham_48f9add9b2c9b39a.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "eliezer",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "…맹세하겠나이다, 주인이여.",
+          "voice_key": "eliezer_9722df56cbc6b7ce",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/eliezer_9722df56cbc6b7ce.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "despawn",
+          "id": "abraham"
+        },
+        {
+          "step_type": "despawn",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "left",
+          "id": "oath_pose",
+          "scale": 1
+        },
+        {
+          "step_type": "equip_actor_action",
+          "face": "left",
+          "fps": 1,
+          "frames": 1,
+          "id": "oath_pose",
+          "move_fps": 8,
+          "move_frames": 0,
+          "move_texture": "",
+          "texture": "res://assets/sprites/actions/abraham_eliezer_oath.png"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 맹세의 방식을 이렇게 풀이한다 —",
+          "voice_key": "narrator_8c4b3da6e6bbbb77",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/narrator_8c4b3da6e6bbbb77.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "허벅지 밑에 손을 넣는 것은 곧 할례의 표, 그 언약의 살에 손을 대고 맹세함이었다는 것이다.",
+          "voice_key": "narrator_b9ddc5c398bfa1cf",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/narrator_b9ddc5c398bfa1cf.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "despawn",
+          "id": "oath_pose"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "종이 그 주인의 낙타 열 필과 주인의 모든 좋은 것을 가지고, 메소보다미아 나홀의 성으로 떠났다.",
+          "voice_key": "narrator_95dd969fbcdfea39",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/04_a_bride_for_isaac/narrator_95dd969fbcdfea39.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "travel_caravan"
+        },
+        {
+          "step_type": "travel_route",
+          "character": "eliezer",
+          "distance": "약 900 km",
+          "duration": 5.4,
+          "from": "헤브론",
+          "heading": "헤브론에서 나홀의 성으로",
+          "hold": 1.35,
+          "landmarks": "Array[Dictionary]([{",
+          "offset": {
+            "x": 6,
+            "y": 4
+          },
+          "pos": {
+            "x": 158,
+            "y": 163
+          },
+          "style": "reference",
+          "text": "가나안 · 약속의 땅"
+        }
+      ]
+    },
+    {
+      "slug": "05_labans_house",
+      "title": "제5장 · 라반의 집",
+      "summary": "엘리에셀이 우물가에서 리브가를 만나 혼약을 정하고, 가나안으로 돌아와 이삭과 리브가를 만나게 한다.",
+      "characters": [
+        "엘리에셀",
+        "리브가",
+        "라반",
+        "이삭"
+      ],
+      "location": "나홀의 성 / 라반의 집 / 가나안",
+      "tags": [
+        "리브가",
+        "라반",
+        "우물",
+        "창세기 24장"
+      ],
+      "stepCount": 123,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WELL",
+          "location": ""
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 336,
+            "y": 264
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 5
+          },
+          "character": "eliezer",
+          "dir": "right",
+          "id": "eliezer",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 6
+          },
+          "character": "camel",
+          "dir": "left",
+          "id": "camel1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10.5,
+            "y": 6
+          },
+          "character": "trough",
+          "dir": "down",
+          "id": "trough",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "title",
+          "text": "제5장 · 라반의 집"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "set_object_frame",
+          "frame": 2,
+          "id": "camel1"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "저녁 때 곧 여자들이 물 길으러 나올 때에, 종이 성 밖 우물 곁에 낙타를 꿇렸다.",
+          "voice_key": "narrator_6fdd4befd8cbcc36",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_6fdd4befd8cbcc36.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "eliezer",
+          "mood": "silence"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 352,
+            "y": 264
+          },
+          "zoom": {
+            "x": 1.2,
+            "y": 1.2
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "…주 나의 주인 아브라함의 하나님이여, 원하건대 오늘 나로 순조롭게 만나게 하시고 내 주인 아브라함에게 은총을 베푸시옵소서.",
+          "voice_key": "eliezer_75391becd6193ebb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_75391becd6193ebb.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "제가 한 소녀에게 '항아리를 기울여 물을 마시게 하라' 하리니, 그가 '마시라, 당신의 낙타에게도 물을 마시게 하리라' 하면,",
+          "voice_key": "eliezer_24fe1c18696b40b3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_24fe1c18696b40b3.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "그가 곧 주께서 이삭을 위하여 정하신 자로 알겠나이다.",
+          "voice_key": "eliezer_8f5ee797a47ea3ec",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_8f5ee797a47ea3ec.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 336,
+            "y": 264
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 5
+          },
+          "character": "rebekah",
+          "dir": "left",
+          "id": "rebekah",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 5
+          },
+          "character": "water_jar",
+          "dir": "left",
+          "id": "water_jar",
+          "scale": 1
+        },
+        {
+          "step_type": "attach_actor",
+          "id": "water_jar",
+          "offset": {
+            "x": 10,
+            "y": -10
+          },
+          "to": "rebekah"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "rebekah",
+          "speed": 56,
+          "to": {
+            "x": 9,
+            "y": 5
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "말을 마치기도 전에 리브가가 물동이를 어깨에 메고 나왔다.",
+          "voice_key": "narrator_0564583bd0286fda",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_0564583bd0286fda.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "청하건대 그대의 물동이의 물을 내게 조금 마시게 하라.",
+          "voice_key": "eliezer_aea7dd21f1e03bd1",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_aea7dd21f1e03bd1.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "rebekah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "rebekah",
+          "mood": "talk",
+          "speaker": "리브가",
+          "text": "주여 마시소서. …당신의 낙타를 위하여서도 물을 길어 그것들도 배부르게 마시게 하리이다.",
+          "voice_key": "rebekah_7a239a7df002b2de",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/rebekah_7a239a7df002b2de.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "eliezer",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10.5,
+            "y": 6
+          },
+          "key": "water_pour"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.1
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10.5,
+            "y": 6
+          },
+          "key": "water_draw"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.25
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10.5,
+            "y": 6
+          },
+          "key": "water_pour"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "리브가가 급히 물동이의 물을 구유에 붓고 다시 길으러 우물로 달려가서 그 모든 낙타를 위하여 길었다.",
+          "voice_key": "narrator_67182b9762497c5d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_67182b9762497c5d.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.8509804,
+            "g": 0.6901961,
+            "b": 0.2901961,
+            "a": 1
+          },
+          "duration": 0.35
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "낙타가 마시기를 다 마치자, 그가 금 고리 한 개와 금 손목고리 한 쌍을 꺼내어 그에게 주었다.",
+          "voice_key": "narrator_ad1114e8121c3b63",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_ad1114e8121c3b63.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 6
+          },
+          "character": "jewelry",
+          "dir": "down",
+          "id": "jewelry",
+          "scale": 1
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 9,
+            "y": 6
+          },
+          "key": "gift_bundle_place"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "…그대는 뉘 집 딸이뇨. 그대 부친의 집에 우리가 유숙할 곳이 있느냐.",
+          "voice_key": "eliezer_a03d910ef60a183f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_a03d910ef60a183f.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "rebekah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "rebekah",
+          "mood": "talk",
+          "speaker": "리브가",
+          "text": "나는 밀가가 나홀에게서 낳은 아들 브두엘의 딸이니이다. 우리에게 짚과 사료가 족하고 유숙할 곳도 있나이다.",
+          "voice_key": "rebekah_71e2b543eb88660d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/rebekah_71e2b543eb88660d.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "eliezer",
+          "dir": "right",
+          "id": "eliezer",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 7
+          },
+          "character": "laban",
+          "dir": "left",
+          "id": "laban",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "라반의 집"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "laban",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "laban",
+          "speed": 56,
+          "to": {
+            "x": 9,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "리브가에게 오라비가 있어 이름은 라반이라. 라반이 그 누이의 손에 낀 코걸이와 손목의 팔찌를 보고,",
+          "voice_key": "narrator_b69a60da8eaa4c48",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_b69a60da8eaa4c48.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "또 그 누이 리브가가 전하는 말을 듣고 그 사람에게로 달려나갔다.",
+          "voice_key": "narrator_ac58dc136fecb053",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_ac58dc136fecb053.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "laban"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "laban",
+          "mood": "talk",
+          "speaker": "라반",
+          "text": "여호와께 복을 받은 자여, 들어오소서. 어찌 밖에 서 있나이까.",
+          "voice_key": "laban_a5827201e8834c80",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/laban_a5827201e8834c80.ogg"
+        },
+        {
+          "step_type": "breathe_actor",
+          "breath_scale": {
+            "x": 1.015,
+            "y": 1
+          },
+          "id": "eliezer",
+          "seconds": 1.8
+        },
+        {
+          "step_type": "breathe_actor",
+          "breath_scale": {
+            "x": 1.015,
+            "y": 1
+          },
+          "id": "laban",
+          "seconds": 1.8
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "종이 그 오는 뜻을 낱낱이 고하니, 라반과 브두엘이 대답하였다.",
+          "voice_key": "narrator_11d1747cfd91cabd",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_11d1747cfd91cabd.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.15,
+            "y": 1.15
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "id": "laban",
+          "mood": "talk",
+          "speaker": "라반",
+          "text": "이 일이 여호와께로 말미암았으니 우리가 가부를 말할 수 없노라. 리브가가 당신 앞에 있으니 데려다가",
+          "voice_key": "laban_d3bfe45dfa72cceb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/laban_d3bfe45dfa72cceb.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "laban",
+          "mood": "talk",
+          "speaker": "라반",
+          "text": "여호와의 명령대로 그를 당신 주인의 아들의 아내가 되게 하라.",
+          "voice_key": "laban_94e9785ccb3da9f8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/laban_94e9785ccb3da9f8.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "betrothal_chime"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이튿날 아침, 그들이 리브가에게 이 사람과 함께 가려느냐 물으니 리브가가 가겠다고 대답하였다.",
+          "voice_key": "narrator_33f93170a7df1c71",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_33f93170a7df1c71.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 304,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.15,
+            "y": 1.15
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그들이 리브가를 보내며 그에게 축복하며 말했다: 우리 누이여 너는 천만인의 어머니가 되어라.",
+          "voice_key": "narrator_d462f75666077cd9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_d462f75666077cd9.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 씨가 그 원수의 성문을 차지하게 되어라.",
+          "voice_key": "narrator_274c4801bd8950b0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_274c4801bd8950b0.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 17,
+            "y": 7
+          },
+          "character": "isaac_young",
+          "dir": "left",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 3,
+            "y": 8
+          },
+          "character": "eliezer",
+          "dir": "right",
+          "id": "eliezer",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 1.5,
+            "y": 8
+          },
+          "character": "rebekah",
+          "dir": "right",
+          "id": "rebekah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "play_ambience",
+          "key": "amb_desert_day"
+        },
+        {
+          "step_type": "title",
+          "text": "가나안 땅 · 저녁"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "저물 때에 이삭이 들에 나가 묵상하다가 눈을 들어 보니, 낙타들이 오고 있었다.",
+          "voice_key": "narrator_2a17429d8ae2eb22",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_2a17429d8ae2eb22.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "travel_caravan"
+        },
+        {
+          "step_type": "move_actors",
+          "moves": "[{",
+          "face_during": "",
+          "id": "eliezer",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 8
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "rebekah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "rebekah",
+          "mood": "question",
+          "speaker": "리브가",
+          "text": "우리를 맞으러 들에서 걸어오는 저 사람은 누구입니까?",
+          "voice_key": "rebekah_76f48c927a12406c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/rebekah_76f48c927a12406c.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "eliezer"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "eliezer",
+          "mood": "talk",
+          "speaker": "엘리에셀",
+          "text": "그가 내 주인 이삭입니다.",
+          "voice_key": "eliezer_e527367ce4b37681",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/eliezer_e527367ce4b37681.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "isaac_rebekah_meet"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "리브가는 너울을 가져다가 자신을 가렸고, 종은 그가 행한 일을 이삭에게 모두 아뢰었다.",
+          "voice_key": "narrator_dae1c06c312bf389",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_dae1c06c312bf389.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "isaac",
+          "mood": "silence"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "left",
+          "face_during": "",
+          "id": "isaac",
+          "speed": 24,
+          "to": {
+            "x": 12,
+            "y": 7
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 8
+          },
+          "character": "isaac_young",
+          "dir": "right",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "rebekah",
+          "dir": "left",
+          "id": "rebekah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭이 리브가를 어머니 사라의 장막으로 인도하여 아내로 맞고 사랑하였다.",
+          "voice_key": "narrator_0071bab32dd10047",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_0071bab32dd10047.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "silence",
+          "speaker": "이삭",
+          "text": "…어머니를 잃은 뒤 비어 있던 이 장막에, 다시 온기가 돌아왔습니다.",
+          "voice_key": "isaac_40fdcca5580a6dd7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/isaac_40fdcca5580a6dd7.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.3,
+            "y": 1.3
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "rebekah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "rebekah",
+          "mood": "silence",
+          "speaker": "리브가",
+          "text": "이제 제가 당신과 함께 있겠습니다.",
+          "voice_key": "rebekah_c1fd2b8e23c2cf5f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/rebekah_c1fd2b8e23c2cf5f.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "betrothal_chime"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭이 그의 어머니를 잃은 뒤에 위로를 얻었더라.",
+          "voice_key": "narrator_171eef353dcbcb1c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/05_labans_house/narrator_171eef353dcbcb1c.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "06_keturah_and_the_sons_of_the_east",
+      "title": "제6장 · 그두라와 동방으로 보낸 아들들",
+      "summary": "아브라함이 그두라를 통해 여러 아들을 얻으나, 이삭에게 모든 것을 물려주고 나머지 아들들은 예물을 들려 동방으로 보낸다.",
+      "characters": [
+        "아브라함",
+        "그두라의 아들들"
+      ],
+      "location": "아브라함의 장막",
+      "tags": [
+        "그두라",
+        "요세푸스",
+        "창세기 25장"
+      ],
+      "stepCount": 38,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 5
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "son1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10.5,
+            "y": 5
+          },
+          "character": "visitor",
+          "dir": "left",
+          "id": "son2",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 5
+          },
+          "character": "smith",
+          "dir": "left",
+          "id": "son3",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "courtier",
+          "dir": "left",
+          "id": "son4",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10.5,
+            "y": 8
+          },
+          "character": "guard",
+          "dir": "left",
+          "id": "son5",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 8
+          },
+          "character": "villager",
+          "dir": "left",
+          "id": "son6",
+          "scale": 1,
+          "tint": {
+            "r": 0.92,
+            "g": 0.85,
+            "b": 0.76,
+            "a": 1
+          }
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "title",
+          "text": "제6장 · 그두라와 동방으로 보낸 아들들"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 다시 아내를 맞이하니 이름은 그두라라. 그가 아브라함에게 시므란과 욕산과 므단과",
+          "voice_key": "narrator_692e72bb9a66e210",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_692e72bb9a66e210.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "미디안과 이스박과 수아를 낳았더라.",
+          "voice_key": "narrator_8d05e0d738f7fec5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_8d05e0d738f7fec5.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…모든 유업은 이삭에게 간다. 다른 아들들에게는, 내가 살아있는 동안 재물을 나누어 주겠다.",
+          "voice_key": "abraham_a64bf8a94d22fc7c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/abraham_a64bf8a94d22fc7c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 자기의 모든 소유를 이삭에게 주었고,",
+          "voice_key": "narrator_44ef5fef2c356821",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_44ef5fef2c356821.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "자기 서자들에게도 재물을 주어 자기 생전에 그들로 하여금 아들 이삭을 떠나 동방으로,",
+          "voice_key": "narrator_6b124a5762040373",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_6b124a5762040373.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "곧 동쪽 땅으로 가게 하였다.",
+          "voice_key": "narrator_71a0245a27ed0a82",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_71a0245a27ed0a82.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 5,
+            "y": 8
+          },
+          "key": "gift_bundle_place"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…이것이 다툼 없이 너희 모두를 지키는 길이다.",
+          "voice_key": "abraham_2d9d5df67f2b91a2",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/abraham_2d9d5df67f2b91a2.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "travel_caravan"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "move_actors",
+          "async": true,
+          "moves": "[{",
+          "face_during": "",
+          "id": "son1",
+          "speed": 24,
+          "to": {
+            "x": 22,
+            "y": 5
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘은 이미 그 자신의 큰 민족을 이루어 가고 있었으니, 이 아들들 중에 포함되지 않았다.",
+          "voice_key": "narrator_f37c7b9a6f3b46e2",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_f37c7b9a6f3b46e2.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "역사가 요세푸스는, 이 아들들이 훗날 아라비아와 동방 여러 땅에 흩어져",
+          "voice_key": "narrator_0e37f20c0925a210",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_0e37f20c0925a210.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 이름을 딴 족속과 지역을 이루었다고 전한다 — 미디안 자손이 그중 하나였다.",
+          "voice_key": "narrator_cce98ac9a808226c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_cce98ac9a808226c.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이는 냉정함이 아니라 지혜였다 — 유업을 하나로 지키고, 다툼의 씨를 미리 흩어 놓은 것이다.",
+          "voice_key": "narrator_fd083a80fb0b0971",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/06_keturah_and_the_sons_of_the_east/narrator_fd083a80fb0b0971.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "07_death_of_abraham",
+      "title": "제7장 · 아브라함의 죽음",
+      "summary": "아브라함이 백칠십오 세에 죽어, 이삭과 이스마엘이 나란히 서서 그를 막벨라 굴 사라 곁에 장사한다.",
+      "characters": [
+        "이삭",
+        "이스마엘"
+      ],
+      "location": "막벨라 굴",
+      "tags": [
+        "아브라함의 죽음",
+        "화해",
+        "창세기 25장"
+      ],
+      "stepCount": 49,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "down",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_lament"
+        },
+        {
+          "step_type": "title",
+          "text": "제7장 · 아브라함의 죽음"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 272,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1.25,
+            "y": 1.25
+          }
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…내가 본 것을, 내 자손들도 보게 되리라.",
+          "voice_key": "abraham_39b5c2aee278ad27",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/abraham_39b5c2aee278ad27.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 향년 백칠십오 세에 기운이 다하여 죽어 자기 열조에게로 돌아가니,",
+          "voice_key": "narrator_018dceea031637f3",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_018dceea031637f3.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "abraham"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": false
+        },
+        {
+          "step_type": "set_map",
+          "id": "MACHPELAH",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 304,
+            "y": 232
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 6
+          },
+          "character": "isaac_young",
+          "dir": "right",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 6
+          },
+          "character": "ishmael",
+          "dir": "left",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.7,
+          "fade_in": true
+        },
+        {
+          "step_type": "title",
+          "text": "막벨라 굴"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 9,
+            "y": 5
+          },
+          "key": "burial_earth"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그의 아들 이삭과 이스마엘이 그를 헤브론 앞 막벨라 굴,",
+          "voice_key": "narrator_327504a87932e1db",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_327504a87932e1db.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "곧 마므레 앞에 있는 헷 사람 에브론의 밭에 장사하였으니,",
+          "voice_key": "narrator_d66fe1a6598e6c98",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_d66fe1a6598e6c98.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이는 아브라함이 헷 족속에게서 값을 다 치르고 산 밭이라.",
+          "voice_key": "narrator_a3b44786bfe2db41",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_a3b44786bfe2db41.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 304,
+            "y": 264
+          },
+          "zoom": {
+            "x": 0.65,
+            "y": 0.65
+          }
+        },
+        {
+          "step_type": "move_actors",
+          "moves": "[{",
+          "face_during": "",
+          "id": "isaac",
+          "speed": 24,
+          "to": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 304,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1.1,
+            "y": 1.1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 대목을 눈여겨본다 — 광야로 보내진 뒤 한 번도 다시 이름이 불리지 않던",
+          "voice_key": "narrator_8ee1983c00deff53",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_8ee1983c00deff53.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘이, 오직 이 장사지내는 자리에서만 다시 \"이삭과 이스마엘\"로 나란히 불린다는 것이다.",
+          "voice_key": "narrator_60601321ac54bdae",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_60601321ac54bdae.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이복형제였고, 한때 광야로 내몰렸던 사이였다. 그러나 아버지의 무덤 앞에서 두 사람은 나란히 섰다.",
+          "voice_key": "narrator_63cd9df953d30a0e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_63cd9df953d30a0e.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "ishmael"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ishmael",
+          "mood": "talk",
+          "speaker": "이스마엘",
+          "text": "…아버지는 끝내 나를 놓지 않으셨소.",
+          "voice_key": "ishmael_43c1634ef73bab0e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/ishmael_43c1634ef73bab0e.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.6,
+          "id": "isaac",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "talk",
+          "speaker": "이삭",
+          "text": "…나도 그리 배웠소.",
+          "voice_key": "isaac_c4a7c4cb2f46a25d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/isaac_c4a7c4cb2f46a25d.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함과 그의 아내 사라가 거기 함께 장사되니라.",
+          "voice_key": "narrator_fde2f8a0e3d1283f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_6/07_death_of_abraham/narrator_fde2f8a0e3d1283f.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "title",
+          "text": "— 믿음의 조상, 아브라함 —"
+        },
+        {
+          "step_type": "wait",
+          "duration": 2.2
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2989 @@
+{
+  "id": "abraham_5",
+  "title": "아브라함 5권 · 모리아",
+  "chapterCount": 8,
+  "chapters": [
+    {
+      "slug": "01_birth_of_isaac",
+      "title": "제1장 · 이삭의 출생",
+      "summary": "노년의 사라가 이삭을 낳고, 젖을 떼는 잔치 날 하갈과 이스마엘은 광야로 보내진다.",
+      "characters": [
+        "아브라함",
+        "사라",
+        "이삭",
+        "하갈",
+        "이스마엘"
+      ],
+      "location": "아브라함의 장막",
+      "tags": [
+        "이삭",
+        "출생",
+        "창세기 21장",
+        "미드라시"
+      ],
+      "stepCount": 47,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "TENT",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 272,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "sarai",
+          "dir": "left",
+          "id": "sarah",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_feast_celebration"
+        },
+        {
+          "step_type": "title",
+          "text": "제1장 · 이삭의 출생"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여호와께서 말씀하신 대로 사라를 돌보셨으니, 노년의 아브라함에게 아들을 낳았다.",
+          "voice_key": "narrator_f74114b41c1ce05e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_f74114b41c1ce05e.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "character": "isaac_young",
+          "dir": "up",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…그의 이름을 이삭이라 하리라.",
+          "voice_key": "abraham_56ca88dff9ab5c98",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/abraham_56ca88dff9ab5c98.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "sarah",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "하나님이 나를 웃게 하시니, 듣는 자가 다 나와 함께 웃으리로다.",
+          "voice_key": "sarah_0de21cc586a1f23f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/sarah_0de21cc586a1f23f.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이웃들이 이 아이가 사라의 친자식이 아니라",
+          "voice_key": "narrator_9bc83963f87ab559",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_9bc83963f87ab559.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "주워온 아이라 수군거렸다고 전한다. 아흔 노파가 정말 젖을 물릴 수 있겠느냐는 것이었다.",
+          "voice_key": "narrator_295114ef20762ea6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_295114ef20762ea6.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그래서 잔칫날, 사라는 초대받은 귀부인들의 아기들에게까지 자기 젖을 직접 물려 보였다 —",
+          "voice_key": "narrator_424f7e76c48ee6d4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_424f7e76c48ee6d4.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "젖이 참으로 나오는 것을 모두의 눈앞에서 증명한 것이다.",
+          "voice_key": "narrator_3fead9a010637b72",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_3fead9a010637b72.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "또한 이삭의 얼굴은 아브라함과 꼭 닮아, 그가 진짜 아들임을 의심하는 자가 곧 사라졌다고 전한다.",
+          "voice_key": "narrator_247f7574f6808e13",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_247f7574f6808e13.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.8
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아이가 자라 젖을 떼는 날, 아브라함이 큰 잔치를 베풀었다.",
+          "voice_key": "narrator_58f56c7d3392e5ed",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_58f56c7d3392e5ed.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 9
+          },
+          "character": "ishmael",
+          "dir": "left",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "사라가 이스마엘이 이삭을 놀리는 것을 보고 아브라함에게 말했다:",
+          "voice_key": "narrator_c440cd0fe5033893",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_c440cd0fe5033893.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "sarah"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "sarah",
+          "mood": "talk",
+          "speaker": "사라",
+          "text": "이 여종과 그 아들을 내쫓아 주세요. 이 종의 아들은 내 아들 이삭과 함께 상속자가 되지 못할 것입니다.",
+          "voice_key": "sarah_adc5d2e912f3ae63",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/sarah_adc5d2e912f3ae63.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이스마엘의 \"놀이\"가 단순한 장난이 아니라 활로 이삭을 겨누는 위태로운 짓이었다고도 풀이한다.",
+          "voice_key": "narrator_386bfbc46eb9cc15",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_386bfbc46eb9cc15.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…이는 그 아들로 말미암음이라, 내게 심히 근심이 되었도다.",
+          "voice_key": "abraham_eca3783bb5b20b19",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/abraham_eca3783bb5b20b19.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 6,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 7,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 아이나 네 여종으로 말미암아 근심하지 말고 사라의 말을 들으라.",
+          "voice_key": "narrator_826f8ac851292cd6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_826f8ac851292cd6.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "여종의 아들도 네 씨이니, 내가 그로 한 민족을 이루게 하겠다.",
+          "voice_key": "narrator_cc34bf7d68d67f9c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_cc34bf7d68d67f9c.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 9
+          },
+          "character": "hagar",
+          "dir": "left",
+          "id": "hagar",
+          "scale": 1
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…미안하다. 너를 향한 내 마음은, 이것으로 변하지 않는다.",
+          "voice_key": "abraham_f2cffded1b9012d6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/abraham_f2cffded1b9012d6.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_desert_exile"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.2,
+          "position": {
+            "x": 560,
+            "y": 392
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "move_actors",
+          "async": true,
+          "moves": "[{",
+          "face_during": "",
+          "id": "hagar",
+          "speed": 24,
+          "to": {
+            "x": 15,
+            "y": 10
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 아침 일찍이 떡과 물 한 가죽부대를 하갈에게 주어, 이스마엘과 함께 내보냈다.",
+          "voice_key": "narrator_526a05bc98830d26",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/01_birth_of_isaac/narrator_526a05bc98830d26.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "hagar"
+        },
+        {
+          "step_type": "despawn",
+          "id": "ishmael"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "02_ishmael_in_wilderness",
+      "title": "제2장 · 광야의 이스마엘",
+      "summary": "브엘세바 광야에서 물이 떨어져 죽어가던 이스마엘을, 하나님이 하갈의 눈을 밝혀 샘물을 보게 하시고 살려내신다.",
+      "characters": [
+        "하갈",
+        "이스마엘"
+      ],
+      "location": "브엘세바 광야",
+      "tags": [
+        "하갈",
+        "이스마엘",
+        "샘물",
+        "창세기 21장"
+      ],
+      "stepCount": 42,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "character": "hagar",
+          "dir": "right",
+          "id": "hagar",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 9
+          },
+          "character": "ishmael",
+          "dir": "left",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2.5,
+          "key": "bgm_desert_exile"
+        },
+        {
+          "step_type": "title",
+          "text": "제2장 · 광야의 이스마엘"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈이 나가서 브엘세바 광야를 헤매더니,",
+          "voice_key": "narrator_367f5c88e8c2ac4b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_367f5c88e8c2ac4b.ogg"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "key": "waterskin_empty"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "가죽부대의 물이 다하자 그 아이를 관목 덤불 아래에 두었다.",
+          "voice_key": "narrator_d440d2397d3c4271",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_d440d2397d3c4271.ogg"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "ishmael",
+          "speed": 24,
+          "to": {
+            "x": 15,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그가 화살 한 바탕쯤 떨어져 마주 앉아,",
+          "voice_key": "narrator_1552817fa487f57d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_1552817fa487f57d.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아이가 죽는 것을 차마 보지 못하겠다며 소리 내어 울었다.",
+          "voice_key": "narrator_761697e106ced8a8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_761697e106ced8a8.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 1,
+          "id": "hagar",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "hagar"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "hagar",
+          "mood": "talk",
+          "speaker": "하갈",
+          "text": "…이 아이가 죽는 것을 내가 어찌 보리이까.",
+          "voice_key": "hagar_112d428eb1203947",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/hagar_112d428eb1203947.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "ishmael",
+          "mood": "silence",
+          "speaker": "이스마엘",
+          "text": "…어머니…",
+          "voice_key": "ishmael_a149fe8c1487e67b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/ishmael_a149fe8c1487e67b.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.4
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 그 아이의 소리를 들으셨으므로,",
+          "voice_key": "narrator_b4b71838206baab8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_b4b71838206baab8.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님의 사자가 하늘에서부터 하갈을 불러 말했다:",
+          "voice_key": "narrator_54018360608e0130",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_54018360608e0130.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.8,
+          "key": "bgm_divine_call"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하갈아 무엇이 너를 괴롭게 하느냐. 두려워하지 말라.",
+          "voice_key": "narrator_0c80a582bc5dfee4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_0c80a582bc5dfee4.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 저기 있는 아이의 소리를 들으셨나니, 일어나 아이를 일으켜 네 손으로 붙들라.",
+          "voice_key": "narrator_455ab15ac71438de",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_455ab15ac71438de.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 그를 큰 민족이 되게 하겠다.",
+          "voice_key": "narrator_de3919c9aee82aa0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_de3919c9aee82aa0.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.8980392,
+            "b": 0.5411765,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.6,
+          "position": {
+            "x": 464,
+            "y": 360
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.6,
+          "position": {
+            "x": 432,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 하갈의 눈을 밝히시매,",
+          "voice_key": "narrator_a2392852599ff5b9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_a2392852599ff5b9.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 10,
+            "y": 9
+          },
+          "key": "waterskin_fill"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그가 샘물을 보고 가죽부대에 물을 채워다가 아이에게 마시게 하였다.",
+          "voice_key": "narrator_127a150b872d5b6f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_127a150b872d5b6f.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 그 샘이 그 자리에 처음부터 있었다고 전한다 —",
+          "voice_key": "narrator_9f488582466c2f60",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_9f488582466c2f60.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 새로 만드신 것이 아니라, 절망에 가려 보지 못하던 하갈의 눈을 열어 주셨을 뿐이라는 것이다.",
+          "voice_key": "narrator_492d64a9f7592411",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_492d64a9f7592411.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "move_actor",
+          "async": true,
+          "face_after": "",
+          "face_during": "",
+          "id": "hagar",
+          "speed": 120,
+          "to": {
+            "x": 14,
+            "y": 9
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "하나님이 그 아이와 함께 계시매, 그가 자라며 광야에 거주하여 활 쏘는 자가 되었다.",
+          "voice_key": "narrator_1ec0f6ace52bc4f7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/02_ishmael_in_wilderness/narrator_1ec0f6ace52bc4f7.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "03_ishmaels_two_wives",
+      "title": "제3장 · 이스마엘의 두 아내",
+      "summary": "나그네로 변장한 아브라함이 이스마엘의 집을 찾아, 박대하는 첫 아내를 물리고 환대하는 둘째 아내를 인정한다.",
+      "characters": [
+        "아브라함",
+        "이스마엘",
+        "이스마엘의 아내"
+      ],
+      "location": "바란 광야",
+      "tags": [
+        "이스마엘",
+        "미드라시",
+        "피르케 드 랍비 엘리에젤"
+      ],
+      "stepCount": 49,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "title",
+          "text": "제3장 · 이스마엘의 두 아내"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이스마엘이 장성한 뒤의 일을 이렇게 전한다.",
+          "voice_key": "narrator_b274afe273f63d8c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_b274afe273f63d8c.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "right",
+          "id": "stranger",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "handmaid",
+          "dir": "left",
+          "id": "ishmael_wife1",
+          "scale": 1
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 나그네 차림으로 이스마엘의 장막을 찾았다. 이스마엘은 사냥을 나가고 없었고,",
+          "voice_key": "narrator_60e2ef400325b5e0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_60e2ef400325b5e0.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 아내만이 장막을 지키고 있었다.",
+          "voice_key": "narrator_9a331b0312da2bd6",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_9a331b0312da2bd6.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "stranger"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "물 한 모금과 빵 한 조각을 청하오. 먼 길을 왔소.",
+          "voice_key": "stranger_ce874f60eb4f445b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/stranger_ce874f60eb4f445b.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "ishmael_wife1"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael_wife1",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 그 아내는 매몰차게 거절하고 문전박대하였다.",
+          "voice_key": "narrator_87a45a06b280deda",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_87a45a06b280deda.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "노인은 이스마엘이 돌아오면 이렇게 전해 달라 부탁하였다:",
+          "voice_key": "narrator_098dc9809f2019ef",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_098dc9809f2019ef.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "그대의 아버지가 다녀갔다 전하시오. \"장막 문의 말뚝을 바꾸라\"고 하더라 전하시오.",
+          "voice_key": "stranger_6bb3fa551ed2d96e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/stranger_6bb3fa551ed2d96e.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "stranger"
+        },
+        {
+          "step_type": "despawn",
+          "id": "ishmael_wife1"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 8
+          },
+          "character": "ishmael",
+          "dir": "down",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "question"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘이 돌아와 그 말을 전해 듣고, 아버지의 뜻을 알아차렸다 — 이 아내를 내보내라는 것이었다.",
+          "voice_key": "narrator_2b559c9bfe65796e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_2b559c9bfe65796e.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.2,
+          "key": "bgm_shadow_intrigue"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그는 그 아내를 물리고 새 아내를 맞았다.",
+          "voice_key": "narrator_ed1e74b241688b20",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_ed1e74b241688b20.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "despawn",
+          "id": "ishmael"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "얼마 뒤 아브라함이 다시 나그네 차림으로 찾아왔을 때, 이번에는 새 아내가 그를 반갑게 맞아",
+          "voice_key": "narrator_812172471b39d37b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_812172471b39d37b.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_family_warmth"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "물과 빵을 아낌없이 내주었다.",
+          "voice_key": "narrator_f14fae47e6950486",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_f14fae47e6950486.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "right",
+          "id": "stranger",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "rebekah",
+          "dir": "left",
+          "id": "ishmael_wife2",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "ishmael_wife2",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael_wife2",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "stranger"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "그대의 남편에게 전하시오. \"이번 장막의 말뚝은 좋다\"고 하더라 전하시오.",
+          "voice_key": "stranger_7dac82121652e25d",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/stranger_7dac82121652e25d.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "stranger"
+        },
+        {
+          "step_type": "despawn",
+          "id": "ishmael_wife2"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 11,
+            "y": 8
+          },
+          "character": "ishmael",
+          "dir": "down",
+          "id": "ishmael",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "question"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이스마엘이 돌아와 이번에는 다른 뜻을 알아차렸다 — 아버지가 이 아내를 인정하였다는 것이었다.",
+          "voice_key": "narrator_6c0eabc1dbd5693f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_6c0eabc1dbd5693f.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "ishmael",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "쫓겨난 아들이었으나, 아브라함은 끝내 그를 완전히 놓지 않았다.",
+          "voice_key": "narrator_8d667d3d74091f81",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/03_ishmaels_two_wives/narrator_8d667d3d74091f81.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "04_well_of_beersheba",
+      "title": "제4장 · 브엘세바의 우물",
+      "summary": "그랄 왕 아비멜렉과 군대 장관 비골이 찾아와 아브라함과 우물을 두고 언약을 맺고, 아브라함이 그곳을 브엘세바라 부른다.",
+      "characters": [
+        "아브라함",
+        "아비멜렉",
+        "비골"
+      ],
+      "location": "브엘세바",
+      "tags": [
+        "아비멜렉",
+        "브엘세바",
+        "언약",
+        "창세기 21장"
+      ],
+      "stepCount": 47,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WELL",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 336,
+            "y": 264
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 7
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 5
+          },
+          "character": "abimelech",
+          "dir": "left",
+          "id": "abimelech",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 7
+          },
+          "character": "guard",
+          "dir": "left",
+          "id": "phicol",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.5,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_pastoral_home"
+        },
+        {
+          "step_type": "title",
+          "text": "제4장 · 브엘세바의 우물"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 때에 아비멜렉과 그 군대 장관 비골이 아브라함에게 와서 말했다:",
+          "voice_key": "narrator_e65bb34500190dca",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_e65bb34500190dca.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abimelech"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abimelech",
+          "mood": "talk",
+          "speaker": "아비멜렉",
+          "text": "네가 무슨 일을 하든지 하나님이 너와 함께 계시는도다.",
+          "voice_key": "abimelech_ce773e9b15a3f14e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abimelech_ce773e9b15a3f14e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abimelech",
+          "mood": "talk",
+          "speaker": "아비멜렉",
+          "text": "그런즉 너는 나와 내 아들과 내 손자에게 거짓되이 행하지 아니하기를,",
+          "voice_key": "abimelech_835fd7d0fb7db12e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abimelech_835fd7d0fb7db12e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abimelech",
+          "mood": "talk",
+          "speaker": "아비멜렉",
+          "text": "이제 여기서 하나님을 가리켜 내게 맹세하라.",
+          "voice_key": "abimelech_b1e8d3bfd4d7609b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abimelech_b1e8d3bfd4d7609b.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "phicol"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "phicol",
+          "mood": "talk",
+          "speaker": "비골",
+          "text": "…내 주여, 이 사람의 말이 참입니다.",
+          "voice_key": "phicol_ce47cde718c212ec",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/phicol_ce47cde718c212ec.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "내가 맹세하리이다.",
+          "voice_key": "abraham_c16f46cee12b6570",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abraham_c16f46cee12b6570.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 아비멜렉의 종들이 빼앗은 우물에 대하여 그를 책망하니,",
+          "voice_key": "narrator_1be3dfbdc807df4f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_1be3dfbdc807df4f.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아비멜렉이 말했다: 누가 그리하였는지 나는 알지 못하며, 너도 내게 알리지 않았다.",
+          "voice_key": "narrator_17ce1c142f59e0e0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_17ce1c142f59e0e0.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 양과 소를 가져다가 아비멜렉에게 주고, 두 사람이 서로 언약을 세웠다.",
+          "voice_key": "narrator_d07e11838f6d6ca0",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_d07e11838f6d6ca0.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9.5,
+            "y": 7.5
+          },
+          "character": "sheep",
+          "dir": "right",
+          "id": "gift_sheep1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10.5,
+            "y": 7.5
+          },
+          "character": "sheep",
+          "dir": "left",
+          "id": "gift_sheep2",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 6.5
+          },
+          "character": "cattle",
+          "dir": "right",
+          "id": "gift_cattle",
+          "scale": 1
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 320,
+            "y": 312
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 일곱 암양 새끼를 따로 놓자, 아비멜렉이 그 뜻을 물었다.",
+          "voice_key": "narrator_69f44d095e2cf4b4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_69f44d095e2cf4b4.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "당신은 내 손에서 이 암양 새끼 일곱을 받아, 내가 이 우물을 판 증거로 삼으소서.",
+          "voice_key": "abraham_0a6b546a86caa9e1",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abraham_0a6b546a86caa9e1.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 336,
+            "y": 264
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "두 사람이 거기서 서로 맹세하였으므로 그곳을 브엘세바라 이름하였다.",
+          "voice_key": "narrator_24383e7a146a65bb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_24383e7a146a65bb.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "abimelech",
+          "mood": "silence"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "silence",
+          "speaker": "아브라함",
+          "text": "…맹세의 우물이라. 이 이름이라면, 후손들도 오래 기억하겠구나.",
+          "voice_key": "abraham_2f6088b0b66d5b38",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/abraham_2f6088b0b66d5b38.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "gift_sheep1"
+        },
+        {
+          "step_type": "despawn",
+          "id": "gift_sheep2"
+        },
+        {
+          "step_type": "despawn",
+          "id": "gift_cattle"
+        },
+        {
+          "step_type": "despawn",
+          "id": "abimelech"
+        },
+        {
+          "step_type": "despawn",
+          "id": "phicol"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 브엘세바에 에셀 나무를 심었다. 이는 단지 그늘을 위한 것만이 아니라,",
+          "voice_key": "narrator_1619f8065110267e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_1619f8065110267e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "지나는 나그네마다 먹이고 재우던 그의 작은 여인숙이었다고 전해온다.",
+          "voice_key": "narrator_13d5c161acf8fffb",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_13d5c161acf8fffb.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그는 거기서 영원하신 하나님 여호와의 이름을 불렀다.",
+          "voice_key": "narrator_0acba2742503c6c4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/04_well_of_beersheba/narrator_0acba2742503c6c4.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.8509804,
+            "g": 0.6901961,
+            "b": 0.2901961,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "05_satans_accusation",
+      "title": "제5장 · 사탄의 참소",
+      "summary": "모리아로 떠나는 아브라함을 노인의 모습을 한 시험자가 길에서 만류하고, 넘을 수 없는 강으로 앞을 막는다.",
+      "characters": [
+        "아브라함",
+        "이삭",
+        "노인"
+      ],
+      "location": "모리아로 가는 길",
+      "tags": [
+        "사탄",
+        "시험",
+        "미드라시",
+        "산헤드린"
+      ],
+      "stepCount": 43,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.47058824,
+            "g": 0.19607843,
+            "b": 0.078431375,
+            "a": 0.26
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "isaac_young",
+          "dir": "right",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_sacred_trial"
+        },
+        {
+          "step_type": "title",
+          "text": "제5장 · 사탄의 참소"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 일 후에 하나님이 아브라함을 시험하시려고 그를 부르셨다.",
+          "voice_key": "narrator_13a4d62d1360435e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_13a4d62d1360435e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네 아들, 네가 사랑하는 독자 이삭을 데리고 모리아 땅으로 가서 번제로 드리라 하셨다.",
+          "voice_key": "narrator_6f206432ca566b79",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_6f206432ca566b79.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 그 길에 시험하는 자가 나타났다고 전한다.",
+          "voice_key": "narrator_d90056b62ee2d749",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_d90056b62ee2d749.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 8
+          },
+          "character": "visitor",
+          "dir": "left",
+          "id": "stranger",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "stranger",
+          "speed": 24,
+          "to": {
+            "x": 11,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "stranger"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "…어디로 그리 급히 가시오, 노인장.",
+          "voice_key": "stranger_1b69be55620b6a93",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/stranger_1b69be55620b6a93.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "right",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "기도하러 가는 길이오.",
+          "voice_key": "abraham_df1638657db93b5f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/abraham_df1638657db93b5f.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "기도하러 가는 자가 어찌 불과 나무를 손수 지고 가시오?",
+          "voice_key": "stranger_052533185ac9df56",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/stranger_052533185ac9df56.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.7,
+          "id": "stranger",
+          "mood": "question"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "…내가 다 아오. 늙어서 얻은 아들을 죽이러 가는 길 아니오.",
+          "voice_key": "stranger_064765cae667ce8b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/stranger_064765cae667ce8b.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "stranger",
+          "mood": "talk",
+          "speaker": "노인",
+          "text": "오늘 그 아이를 죽이면, 내일 하나님은 당신에게 살인죄를 물으실 것이오.",
+          "voice_key": "stranger_3b5666b310d4ce1e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/stranger_3b5666b310d4ce1e.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 4,
+          "duration": 0.4
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…그것은 내가 알 바 아니오.",
+          "voice_key": "abraham_ac70e58912182527",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/abraham_ac70e58912182527.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "despawn",
+          "id": "stranger"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "노인은 사라지고, 대신 앞을 가로막는 것이 나타났다 — 어디서도 본 적 없는 큰 강이었다.",
+          "voice_key": "narrator_241a8f776d31ab6e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_241a8f776d31ab6e.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 0.6,
+          "key": "bgm_danger_pursuit"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "isaac",
+          "mood": "surprise"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.4
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0.14901961,
+            "g": 0.3529412,
+            "b": 0.54901963,
+            "a": 0.38
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "물은 허리까지, 다시 목까지 차올랐다.",
+          "voice_key": "narrator_34c67e3ef63520a4",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_34c67e3ef63520a4.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 12,
+          "duration": 0.6
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…주여, 내가 이 물에 빠져 죽으면, 주의 말씀을 어찌 이루겠나이까.",
+          "voice_key": "abraham_a1bb85df60aada46",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/abraham_a1bb85df60aada46.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+          },
+          "duration": 0.35
+        },
+        {
+          "step_type": "tint",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 0
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "강이 순식간에 말랐다. 시험하는 자는 그 자리를 떠났고, 아브라함과 이삭은 다시 길을 갔다.",
+          "voice_key": "narrator_1af47dfc3021fd7b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/05_satans_accusation/narrator_1af47dfc3021fd7b.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.8,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "06_road_to_moriah",
+      "title": "제6장 · 모리아로 가는 길",
+      "summary": "사흘 길 끝에 오직 아브라함과 이삭에게만 산 위의 영광의 구름이 보이고, 두 종은 그곳에 남겨진다.",
+      "characters": [
+        "아브라함",
+        "이삭"
+      ],
+      "location": "모리아로 가는 길",
+      "tags": [
+        "모리아",
+        "구름",
+        "미드라시",
+        "창세기 22장"
+      ],
+      "stepCount": 48,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "particles",
+          "amount": 34,
+          "at": {
+            "x": 10.5,
+            "y": 9.5
+          },
+          "effect": "trail_dust",
+          "id": "travel_dust",
+          "z_index": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 9
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 7,
+            "y": 9
+          },
+          "character": "isaac_young",
+          "dir": "right",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 6,
+            "y": 9
+          },
+          "character": "guard",
+          "dir": "right",
+          "id": "guard1",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 5,
+            "y": 9
+          },
+          "character": "guard",
+          "dir": "right",
+          "id": "guard2",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "title",
+          "text": "제6장 · 모리아로 가는 길"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 아침 일찍이 일어나 나귀에 안장을 지우고,",
+          "voice_key": "narrator_e297026c56276815",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_e297026c56276815.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이삭과 두 종을 데리고 번제에 쓸 나무를 쪼개어 모리아로 향하였다.",
+          "voice_key": "narrator_31145027fede97c9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_31145027fede97c9.ogg"
+        },
+        {
+          "step_type": "move_actors",
+          "moves": "[{",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 56,
+          "to": {
+            "x": 14,
+            "y": 8
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "donkey",
+          "dir": "right",
+          "id": "donkey",
+          "scale": 1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "제삼일에 아브라함이 눈을 들어 그곳을 멀리 바라보았다.",
+          "voice_key": "narrator_cb6577f4644aaeab",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_cb6577f4644aaeab.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 0.8980392,
+            "b": 0.5411765,
+            "a": 1
+          },
+          "duration": 0.3
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 그 산 위에 오직 아브라함과 이삭에게만 보이는 구름 기둥이 있었다고 전한다 —",
+          "voice_key": "narrator_d85d1cb1fb3e2f18",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_d85d1cb1fb3e2f18.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_sacred_trial"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "영광이 머무는 표였다. 두 종에게는 그저 평범한 산으로만 보였다.",
+          "voice_key": "narrator_d360b9b0c8905796",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_d360b9b0c8905796.ogg"
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…너희는 나귀와 함께 여기서 기다리라. 나와 아이는 저기 가서 경배하고 우리가 너희에게로 돌아오리라.",
+          "voice_key": "abraham_1546ff4cd444b12b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/abraham_1546ff4cd444b12b.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.9,
+          "id": "guard1",
+          "mood": "question"
+        },
+        {
+          "step_type": "despawn",
+          "id": "guard1"
+        },
+        {
+          "step_type": "despawn",
+          "id": "guard2"
+        },
+        {
+          "step_type": "particles",
+          "effect": "",
+          "id": "travel_dust"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 17,
+            "y": 3
+          },
+          "character": "glory_cloud",
+          "dir": "down",
+          "id": "glory_cloud",
+          "scale": 1,
+          "z_index": -1
+        },
+        {
+          "step_type": "particles",
+          "amount": 36,
+          "at": {
+            "x": 17,
+            "y": 3
+          },
+          "effect": "glory_sparkles",
+          "id": "glory_sparkles",
+          "z_index": 2
+        },
+        {
+          "step_type": "spin_actor",
+          "clockwise": true,
+          "id": "glory_cloud",
+          "seconds_per_turn": 3.5,
+          "turns": 0
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 2,
+          "position": {
+            "x": 560,
+            "y": 168
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 432,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 번제 나무를 이삭에게 지우고, 자기는 불과 칼을 손에 들고 둘이 함께 나아갔다.",
+          "voice_key": "narrator_8b7c8bdc8fb441ae",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_8b7c8bdc8fb441ae.ogg"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 8
+          },
+          "character": "firewood_bundle",
+          "dir": "right",
+          "id": "firewood",
+          "scale": 1
+        },
+        {
+          "step_type": "attach_actor",
+          "id": "firewood",
+          "offset": {
+            "x": -6,
+            "y": -10
+          },
+          "to": "isaac"
+        },
+        {
+          "step_type": "move_actors",
+          "moves": "[{",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 16,
+            "y": 8
+          }
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 496,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "talk",
+          "speaker": "이삭",
+          "text": "내 아버지여… 불과 나무는 있거니와, 번제할 어린 양은 어디 있나이까.",
+          "voice_key": "isaac_5f4fc0652693ef3b",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/isaac_5f4fc0652693ef3b.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.8,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "abraham",
+          "mood": "talk",
+          "speaker": "아브라함",
+          "text": "…하나님이 자기를 위하여 친히 준비하시리라, 내 아들아.",
+          "voice_key": "abraham_ea3f9e355986d2a8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/abraham_ea3f9e355986d2a8.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 528,
+            "y": 328
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "둘이 계속하여 함께 나아갔다.",
+          "voice_key": "narrator_2995bcf2b34e7878",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/06_road_to_moriah/narrator_2995bcf2b34e7878.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "07_mount_moriah",
+      "title": "제7장 · 모리아산",
+      "summary": "하나님이 이삭을 번제로 바치라 시험하시고, 마지막 순간 천사가 아브라함을 막는다.",
+      "characters": [
+        "아브라함",
+        "이삭"
+      ],
+      "location": "모리아산",
+      "tags": [
+        "번제",
+        "시험",
+        "창세기 22장",
+        "미드라시"
+      ],
+      "stepCount": 88,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "MORIAH",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 336,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "isaac_young",
+          "dir": "right",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "firewood_bundle",
+          "dir": "right",
+          "id": "firewood",
+          "scale": 1
+        },
+        {
+          "step_type": "attach_actor",
+          "id": "firewood",
+          "offset": {
+            "x": -6,
+            "y": -10
+          },
+          "to": "isaac"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_sacred_trial"
+        },
+        {
+          "step_type": "title",
+          "text": "제7장 · 모리아산"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그들이 하나님이 일러 주신 곳에 이른지라.",
+          "voice_key": "narrator_b10ecaf0e9eb2c7f",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_b10ecaf0e9eb2c7f.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 그곳에 제단을 쌓고 나무를 벌여 놓았다.",
+          "voice_key": "narrator_9c05ee924457a538",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_9c05ee924457a538.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "firewood"
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "abraham",
+          "speed": 24,
+          "to": {
+            "x": 10,
+            "y": 7
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "down",
+          "id": "abraham"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "altar_1",
+          "dir": "down",
+          "id": "altar",
+          "scale": 1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "despawn",
+          "id": "altar"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "altar_2",
+          "dir": "down",
+          "id": "altar",
+          "scale": 1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.5
+        },
+        {
+          "step_type": "despawn",
+          "id": "altar"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "altar_3",
+          "dir": "down",
+          "id": "altar",
+          "scale": 1
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.5,
+          "position": {
+            "x": 304,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.7,
+            "y": 0.7
+          }
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.4
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 336,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는, 이삭이 그때 이미 서른일곱 살이었고 스스로 결박당하기를 청하였다고 전한다 —",
+          "voice_key": "narrator_d11be1f4b0ab75d1",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_d11be1f4b0ab75d1.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1.2,
+          "position": {
+            "x": 272,
+            "y": 328
+          },
+          "zoom": {
+            "x": 0.75,
+            "y": 0.75
+          }
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "isaac"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "isaac",
+          "mood": "talk",
+          "speaker": "이삭",
+          "text": "…아버지, 제 손발을 단단히 묶어 주소서. 두려움에 몸부림쳐 흠 있는 제물이 되지 않도록.",
+          "voice_key": "isaac_d450db25b2cbe3bd",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/isaac_d450db25b2cbe3bd.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.9,
+          "id": "isaac",
+          "mood": "silence"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "despawn",
+          "id": "abraham"
+        },
+        {
+          "step_type": "despawn",
+          "id": "isaac"
+        },
+        {
+          "step_type": "despawn",
+          "id": "altar"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "abraham",
+          "dir": "left",
+          "id": "binding_pose",
+          "scale": 1
+        },
+        {
+          "step_type": "equip_actor_action",
+          "face": "left",
+          "fps": 6,
+          "frames": 4,
+          "id": "binding_pose",
+          "move_fps": 8,
+          "move_frames": 0,
+          "move_texture": "",
+          "texture": "res://assets/sprites/actions/moriah_binding_action.png"
+        },
+        {
+          "step_type": "play_equipped_action",
+          "face": "left",
+          "id": "binding_pose"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 이삭을 결박하여 제단 나무 위에 놓았다.",
+          "voice_key": "narrator_49f7d9cb8c0e13f9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_49f7d9cb8c0e13f9.ogg"
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 304,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "despawn",
+          "id": "binding_pose"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "abraham",
+          "dir": "left",
+          "id": "bound_pose",
+          "scale": 1
+        },
+        {
+          "step_type": "equip_actor_action",
+          "face": "left",
+          "fps": 1,
+          "frames": 1,
+          "id": "bound_pose",
+          "move_fps": 8,
+          "move_frames": 0,
+          "move_texture": "",
+          "texture": "res://assets/sprites/actions/isaac_bound_altar.png"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "bubble",
+          "duration": 1.2,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "shake",
+          "amount": 6,
+          "duration": 0.5
+        },
+        {
+          "step_type": "stop_bgm",
+          "fade": 0.6
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.8,
+          "position": {
+            "x": 304,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.55,
+            "y": 0.55
+          }
+        },
+        {
+          "step_type": "equip_actor_action",
+          "face": "left",
+          "fps": 7,
+          "frames": 4,
+          "id": "abraham",
+          "move_fps": 8,
+          "move_frames": 0,
+          "move_texture": "",
+          "texture": "res://assets/sprites/actions/abraham_knife_raise.png"
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 8,
+            "y": 8
+          },
+          "key": "knife_raise_tension"
+        },
+        {
+          "step_type": "play_equipped_action",
+          "async": true,
+          "face": "left",
+          "id": "abraham"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 손을 내밀어 칼을 잡고 그 아들을 잡으려 하니…",
+          "voice_key": "narrator_18b08bd72ebc3aaf",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_18b08bd72ebc3aaf.ogg"
+        },
+        {
+          "step_type": "shake",
+          "amount": 10,
+          "duration": 0.7
+        },
+        {
+          "step_type": "dialogue",
+          "async": true,
+          "id": "abraham",
+          "mood": "surprise",
+          "speaker": "아브라함",
+          "text": "…!"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 1,
+            "g": 1,
+            "b": 1,
+            "a": 1
+          },
+          "duration": 0.4
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.3,
+          "position": {
+            "x": 336,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.9,
+            "y": 0.9
+          }
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "angel_stop"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 0.5,
+          "key": "bgm_divine_call"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함아 아브라함아! 그 아이에게 네 손을 대지 말라. 아무 일도 그에게 하지 말라.",
+          "voice_key": "narrator_a19cc663d4412971",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_a19cc663d4412971.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네가 네 아들 네 독자까지도 내게 아끼지 아니하였으니,",
+          "voice_key": "narrator_2812318996aa11a8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_2812318996aa11a8.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "네가 하나님을 경외하는 줄을 내가 이제 아노라.",
+          "voice_key": "narrator_a3cb748a781dbfe5",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_a3cb748a781dbfe5.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.9
+        },
+        {
+          "step_type": "unequip_actor_action",
+          "id": "abraham"
+        },
+        {
+          "step_type": "despawn",
+          "id": "bound_pose"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 9,
+            "y": 7
+          },
+          "character": "isaac_young",
+          "dir": "down",
+          "id": "isaac",
+          "scale": 1
+        },
+        {
+          "step_type": "play_sfx",
+          "key": "sting_release"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.7
+        },
+        {
+          "step_type": "play_sfx",
+          "at": {
+            "x": 12,
+            "y": 7.5
+          },
+          "key": "ram_bush"
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 12,
+            "y": 7.5
+          },
+          "character": "ram",
+          "dir": "left",
+          "id": "ram",
+          "scale": 1
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 368,
+            "y": 296
+          },
+          "zoom": {
+            "x": 0.8,
+            "y": 0.8
+          }
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.8,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 눈을 들어 보니 한 숫양이 뒤에 있어 뿔이 수풀에 걸려 있는지라,",
+          "voice_key": "narrator_969a37a621380354",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_969a37a621380354.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "전해오는 이야기는 이 숫양이 세상 창조 엿샛날 해질 무렵, 미리 예비된 것이라 전한다.",
+          "voice_key": "narrator_463a9888c2eedf8e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_463a9888c2eedf8e.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그 숫양을 가져다가 아들을 대신하여 번제로 드렸다.",
+          "voice_key": "narrator_c7047828c401d99e",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_c7047828c401d99e.ogg"
+        },
+        {
+          "step_type": "despawn",
+          "id": "ram"
+        },
+        {
+          "step_type": "particles",
+          "amount": 28,
+          "at": {
+            "x": 9,
+            "y": 6.5
+          },
+          "effect": "altar_smoke",
+          "id": "altar_smoke",
+          "z_index": 2
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 1,
+          "position": {
+            "x": 336,
+            "y": 296
+          },
+          "zoom": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 그 땅 이름을 여호와이레라 하였으니,",
+          "voice_key": "narrator_ffdc8a8e696c51f8",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_ffdc8a8e696c51f8.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "오늘날까지 사람들이 이르기를 여호와의 산에서 준비될 것이라 한다.",
+          "voice_key": "narrator_567c1938f13ba9e9",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_567c1938f13ba9e9.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이 산은 훗날 다윗의 아들 솔로몬이 성전을 세울 그 자리라고도 전해온다.",
+          "voice_key": "narrator_4327483172951072",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_4327483172951072.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_covenant_stars"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "내가 네게 큰 복을 주고 네 씨가 크게 번성하여 하늘의 별과 바닷가의 모래와 같게 할 것이니,",
+          "voice_key": "narrator_83cc13c995cdae0c",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_83cc13c995cdae0c.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "천하 만민이 네 씨로 말미암아 복을 받으리니,",
+          "voice_key": "narrator_66755931e161262a",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_66755931e161262a.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "이는 네가 내 말을 준행하였음이니라.",
+          "voice_key": "narrator_a55b7c0019d542ea",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/07_mount_moriah/narrator_a55b7c0019d542ea.ogg"
+        },
+        {
+          "step_type": "flash",
+          "color": {
+            "r": 0.8509804,
+            "g": 0.6901961,
+            "b": 0.2901961,
+            "a": 1
+          },
+          "duration": 0.5
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    },
+    {
+      "slug": "08_the_road_back",
+      "title": "제8장 · 돌아오는 길",
+      "summary": "시험을 마치고 돌아오는 길, 고향 나홀의 집에 리브가라는 딸이 태어났다는 소식이 전해진다.",
+      "characters": [
+        "아브라함"
+      ],
+      "location": "브엘세바로 가는 길",
+      "tags": [
+        "리브가",
+        "브릿지",
+        "창세기 22:20-24"
+      ],
+      "stepCount": 24,
+      "steps": [
+        {
+          "step_type": "set_map",
+          "id": "WILDERNESS",
+          "location": ""
+        },
+        {
+          "step_type": "camera_move",
+          "duration": 0.05,
+          "position": {
+            "x": 432,
+            "y": 296
+          }
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 10,
+            "y": 8
+          },
+          "character": "abraham",
+          "dir": "right",
+          "id": "abraham",
+          "scale": 1
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.6,
+          "fade_in": true
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 1.5,
+          "key": "bgm_nomad_journey"
+        },
+        {
+          "step_type": "title",
+          "text": "제8장 · 돌아오는 길"
+        },
+        {
+          "step_type": "wait",
+          "duration": 1.2
+        },
+        {
+          "step_type": "title",
+          "text": ""
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함이 그 종들에게로 돌아가서 함께 떠나 브엘세바에 이르러 거기 거주하였다.",
+          "voice_key": "narrator_1e635c0cfeb3c662",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/narrator_1e635c0cfeb3c662.ogg"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "spawn",
+          "at": {
+            "x": 13,
+            "y": 8
+          },
+          "character": "messenger",
+          "dir": "left",
+          "id": "messenger",
+          "scale": 1
+        },
+        {
+          "step_type": "move_actor",
+          "face_after": "",
+          "face_during": "",
+          "id": "messenger",
+          "speed": 56,
+          "to": {
+            "x": 11,
+            "y": 8
+          },
+          "to_scale": -1
+        },
+        {
+          "step_type": "face_actor",
+          "dir": "left",
+          "id": "messenger"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "messenger",
+          "mood": "talk",
+          "speaker": "전령",
+          "text": "주인이여, 고향에서 소식이 왔습니다.",
+          "voice_key": "messenger_61e1847f6fdfd540",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/messenger_61e1847f6fdfd540.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "messenger",
+          "mood": "talk",
+          "speaker": "전령",
+          "text": "형제 나홀의 아내 밀가가 여덟 아들을 낳았고, 그중 막내 브두엘에게서 딸이 태어났다 합니다.",
+          "voice_key": "messenger_011ae90495e319b7",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/messenger_011ae90495e319b7.ogg"
+        },
+        {
+          "step_type": "dialogue",
+          "id": "messenger",
+          "mood": "talk",
+          "speaker": "전령",
+          "text": "이름은 리브가라 하더이다.",
+          "voice_key": "messenger_6c02224dbaf7db53",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/messenger_6c02224dbaf7db53.ogg"
+        },
+        {
+          "step_type": "play_bgm",
+          "fade": 2,
+          "key": "bgm_hope_legacy"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.7
+        },
+        {
+          "step_type": "despawn",
+          "id": "messenger"
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "아브라함은 그 이름을 마음에 담아 두었다. 아직은 그저 먼 친척의 소식일 뿐이었다.",
+          "voice_key": "narrator_b3ae1b97a78de380",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/narrator_b3ae1b97a78de380.ogg"
+        },
+        {
+          "step_type": "bubble",
+          "duration": 0.9,
+          "id": "abraham",
+          "mood": "silence"
+        },
+        {
+          "step_type": "wait",
+          "duration": 0.6
+        },
+        {
+          "step_type": "dialogue",
+          "speaker": "",
+          "text": "그러나 훗날, 그 이름은 이삭의 아내가 되어 이 집안의 이야기 속으로 다시 걸어 들어올 것이었다.",
+          "voice_key": "narrator_a0eb57dcb210c919",
+          "voice_path": "res://assets/audio/voice/ko/abraham_5/08_the_road_back/narrator_a0eb57dcb210c919.ogg"
+        },
+        {
+          "step_type": "fade",
+          "color": {
+            "r": 0,
+            "g": 0,
+            "b": 0,
+            "a": 1
+          },
+          "duration": 0.9,
+          "fade_in": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#14101c" />
+  <title>아브라함 — 믿음의 조상</title>
+  <link rel="icon" type="image/png" href="./favicon.png" />
+  <style>
+    html, body { margin: 0; height: 100%; background: #14101c; overflow: hidden; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+    #game { position: fixed; top: 0; right: 0; bottom: 0; left: 0; display: grid; place-items: center; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+    canvas { flex: none; grid-area: 1 / 1; image-rendering: pixelated; image-rendering: crisp-edges; }
+  </style>
+</head>
+<body>
+  <div id="game"></div>
+  <noscript>
+    <p style="position:fixed;top:0;right:0;bottom:0;left:0;margin:0;display:grid;place-items:center;padding:24px;box-sizing:border-box;color:#f0e6d2;font:16px/1.6 sans-serif;text-align:center">
+      이 게임은 자바스크립트가 있어야 한다. 브라우저 설정에서 자바스크립트를 켜고 다시 열자.
+    </p>
+  </noscript>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
