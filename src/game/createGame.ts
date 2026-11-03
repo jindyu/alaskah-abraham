@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { PixelRenderer } from '../renderer/pixelRenderer';
 import { GraphicsInitError, GRAPHICS_FATAL_TEXT, showFatal } from './fatal';
-import { PAL } from '../world/palette';
+import { PAL, PAL_REGION } from '../world/palette';
 import { Hud, type Prompt } from '../ui/hud';
 import { mountTouchControls } from '../ui/touchControls';
 import { Interactions, type Interactable } from '../systems/interaction';
@@ -19,6 +19,8 @@ import type { ProtagonistId } from '../entities/cast';
 import { BOOKS } from '../data/books';
 import { getChapterContext } from '../systems/story';
 import { setupChapterActions } from '../systems/actions/bookActions';
+import { ParticleManager } from '../renderer/particles';
+import { updateEnvironmentWind } from '../renderer/environmentWind';
 
 const SPEED = 4.2;
 const AUTOSAVE_SECONDS = 20;
@@ -40,7 +42,13 @@ export function createGame(): void {
   scene.background = new THREE.Color(PAL.skyGrad[2]);
   const sun = new THREE.DirectionalLight(0xfff0d0, 2.2);
   sun.position.set(-8, 14, 6);
-  scene.add(sun, new THREE.HemisphereLight(0xcfe4f0, 0x8a6440, 1.1));
+  const hemi = new THREE.HemisphereLight(0xcfe4f0, 0x8a6440, 1.1);
+  const torchLight = new THREE.PointLight(0xff6611, 0, 16);
+  scene.add(sun, hemi, torchLight);
+
+  // ── 파티클 시스템 ──
+  const particles = new ParticleManager();
+  scene.add(particles.group);
 
   // ── 서브시스템 초기화 ──
   const audio = new AudioManager();
@@ -79,6 +87,7 @@ export function createGame(): void {
     hud,
     audio,
     crowd,
+    particles,
     onMapChange: (mapId, _loc) => {
       // 맵 ID와 StageId 매핑
       let targetStage: StageId = 'ur_workshop';
@@ -89,7 +98,8 @@ export function createGame(): void {
       else if (mapId === 'SODOM') targetStage = 'sodom';
       else if (mapId === 'BEERSHEBA') targetStage = 'beersheba';
       else if (mapId === 'MORIAH') targetStage = 'moriah';
-      stageManager.loadStage(targetStage);
+      const st = stageManager.loadStage(targetStage);
+      applyAtmosphere(st.region, st.id);
     },
     onChapterComplete: () => {
       // 컷신 종료 후 플레이어블 액션 연결
@@ -114,12 +124,65 @@ export function createGame(): void {
     scene.add(playerActor.root);
   }
 
+  // ── 4대 지역 팔레트 기반 대기 조명 & 안개 & 하늘 동적 튜닝 ──
+  function applyAtmosphere(region: 'MESOPOTAMIA' | 'CANAAN' | 'EGYPT' | 'SODOM_NEGEV', stageId: StageId): void {
+    switch (region) {
+      case 'MESOPOTAMIA':
+        scene.background = new THREE.Color(PAL_REGION.MESOPOTAMIA.sky[1]);
+        scene.fog = new THREE.FogExp2(PAL_REGION.MESOPOTAMIA.sky[2], 0.015);
+        sun.color.setHex(0xffeed0);
+        sun.intensity = 2.0;
+        hemi.color.setHex(0xb8ccd4);
+        hemi.groundColor.setHex(0x8a6440);
+        break;
+
+      case 'CANAAN':
+        scene.background = new THREE.Color(PAL_REGION.CANAAN.sky[1]);
+        scene.fog = new THREE.FogExp2(PAL_REGION.CANAAN.sky[2], 0.012);
+        sun.color.setHex(0xfff2d8);
+        sun.intensity = 2.2;
+        hemi.color.setHex(0xcfe4f0);
+        hemi.groundColor.setHex(0x6f874e);
+        break;
+
+      case 'EGYPT':
+        scene.background = new THREE.Color(PAL_REGION.EGYPT.sky[1]);
+        scene.fog = new THREE.FogExp2(PAL_REGION.EGYPT.sky[2], 0.010);
+        sun.color.setHex(0xfff8e0);
+        sun.intensity = 2.5;
+        hemi.color.setHex(0x8ec8e0);
+        hemi.groundColor.setHex(0xd8b472);
+        break;
+
+      case 'SODOM_NEGEV':
+        if (stageId === 'sodom') {
+          // 소돔: 종말론적 유황불빛 붉은 안개
+          scene.background = new THREE.Color(0x502820);
+          scene.fog = new THREE.FogExp2(0x803828, 0.022);
+          sun.color.setHex(0xf36820);
+          sun.intensity = 2.3;
+          hemi.color.setHex(0xddc438);
+          hemi.groundColor.setHex(0xba7c52);
+        } else {
+          // 브엘세바 & 모리아: 메마른 광야 & 장엄한 산지
+          scene.background = new THREE.Color(0xa67450);
+          scene.fog = new THREE.FogExp2(0xcca872, 0.014);
+          sun.color.setHex(0xffe8c0);
+          sun.intensity = 2.3;
+          hemi.color.setHex(0xe8d0b0);
+          hemi.groundColor.setHex(0x9a7452);
+        }
+        break;
+    }
+  }
+
   // ── 챕터 로딩 및 전환 라이프사이클 ──
   function setupInteractiveLoop(): void {
     setupChapterActions({
       interactions,
       hud,
       audio,
+      particles,
       bookIndex: curBook,
       chapterIndex: curChapter,
       onLoopComplete: () => {
@@ -149,12 +212,15 @@ export function createGame(): void {
 
     interactions.clear();
     crowd.clear();
+    particles.clear();
     cutsceneEngine.stop();
 
     const ctx = getChapterContext(curBook, curChapter);
     setPlayableProtagonist(ctx.hero);
 
     const stage = stageManager.loadStage(ctx.stageId);
+    applyAtmosphere(stage.region, stage.id);
+
     playerActor.root.position.set(stage.spawn.x, 0, stage.spawn.z);
     playerActor.setPose('stand');
 
@@ -342,10 +408,20 @@ export function createGame(): void {
       cutsceneEngine.update(dt);
     }
     crowd.update(dt);
+    particles.update(dt);
+    updateEnvironmentWind(now * 0.001, 0, pr.fx);
 
     const st = stageManager.stage;
     const b = st ? st.bounds : { minX: -10, maxX: 10, minZ: -10, maxZ: 10 };
     const p = playerActor.root.position;
+
+    // 동적 횃불/화로 조명 깜빡임
+    if (st && (st.id === 'ur_furnace' || st.id === 'sodom')) {
+      torchLight.intensity = 1.8 + Math.sin(now * 0.015) * 0.35 + Math.cos(now * 0.031) * 0.2;
+      torchLight.position.set(p.x, 2.0, p.z);
+    } else {
+      torchLight.intensity = 0;
+    }
 
     // 플레이어 이동 (컷신 중이 아닐 때만)
     if (!cutsceneEngine.running && !hud.chapterSelect.open && !hud.pauseMenu.open) {

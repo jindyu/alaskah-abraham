@@ -4,6 +4,7 @@ import { CrowdManager } from '../../entities/crowd';
 import type { AudioManager } from '../../audio/audioManager';
 import type { Hud } from '../../ui/hud';
 import type { PixelRenderer } from '../../renderer/pixelRenderer';
+import type { ParticleManager } from '../../renderer/particles';
 import { tr } from '../../i18n/tr';
 
 export interface CutsceneStep {
@@ -17,6 +18,7 @@ export interface CutsceneHost {
   hud: Hud;
   audio: AudioManager;
   crowd: CrowdManager;
+  particles?: ParticleManager;
   onMapChange?: (mapId: string, location: string) => void;
   onChapterComplete?: () => void;
 }
@@ -368,6 +370,74 @@ export class CutsceneEngine {
           actor.detachProp();
           actor.setPose('stand');
         }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'flash': {
+        const col = step.color || { r: 1, g: 1, b: 1, a: 1 };
+        const dur = typeof step.duration === 'number' ? (step.duration > 10 ? step.duration / 1000 : step.duration) : 0.3;
+        this.host.hud.flash(col, dur);
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'particles': {
+        if (this.host.particles && step.effect) {
+          const at = step.at || { x: 12, y: 8 };
+          const wx = (at.x - 12) * 1.0;
+          const wz = (at.y - 8) * 1.0;
+          const wy = typeof step.y === 'number' ? step.y : 0.6;
+          const amount = step.amount || 16;
+          this.host.particles.emit(step.effect, wx, wy, wz, amount);
+        }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'spin_actor': {
+        const actor = this.actors.get(step.id);
+        if (actor) {
+          const turns = step.turns || 1;
+          const sec = step.seconds_per_turn || 0.22;
+          const cw = step.clockwise !== false;
+          actor.spin(turns, sec, cw);
+        }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'rotate_actor': {
+        const actor = this.actors.get(step.id);
+        if (actor && typeof step.degrees === 'number') {
+          actor.rotate(step.degrees);
+        }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'attach_actor': {
+        const targetActor = this.actors.get(step.to);
+        if (targetActor && step.id) {
+          targetActor.attachProp(step.id);
+        }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'play_equipped_action': {
+        const actor = this.actors.get(step.id);
+        if (actor) {
+          actor.swingEquippedAction(step.face);
+          if (this.host.particles) {
+            this.host.particles.emit('trail_dust', actor.root.position.x, 0.2, actor.root.position.z, 6);
+          }
+        }
+        this.nextStepImmediate();
+        break;
+      }
+
+      case 'travel_route': {
         this.nextStepImmediate();
         break;
       }

@@ -33,6 +33,8 @@ export class Actor {
   private walkTime = 0;
   private currentProp: string | null = null;
   private emote: { type: EmoteType; life: number } | null = null;
+  private spinState: { speed: number; elapsed: number; duration: number } | null = null;
+  private swingTimer = 0;
 
   facing = 0; // 라디안 (0 = 남쪽/앞)
 
@@ -209,6 +211,23 @@ export class Actor {
       }
     }
 
+    if (this.spinState) {
+      this.spinState.elapsed += dt;
+      this.root.rotation.y += this.spinState.speed * dt;
+      if (this.spinState.elapsed >= this.spinState.duration) {
+        this.spinState = null;
+      }
+    }
+
+    if (this.swingTimer > 0) {
+      this.swingTimer -= dt;
+      const p = 1 - Math.max(0, this.swingTimer / 0.35);
+      this.rightArm.rotation.x = -Math.PI * (0.85 - p * 0.95);
+      if (this.swingTimer <= 0) {
+        this.setPose('stand');
+      }
+    }
+
     if (this.pose === 'walk' || isMoving) {
       this.walkTime += dt * 10;
       const swing = Math.sin(this.walkTime) * 0.6;
@@ -265,6 +284,24 @@ export class Actor {
       this.facing = Math.atan2(dx, dz);
     }
     this.root.rotation.y = this.facing;
+  }
+
+  spin(turns = 1, secondsPerTurn = 0.22, clockwise = true): void {
+    const dir = clockwise ? 1 : -1;
+    const totalAngle = turns * Math.PI * 2 * dir;
+    const duration = Math.max(0.05, turns * secondsPerTurn);
+    this.spinState = { speed: totalAngle / duration, elapsed: 0, duration };
+  }
+
+  rotate(degrees: number): void {
+    const rad = (degrees * Math.PI) / 180;
+    this.root.rotation.z = rad;
+  }
+
+  swingEquippedAction(face?: string): void {
+    if (face) this.face(face as any);
+    this.setPose('swing_axe');
+    this.swingTimer = 0.35;
   }
 
   attachProp(propId: string): void {

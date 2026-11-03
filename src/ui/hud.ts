@@ -63,6 +63,20 @@ export class Hud {
       if (p >= 1) clearInterval(timer);
     }, 30);
   }
+
+  /** 화면 번쩍임 효과 (번개, 폭발, 언약 황금빛 플래시) */
+  screenFlash: { r: number; g: number; b: number; a: number; duration: number; age: number } | null = null;
+
+  flash(color: { r: number; g: number; b: number; a?: number } = { r: 1, g: 1, b: 1, a: 1 }, duration = 0.3): void {
+    this.screenFlash = {
+      r: Math.round((color.r ?? 1) * 255),
+      g: Math.round((color.g ?? 1) * 255),
+      b: Math.round((color.b ?? 1) * 255),
+      a: color.a ?? 1,
+      duration: Math.max(0.05, duration),
+      age: 0,
+    };
+  }
   /** 컷신 레터박스 (0~1) */
   letterbox = 0;
   /** 컷신 자막 (cutscene.caption) */
@@ -360,6 +374,19 @@ export class Hud {
       g.fillStyle = '#120c08';
       g.fillRect(0, 0, this.w, this.h);
       g.globalAlpha = 1;
+    }
+    if (this.screenFlash) {
+      this.screenFlash.age += dt;
+      const progress = this.screenFlash.age / this.screenFlash.duration;
+      if (progress >= 1) {
+        this.screenFlash = null;
+      } else {
+        const curAlpha = (1 - progress) * this.screenFlash.a;
+        g.globalAlpha = Math.min(1, Math.max(0, curAlpha));
+        g.fillStyle = `rgb(${this.screenFlash.r},${this.screenFlash.g},${this.screenFlash.b})`;
+        g.fillRect(0, 0, this.w, this.h);
+        g.globalAlpha = 1;
+      }
     }
     if (this.caption) this.drawCaption(this.caption);
     if (this.cinematicTitle) this.drawCinematicTitle(this.cinematicTitle);

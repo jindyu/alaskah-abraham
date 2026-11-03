@@ -1,18 +1,20 @@
 import type { Interactions, Interactable } from '../interaction';
 import type { Hud } from '../../ui/hud';
 import type { AudioManager } from '../../audio/audioManager';
+import type { ParticleManager } from '../../renderer/particles';
 
 export interface ActionContext {
   interactions: Interactions;
   hud: Hud;
   audio: AudioManager;
+  particles?: ParticleManager;
   bookIndex: number;
   chapterIndex: number;
   onLoopComplete: () => void;
 }
 
 export function setupChapterActions(ctx: ActionContext): void {
-  const { interactions, hud, audio, bookIndex, chapterIndex, onLoopComplete } = ctx;
+  const { interactions, hud, audio, particles, bookIndex, chapterIndex, onLoopComplete } = ctx;
   interactions.clear();
 
   // ── Book 1 ──
@@ -74,6 +76,7 @@ export function setupChapterActions(ctx: ActionContext): void {
         act: () => {
           smashed++;
           audio.playSfx('idol_break_01');
+          particles?.emit('impact_dust', -4, 1.0, -7, 24);
           hud.toast('smash', null, `도끼로 우상을 내리쳐 부수었다! (${smashed}/3)`);
           if (smashed >= 3) {
             hud.goal = '큰 우상의 손에 도끼를 쥐여주자';
@@ -90,6 +93,7 @@ export function setupChapterActions(ctx: ActionContext): void {
         act: () => {
           placedOnBigIdol = true;
           audio.playSfx('ui_confirm');
+          particles?.emit('glory_sparkles', 0, 1.8, -5, 16);
           hud.celebrate('우상 파괴', '가장 큰 우상의 손에 도끼를 쥐여주었다');
           hud.toast('done', null, '아브람: "저 큰 우상이 화가 나서 작은 것들을 다 부수었나 봅니다!"');
           onLoopComplete();
@@ -172,6 +176,8 @@ export function setupChapterActions(ctx: ActionContext): void {
         label: () => (stones >= 3 ? '첫 제단 쌓기' : null),
         act: () => {
           audio.playSfx('stone_altar_stack');
+          particles?.emit('altar_smoke', 0, 1.4, -2, 24);
+          particles?.emit('impact_dust', 0, 0.8, -2, 16);
           hud.celebrate('첫 제단', '가나안 땅에서 여호와의 이름을 부르다');
           hud.toast('altar', null, '아브람이 자기에게 나타나신 여호와께 그곳에 제단을 쌓았다');
           onLoopComplete();
@@ -218,6 +224,7 @@ export function setupChapterActions(ctx: ActionContext): void {
             hud.goal = '밤의 호바 전장에서 좌우익 협공으로 기습하자';
           } else {
             audio.playBgm('bgm_battle_deliverance');
+            particles?.emit('charge_dust', 0, 0.4, 2, 28);
             hud.celebrate('구출 승리', '롯과 모든 소유를 되찾아오다');
             onLoopComplete();
           }
@@ -247,6 +254,7 @@ export function setupChapterActions(ctx: ActionContext): void {
             if (shooed === 2) hud.goal = '깊은 잠 속에서 연기 나는 화로와 타는 횃불을 보자';
           } else {
             audio.playSfx('fx_covenant_chime');
+            particles?.emit('glory_sparkles', 0, 1.5, 0, 32);
             hud.celebrate('횃불 언약', '내가 이 땅을 네 자손에게 주리라');
             onLoopComplete();
           }
@@ -299,6 +307,7 @@ export function setupChapterActions(ctx: ActionContext): void {
         label: () => '가족의 손을 잡고 소돔 성문 밖으로 탈출하기',
         act: () => {
           audio.playSfx('brimstone_fall');
+          particles?.emit('embers', 0, 2.0, -4, 28);
           hud.toast('escape', null, '천사들이 롯과 그 아내와 두 딸의 손을 잡아 인도하여 성 밖에 두었다');
           hud.celebrate('소돔의 멸망', '유황불 심판과 소금 기둥');
           onLoopComplete();
@@ -366,6 +375,8 @@ export function setupChapterActions(ctx: ActionContext): void {
             hud.goal = '이삭 대신 숫양을 가져다가 번제로 드리자';
           } else {
             audio.playBgm('bgm_divine_call');
+            particles?.emit('glory_sparkles', 0, 1.8, 0, 36);
+            particles?.emit('altar_smoke', 0, 1.5, 0, 24);
             hud.celebrate('여호와 이레', '여호와의 산에서 준비되리라');
             onLoopComplete();
           }
@@ -388,6 +399,7 @@ export function setupChapterActions(ctx: ActionContext): void {
         label: () => '은 사백 세겔을 달아주고 막벨라 굴 매입하기',
         act: () => {
           audio.playSfx('ui_confirm');
+          particles?.emit('glory_sparkles', 0, 1.2, -4, 20);
           hud.toast('silver', null, '상인이 통용하는 은 사백 세겔을 달아 에브론에게 주었다');
           hud.celebrate('막벨라 굴 매입', '약속의 땅에 산 영원한 기업');
           onLoopComplete();
