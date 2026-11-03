@@ -196,7 +196,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "silence",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…어디로 가시든, 저도 함께 가겠습니다.",
           "voice_key": "sarah_8da15eac095002e8",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/01_the_calling/sarah_8da15eac095002e8.ogg"
@@ -1157,7 +1157,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "talk",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…그리하겠습니다.",
           "voice_key": "sarah_ada9d88dcad408bb",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/02_the_chest_at_the_border/sarah_ada9d88dcad408bb.ogg"
@@ -1603,7 +1603,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "silence",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…하나님, 이 몸 하나로 그이의 집안이 무너지지 않게 하소서.",
           "voice_key": "sarah_46dc26f8783976fe",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/03_sarai_in_egypt/sarah_46dc26f8783976fe.ogg"
@@ -2048,7 +2048,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "silence",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…돌아가게 되었군요.",
           "voice_key": "sarah_8aa0de9a729e8de3",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/03_sarai_in_egypt/sarah_8aa0de9a729e8de3.ogg"
@@ -2075,7 +2075,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "silence",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…다음에도 이런 청을 하실 건가요.",
           "voice_key": "sarah_9e1f3c9283eaa745",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/03_sarai_in_egypt/sarah_9e1f3c9283eaa745.ogg"
@@ -8104,7 +8104,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "talk",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "롯을 되찾았으니 되었습니다. 오늘 밤만은 편히 쉬세요.",
           "voice_key": "sarah_8ea27ac2c4b5a372",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/09_shield_and_reward/sarah_8ea27ac2c4b5a372.ogg"
@@ -8154,7 +8154,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "silence",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "…그건 나도, 매일 밤 생각하는 것입니다.",
           "voice_key": "sarah_b3a2a5e5a45f4016",
           "voice_path": "res://assets/audio/voice/ko/abraham_2/09_shield_and_reward/sarah_b3a2a5e5a45f4016.ogg"

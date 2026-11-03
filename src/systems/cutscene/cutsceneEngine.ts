@@ -158,7 +158,7 @@ export class CutsceneEngine {
 
         this.host.audio.playVoice(
           rawText,
-          step.speaker || 'narrator',
+          step.id || step.speaker || 'narrator',
           step.chapter || '',
           () => {
             // 보이스 재생 종료

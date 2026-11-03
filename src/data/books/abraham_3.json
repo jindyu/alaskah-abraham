@@ -875,7 +875,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "talk",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "여호와께서 나의 출산을 허락하지 아니하시니, 원하건대 내 여종에게 들어가시오.",
           "voice_key": "sarah_d7968c494cf1e6a7",
           "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_d7968c494cf1e6a7.ogg"
@@ -884,7 +884,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "talk",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "내가 그로 말미암아 자식을 얻을까 하나이다.",
           "voice_key": "sarah_dbe427ebae953f66",
           "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_dbe427ebae953f66.ogg"
@@ -954,7 +954,7 @@
           "step_type": "dialogue",
           "id": "sarah",
           "mood": "talk",
-          "speaker": "사라",
+          "speaker": "사래",
           "text": "내가 받는 이 모욕은 당신이 받아야 옳도다!",
           "voice_key": "sarah_e229d72d667c1871",
           "voice_path": "res://assets/audio/voice/ko/abraham_3/02_hagar_and_ishmael/sarah_e229d72d667c1871.ogg"
@@ -1831,7 +1831,7 @@
             "x": 10,
             "y": 8
           },
-          "character": "sarai",
+          "character": "sarah",
           "dir": "up",
           "id": "sarah",
           "scale": 1
