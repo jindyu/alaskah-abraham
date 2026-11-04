@@ -331,6 +331,13 @@ export function buildUrStage(): UrStage {
   col.addCircle(11.5, -4.0, 0.45);
   actors.push(saraiActor);
 
+  const merchantActor = new Actor('merchant', 'citizen');
+  merchantActor.root.position.set(4.5, 0, 9.0);
+  merchantActor.face(0);
+  root.add(merchantActor.root);
+  col.addCircle(4.5, 9.0, 0.45);
+  actors.push(merchantActor);
+
   root.add(b.build());
 
   return {

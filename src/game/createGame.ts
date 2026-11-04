@@ -409,6 +409,10 @@ export function createGame(): void {
     panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open,
     transitioning: () => false,
     aim: () => aimed,
+    onAct: (a) => {
+      const p = a.pos();
+      player.faceTo(p.x, p.z);
+    },
     onActError: () => hud.toast('act-error', null, '문제가 생겨 행동을 마치지 못했다', 0, 5),
     openChapterSelect: () => {
       hud.chapterSelect.bookIndex = curBook;

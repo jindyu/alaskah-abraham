@@ -39,6 +39,21 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
 
   const WX = 0, WZ = -7;
 
+  // 대화 시 NPC와 아브람이 서로를 정면으로 바라봄 ("대화를 하면 캐릭터 쪽으로 돌아보기")
+  const faceEachOther = (actorId: string, emote?: '!' | '?' | '...' | 'heart' | 'anger' | 'sweat') => {
+    const actor = urStage.actors.find((a) => a.id === actorId);
+    const p = sceneCtx.player;
+    if (actor) {
+      // 1) NPC가 아브람(주인공) 쪽으로 돌아봄!
+      actor.face({ x: p.root.position.x, z: p.root.position.z });
+      if (emote) actor.showBubble(emote, 2.5);
+    }
+    // 2) 아브람(주인공)도 NPC 쪽으로 돌아봄!
+    if (actor && 'faceTo' in p) {
+      p.faceTo(actor.root.position.x, actor.root.position.z);
+    }
+  };
+
   // ─────────────────────────────────────────────────────────────
   // 1. 공방 및 시가지 NPC들 (데라, 롯, 사래, 시장 상인)
   // ─────────────────────────────────────────────────────────────
@@ -51,6 +66,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
     label: () => (placedAxeOnBigIdol ? '데라와 담판 짓기' : '아버지 데라와 대화'),
     act: () => {
       if (placedAxeOnBigIdol) {
+        faceEachOther('terah', 'anger');
         audio.playSfx('ui_confirm');
         hud.toast('terah', null, '데라: "네 놈이 나를 놀리느냐! 우상이 어떻게 움직이며 어떻게 도끼를 든단 말이냐!"');
         setTimeout(() => {
@@ -61,6 +77,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       }
 
       talkedToFamily++;
+      faceEachOther('terah', '...');
       audio.playSfx('ui_confirm');
       hud.toast('terah', null, '데라: "아들아, 오늘은 저 큰 우상 곁에 세울 작은 신상들을 손질하거라."');
       checkIntroProgress();
@@ -76,6 +93,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
     label: () => '조카 롯과 대화',
     act: () => {
       talkedToFamily++;
+      faceEachOther('lot', '!');
       audio.playSfx('ui_confirm');
       hud.toast('lot', null, '롯: "삼촌! 성문 밖 낙타 대상들이 싣고 온 신기한 물건들을 보셨어요?"');
       checkIntroProgress();
@@ -91,6 +109,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
     label: () => '사래와 대화',
     act: () => {
       talkedToFamily++;
+      faceEachOther('sarai', '...');
       audio.playSfx('ui_confirm');
       hud.toast('sarai', null, '사래: "아브람, 마을 사람들은 보지도 듣지도 못하는 우상이 복을 준다고 믿는 걸까요..."');
       checkIntroProgress();
@@ -105,6 +124,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
     r: 1.8,
     label: () => '장터 상인과 대화',
     act: () => {
+      faceEachOther('merchant', '!');
       audio.playSfx('ui_confirm');
       hud.toast('merchant', null, '상인: "티그리스와 유프라테스의 단 대추야자와 석류가 방금 들어왔소!"');
     },
