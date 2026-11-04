@@ -5,6 +5,13 @@ import { ACCENT, CREAM, INK, INK_SOFT, INK_WARM, OUTLINE, PAPER, PAPER_SHADOW, W
 import { wrapLines, wrapParagraphs } from './wrap';
 import { tr } from '../i18n/tr';
 import { CATALOG } from '../systems/story';
+export interface ActiveDialogue {
+  speaker: string | null;
+  text: string;
+  age: number;
+  life: number;
+}
+
 /** 풍경을 덜 가리면서 읽을 수 있는 할 일 글자 크기 */
 const GOAL_PX = 12;
 import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
@@ -83,6 +90,8 @@ export class Hud {
   caption: CaptionState | null = null;
   /** 대화 패널 */
   dialogue: { speaker: string; text: string; portrait: string | null } | null = null;
+  /** 캐릭터 아래 활성 대사창 (크고 또렷하게 표시) */
+  activeDialogue: ActiveDialogue | null = null;
   /** 시네마틱 챕터 타이틀 */
   cinematicTitle: string | null = null;
   /** 권/장 선택 오버레이 [Tab] */
@@ -93,6 +102,22 @@ export class Hud {
   dayOverride: string | null = null;
   /** 지금 할 일 (시계 아래 작은 패널). main.ts의 objective()가 매 프레임 채움 */
   goal: string | null = null;
+  /** 좌상단 고대 메소포타미아 미니맵 */
+  minimap = {
+    visible: true,
+    playerX: 0,
+    playerZ: 0,
+    playerFacing: 0,
+    targetPin: null as { x: number; z: number; label?: string } | null,
+    landmarks: [
+      { id: 'workshop', label: '공방', x: 0, z: -7, color: '#c08e60' },
+      { id: 'terah_home', label: '안채', x: 13.5, z: -6.5, color: '#ab7650' },
+      { id: 'well', label: '우물', x: -12.0, z: 3.5, color: '#3f86a8' },
+      { id: 'market', label: '장터', x: 4.5, z: 10.5, color: '#e0a33a' },
+      { id: 'ziggurat', label: '지구라트', x: -36.0, z: -28.0, color: '#224c88' },
+      { id: 'gate', label: '성문', x: 22.0, z: 3.5, color: '#8f5f3e' },
+    ],
+  };
   /** 할 일 아래 작은 조작 안내 (첫날) */
   hint: string | null = null;
   /** 안내 글을 줄로 나눈 결과 (글이 바뀔 때만 다시 나눔) */
@@ -231,8 +256,52 @@ export class Hud {
     this.fillDev('#8a6a50', f.L(1), f.T(1), f.R(1), f.T(2));
   }
 
+  /** 주인공 캐릭터 아래 대사 표시 */
+  showDialogue(speaker: string | null, text: string, life = 4.5): void {
+    this.activeDialogue = {
+      speaker,
+      text,
+      age: 0,
+      life,
+    };
+  }
+
+  clearDialogue(): void {
+    this.activeDialogue = null;
+  }
+
   /** 획득 알림. 같은 key가 떠 있으면 개수를 합침 */
   toast(key: string, iconId: string | null, name: string, count = 0, life?: number) {
+    // 시스템 알림(오디오 볼륨, 저장, 시스템 에러, 카운트 획득 등)을 제외한 스토리 대사 및 안내는
+    // 좌하단이 아닌 주인공 캐릭터 아래쪽의 크고 또렷한 대사 패널로 노출
+    const isSystemToast = key === 'audio' || key.startsWith('save-') || key.startsWith('act-') || count > 0 || iconId !== null;
+    if (!isSystemToast) {
+      let speaker: string | null = null;
+      let text = name.trim();
+      const colonIdx = text.indexOf(':');
+      if (colonIdx > 0 && colonIdx < 12) {
+        speaker = text.slice(0, colonIdx).trim();
+        text = text.slice(colonIdx + 1).trim();
+      } else {
+        const knownSpeakers: Record<string, string> = {
+          terah: '데라',
+          lot: '롯',
+          sarai: '사래',
+          abram: '아브람',
+          merchant: '상인',
+          isaac: '이삭',
+          esau: '에서',
+          angel: '천사',
+          rebekah: '리브가',
+          melchizedek: '멜기세덱',
+          nimrod: '니므롯',
+        };
+        if (knownSpeakers[key]) speaker = knownSpeakers[key];
+      }
+      this.showDialogue(speaker, text, life ?? (speaker ? 4.5 : 3.8));
+      return;
+    }
+
     const t = this.toasts.find((x) => x.key === key && x.age < x.life - 0.5);
     // 같은 알림: 개수는 합치고, 글만 있는 알림(목표 진행 등)은 새 글로 바꿈
     if (t) { t.count += count; if (!count) t.name = name; if (life) t.life = life; t.age = Math.min(t.age, 0.25); return; }
@@ -287,6 +356,11 @@ export class Hud {
     const e = this.edge;
     this.toastRight = this.w - 8 - e.right;
     if (this.gameUi) {
+      // ── 미니맵 (왼쪽 위) ──
+      if (this.minimap.visible && !this.letterbox) {
+        this.drawMinimap(8 + e.left, 8 + e.top);
+      }
+
       // ── 할 일 (오른쪽 위) ──
       if (!this.hideClock && this.goal) this.goalPanel(this.goal, 8 + e.top);
 
@@ -390,6 +464,7 @@ export class Hud {
     }
     if (this.caption) this.drawCaption(this.caption);
     if (this.cinematicTitle) this.drawCinematicTitle(this.cinematicTitle);
+    this.drawDialogue(dt);
     if (this.dialogue) this.drawDialoguePanel(this.dialogue);
     if (this.chapterSelect.open) this.drawChapterSelect();
     if (this.pauseMenu.open) this.drawPauseMenu();
@@ -417,6 +492,113 @@ export class Hud {
       const ly = y + 10 + i * lh;
       this.put(c, lx, ly);
     });
+  }
+
+  /** 주인공 캐릭터 아래 대사 패널 렌더링 ("대사가 주인공 캐릭터 아래쪽으로 좀 아래에 좀크게 나오게") */
+  private drawDialogue(dt: number): void {
+    if (!this.activeDialogue) return;
+    const d = this.activeDialogue;
+    d.age += dt;
+    if (d.age >= d.life) {
+      this.activeDialogue = null;
+      return;
+    }
+
+    const g = this.ctx;
+    const e = this.edge;
+
+    // 1) 주인공 캐릭터의 화면 투영 좌표 (markerFrom)
+    const p = this.project(this.markerFrom.x, 0, this.markerFrom.z);
+
+    // 2) 대사 글자 크기 (16px) 및 줄바꿈
+    const baseFontSize = 16;
+    const cleanText = d.text.trim();
+    const maxInnerW = Math.min(520, Math.round(this.w * 0.82) - 40);
+    const lines = wrapLines(cleanText, maxInnerW, (s) => this.tw(this.txt(s, baseFontSize, INK)), 3);
+
+    const lineElements = lines.map((l) => this.txt(l, baseFontSize, INK));
+    const maxTextW = Math.max(...lineElements.map((el) => this.tw(el)));
+
+    let speakerW = 0;
+    let badgeTextEl: HTMLCanvasElement | null = null;
+    if (d.speaker) {
+      badgeTextEl = this.txt(d.speaker, 13, '#ffe484', '#1f1308');
+      speakerW = this.tw(badgeTextEl) + 24;
+    }
+
+    const panelW = Math.max(Math.max(speakerW + 36, 240), Math.min(maxInnerW + 36, Math.ceil(maxTextW) + 36));
+    const lineH = 24;
+    const textH = lines.length * lineH;
+    const padTop = d.speaker ? 18 : 12;
+    const padBottom = 12;
+    const panelH = padTop + textH + padBottom;
+
+    // 3) X 좌표: 캐릭터 수평 중심에 배치, 화면 가장자리 벗어나지 않게 클램핑
+    let panelX = Math.round(p.x - panelW / 2);
+    const minX = 20 + e.left;
+    const maxX = this.w - panelW - 20 - e.right;
+    panelX = Math.max(minX, Math.min(maxX, panelX));
+
+    // 4) Y 좌표: 주인공 캐릭터의 아래쪽으로 좀 아래에, 하단에서 어느 정도 떨어진 곳
+    // p.y = 발 위치. 캐릭터 아래쪽으로 40px
+    const pBelowChar = Math.round(p.y + 40);
+    // 화면 하단(this.h - e.bottom)에서 적어도 48px 이상 띄워 하단 여유 확보
+    const maxPanelY = this.h - panelH - 48 - e.bottom;
+    // 캐릭터가 화면 중앙 근처일 때 자연스러운 위치(0.58*h)와 캐릭터 아래쪽 위치 중 알맞은 곳 선택
+    const preferredY = Math.max(pBelowChar, Math.round(this.h * 0.58));
+    let panelY = preferredY;
+    if (panelY > maxPanelY) panelY = maxPanelY;
+    if (panelY < 32 + e.top) panelY = 32 + e.top;
+
+    // 5) 부드러운 페이드인 / 페이드아웃 및 팝업 애니메이션
+    const fadeIn = Math.min(1, d.age / 0.15);
+    const fadeOut = Math.min(1, (d.life - d.age) / 0.35);
+    const alpha = fadeIn * fadeOut;
+    if (alpha <= 0) return;
+
+    g.save();
+    g.globalAlpha = alpha;
+
+    // 위로 살짝 부드럽게 안착
+    const slideOffset = Math.round((1 - fadeIn) * 4);
+    const curY = panelY + slideOffset;
+
+    // 6) 대화 패널 본체 (우아한 양피지/원목 패널)
+    this.panel(panelX, curY, panelW, panelH);
+
+    // 7) 캐릭터를 향하는 말풍선 꼬리 포인터
+    const pointerX = Math.max(panelX + 24, Math.min(panelX + panelW - 24, Math.round(p.x)));
+    if (curY > p.y + 10) {
+      g.fillStyle = WOOD;
+      g.fillRect(pointerX - 4, curY - 3, 8, 3);
+      g.fillRect(pointerX - 2, curY - 5, 4, 2);
+      g.fillStyle = CREAM;
+      g.fillRect(pointerX - 2, curY - 2, 4, 2);
+    }
+
+    // 8) 화자 뱃지 (있을 때만)
+    if (d.speaker && badgeTextEl) {
+      const bw = Math.round(this.tw(badgeTextEl)) + 18;
+      const bh = 22;
+      const bx = panelX + 14;
+      const by = curY - 10;
+
+      const f = this.frame(bx, by, bw, bh);
+      this.fillIn(OUTLINE, f, 1, 0, 1, 0);
+      this.fillIn(OUTLINE, f, 0, 1, 0, 1);
+      this.fillIn('#382315', f, 1, 1, 1, 1);
+      this.put(badgeTextEl, bx + 9, centerY(badgeTextEl, by, by + bh - 1));
+    }
+
+    // 9) 본문 텍스트 (16px, INK)
+    const textStartX = panelX + 18;
+    const textStartY = curY + padTop + 2;
+
+    lineElements.forEach((lineEl, idx) => {
+      this.put(lineEl, textStartX, textStartY + idx * lineH);
+    });
+
+    g.restore();
   }
 
   private drawDialoguePanel(d: { speaker: string; text: string; portrait: string | null }): void {
@@ -856,5 +1038,91 @@ export class Hud {
       for (const [y0, y1] of [[T(3), T(4)], [B(4), B(3)]]) this.fillDev('#d8b070', x0, y0, x1, y1);
   }
 
+  private drawMinimap(x: number, y: number): void {
+    const g = this.ctx;
+    const w = 78, h = 78;
+    this.panel(x, y, w, h);
 
+    const innerX = x + 6;
+    const innerY = y + 6;
+    const innerW = w - 12;
+    const innerH = h - 12;
+    const cx = innerX + innerW / 2;
+    const cy = innerY + innerH / 2;
+
+    g.save();
+    // 미니맵 속지 클리핑
+    g.beginPath();
+    g.rect(innerX, innerY, innerW, innerH);
+    g.clip();
+
+    // 양피지 지도 바닥
+    g.fillStyle = '#ecd8b0';
+    g.fillRect(innerX, innerY, innerW, innerH);
+
+    // 미니맵 축척: 월드 1유닛 = 1.05px
+    const zoom = 1.05;
+    const toMapX = (wx: number) => cx + (wx - this.minimap.playerX * 0.3) * zoom;
+    const toMapY = (wz: number) => cy + (wz - this.minimap.playerZ * 0.3) * zoom;
+
+    // 주 도로 십자선 (동서 대로 & 남북 길)
+    g.fillStyle = '#caa070';
+    g.fillRect(innerX, toMapY(3.5) - 2, innerW, 4);
+    g.fillRect(toMapX(0) - 2, innerY, 4, innerH);
+
+    // 랜드마크 렌더링
+    for (const lm of this.minimap.landmarks) {
+      const mx = Math.round(toMapX(lm.x));
+      const my = Math.round(toMapY(lm.z));
+      g.fillStyle = lm.color;
+      g.fillRect(mx - 2, my - 2, 5, 5);
+      g.strokeStyle = '#3a2210';
+      g.lineWidth = 1;
+      g.strokeRect(mx - 2.5, my - 2.5, 6, 6);
+    }
+
+    // 퀘스트 목표 핀 (타겟 핀이 있을 때)
+    if (this.minimap.targetPin) {
+      const tx = Math.round(toMapX(this.minimap.targetPin.x));
+      const ty = Math.round(toMapY(this.minimap.targetPin.z));
+      const pulse = 3 + Math.sin(this.time * 8) * 1.5;
+      g.fillStyle = '#e03030';
+      g.beginPath();
+      g.arc(tx, ty, pulse, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#ffffff';
+      g.fillRect(tx - 1, ty - 1, 2, 2);
+    }
+
+    // 플레이어 마커 (현재 위치 & 시선 방향)
+    const px = Math.round(toMapX(this.minimap.playerX));
+    const py = Math.round(toMapY(this.minimap.playerZ));
+    const facing = this.minimap.playerFacing;
+
+    // 시선 방향 콘 화살표
+    g.fillStyle = 'rgba(240, 200, 80, 0.45)';
+    g.beginPath();
+    g.moveTo(px, py);
+    g.arc(px, py, 9, facing - 0.4, facing + 0.4);
+    g.closePath();
+    g.fill();
+
+    // 플레이어 중심 마커
+    g.fillStyle = '#f0c030';
+    g.beginPath();
+    g.arc(px, py, 2.5, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = '#2a1a0e';
+    g.lineWidth = 1;
+    g.stroke();
+
+    g.restore();
+
+    // 나침반 N 마커 (우측 상단 작은 글씨)
+    g.fillStyle = '#8a2020';
+    g.font = 'bold 9px monospace';
+    g.fillText('N', innerX + innerW - 9, innerY + 9);
+    // 지도 이름 표기 (좌측 하단 '우르')
+    this.put(this.txt('우르', 9, INK_WARM), innerX + 2, innerY + innerH - 9);
+  }
 }

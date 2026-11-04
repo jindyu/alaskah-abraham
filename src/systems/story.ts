@@ -39,20 +39,13 @@ export function getChapterContext(
     return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '태고의 약속을 바라보자' };
   }
 
-  // 1권: 불과 팥죽
+  // 1권: 불과 팥죽 (갈대아 우르 시가지 & 데라 공방 중심)
   if (bookIndex === 1) {
-    if (chapterIndex <= 1) return { stageId: 'ur_palace', hero: 'abram_young', defaultGoal: '바벨의 역사를 지켜보자' };
-    if (chapterIndex === 2) return { stageId: 'ur_palace', hero: 'abram_young', defaultGoal: '니므롯 궁정의 선포를 듣자' };
-    if (chapterIndex === 3) return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '공방의 우상들을 살펴보자' };
-    if (chapterIndex === 4) return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '하나님의 첫 부르심을 마음에 품자' };
-    if (chapterIndex === 5) return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '도끼를 들어 우상들을 부수자' };
-    if (chapterIndex === 6) return { stageId: 'ur_palace', hero: 'abram_young', defaultGoal: '니므롯 앞에서의 고발에 답하자' };
-    if (chapterIndex === 7) return { stageId: 'ur_furnace', hero: 'abram_young', defaultGoal: '풀무불 시험을 통과하자' };
-    if (chapterIndex === 8) return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '우르 성문을 빠져나와 탈출하자' };
-    if (chapterIndex === 9) return { stageId: 'haran', hero: 'abram_young', defaultGoal: '하란 땅에서 아버지를 위로하자' };
-    if (chapterIndex === 10) return { stageId: 'mamre', hero: 'abraham', defaultGoal: '손자 에서에게 가문의 이야기를 들려주자' };
-    if (chapterIndex === 11) return { stageId: 'siddim_hobah', hero: 'esau', defaultGoal: '들판에서 니므롯의 가죽옷을 챙겨 달아나자' };
-    if (chapterIndex === 12) return { stageId: 'mamre', hero: 'esau', defaultGoal: '야곱의 붉은 팥죽과 장자권을 맞바꾸자' };
+    return {
+      stageId: 'ur_workshop',
+      hero: 'abram_young',
+      defaultGoal: '공방과 거리를 둘러보며 데라와 식구들을 만나보자',
+    };
   }
 
   // 2권: 약속의 땅

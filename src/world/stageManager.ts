@@ -13,6 +13,9 @@ import {
   buildMachpelahCave,
 } from './props/biblicalProps';
 
+import { buildUrStage, type UrStage } from './stages/ur';
+import type { Collision } from './collision';
+
 export type StageId =
   | 'ur_workshop'
   | 'ur_palace'
@@ -37,6 +40,8 @@ export interface StageInfo {
   root: THREE.Group;
   bgm: string;
   ambience: string;
+  col?: Collision;
+  urDetails?: UrStage;
 }
 
 export class StageManager {
@@ -92,45 +97,18 @@ export class StageManager {
     }
   }
 
-  // ── 1. 우르 데라의 우상 공방 ──
+  // ── 1. 우르 데라의 우상 공방 및 시가지 ──
   private buildUrWorkshop(): StageInfo {
-    const root = new THREE.Group();
-    const gb = new VoxelBuilder(9, false);
-    const reg = PAL_REGION.MESOPOTAMIA;
-
-    // 공방 흙바닥 (24x24)
-    gb.box(0, -0.25, 0, 24, 0.5, 24, reg.ground, { tex: 'soil' });
-
-    // 공방 벽체 (구운 진흙 벽돌)
-    gb.box(0, 1.6, -10, 18, 3.2, 0.8, reg.brick, { tex: 'brick' });
-    gb.box(-9, 1.6, -1, 0.8, 3.2, 18, reg.brick, { tex: 'brick' });
-    gb.box(9, 1.6, -1, 0.8, 3.2, 18, reg.brick, { tex: 'brick' });
-
-    // 작업대 선반
-    gb.box(-4, 0.45, -7, 3.2, 0.9, 1.2, PAL.wood[2], { tex: 'wood' });
-    gb.box(4, 0.45, -7, 3.2, 0.9, 1.2, PAL.wood[2], { tex: 'wood' });
-
-    root.add(gb.build());
-
-    // 우상들 배치
-    const { smallIdols, largeIdol } = buildIdols();
-    // 작은 우상 3개 작업대 위에 배치
-    smallIdols[0].position.set(-5, 0.9, -7);
-    smallIdols[1].position.set(-4, 0.9, -7);
-    smallIdols[2].position.set(-3, 0.9, -7);
-    root.add(smallIdols[0], smallIdols[1], smallIdols[2]);
-
-    // 큰 우상은 공방 중앙 제단에 위엄 있게 배치
-    largeIdol.position.set(0, 0, -5);
-    root.add(largeIdol);
-
+    const ur = buildUrStage();
     return {
       id: 'ur_workshop',
-      name: '우르 데라의 우상 공방',
+      name: '우르 데라의 우상 공방 및 시가지',
       region: 'MESOPOTAMIA',
-      spawn: { x: 0, z: 3 },
-      bounds: { minX: -8, maxX: 8, minZ: -8, maxZ: 8 },
-      root,
+      spawn: ur.spawn,
+      bounds: ur.bounds,
+      root: ur.root,
+      col: ur.col,
+      urDetails: ur,
       bgm: 'bgm_nimrod_empire',
       ambience: 'amb_palace',
     };

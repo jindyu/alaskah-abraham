@@ -12,6 +12,13 @@ import { SaveLifecycle, saveFailText, type WriteOutcome } from './saveLifecycle'
 import { activeSlot, readSave, writeSaveDetail, type SaveData } from '../systems/save';
 import { AudioManager } from '../audio/audioManager';
 import { StageManager, type StageId } from '../world/stageManager';
+import { Player } from '../entities/player';
+import { DEFAULT_APPEARANCE } from '../entities/appearance';
+import { Collision } from '../world/collision';
+import { Cutscene } from '../systems/cutscene/cutscene';
+import { Beam } from '../entities/beam';
+import { setupBook1Actions } from '../systems/actions/book1Actions';
+import { createBook1IntroSteps, type SceneContext } from '../systems/scenes/book1/book1Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -46,9 +53,11 @@ export function createGame(): void {
   const torchLight = new THREE.PointLight(0xff6611, 0, 16);
   scene.add(sun, hemi, torchLight);
 
-  // ── 파티클 시스템 ──
+  // ── 파티클 및 빛기둥 시스템 ──
   const particles = new ParticleManager();
   scene.add(particles.group);
+  const beam = new Beam();
+  scene.add(beam.group);
 
   // ── 서브시스템 초기화 ──
   const audio = new AudioManager();
@@ -57,6 +66,7 @@ export function createGame(): void {
   scene.add(crowd.group);
   const interactions = new Interactions();
   const panels = new PanelStack();
+  const cutscene = new Cutscene();
 
   // ── 저장 불러오기 ──
   const slot = activeSlot();
@@ -107,58 +117,52 @@ export function createGame(): void {
     },
   });
 
-  // ── 플레이어 액터 ──
+  // ── 플레이어 (alaskah-noah 정통 복셀 플레이어) ──
+  const dummyCol = new Collision();
   let currentHero: ProtagonistId = 'abram_young';
-  let playerActor = new Actor('player', currentHero);
-  scene.add(playerActor.root);
+  const player = new Player(DEFAULT_APPEARANCE);
+  scene.add(player.root);
 
   function setPlayableProtagonist(hero: ProtagonistId): void {
-    if (currentHero === hero) return;
     currentHero = hero;
-    const oldPos = playerActor.root.position.clone();
-    scene.remove(playerActor.root);
-    playerActor.dispose();
-
-    playerActor = new Actor('player', hero);
-    playerActor.root.position.copy(oldPos);
-    scene.add(playerActor.root);
   }
 
-  // ── 4대 지역 팔레트 기반 대기 조명 & 안개 & 하늘 동적 튜닝 ──
+  // ── 4대 지역 팔레트 기반 대기 조명 & 하늘 동적 튜닝 ──
   function applyAtmosphere(region: 'MESOPOTAMIA' | 'CANAAN' | 'EGYPT' | 'SODOM_NEGEV', stageId: StageId): void {
+    scene.fog = null; // 선명한 3D 복셀 픽셀 아트를 위해 안개 제거 (소돔 제외)
     switch (region) {
       case 'MESOPOTAMIA':
-        scene.background = new THREE.Color(PAL_REGION.MESOPOTAMIA.sky[1]);
-        scene.fog = new THREE.FogExp2(PAL_REGION.MESOPOTAMIA.sky[2], 0.015);
-        sun.color.setHex(0xffeed0);
-        sun.intensity = 2.0;
-        hemi.color.setHex(0xb8ccd4);
+        scene.background = new THREE.Color(PAL.skyGrad[0]); // 0x8cc8e8 따뜻하고 청명한 푸른 하늘
+        sun.color.setHex(0xfff6e4);
+        sun.intensity = 2.4;
+        hemi.color.setHex(0xfff8f0);
         hemi.groundColor.setHex(0x8a6440);
+        hemi.intensity = 1.3;
         break;
 
       case 'CANAAN':
         scene.background = new THREE.Color(PAL_REGION.CANAAN.sky[1]);
-        scene.fog = new THREE.FogExp2(PAL_REGION.CANAAN.sky[2], 0.012);
         sun.color.setHex(0xfff2d8);
-        sun.intensity = 2.2;
+        sun.intensity = 2.4;
         hemi.color.setHex(0xcfe4f0);
         hemi.groundColor.setHex(0x6f874e);
+        hemi.intensity = 1.3;
         break;
 
       case 'EGYPT':
         scene.background = new THREE.Color(PAL_REGION.EGYPT.sky[1]);
-        scene.fog = new THREE.FogExp2(PAL_REGION.EGYPT.sky[2], 0.010);
         sun.color.setHex(0xfff8e0);
-        sun.intensity = 2.5;
+        sun.intensity = 2.6;
         hemi.color.setHex(0x8ec8e0);
         hemi.groundColor.setHex(0xd8b472);
+        hemi.intensity = 1.3;
         break;
 
       case 'SODOM_NEGEV':
         if (stageId === 'sodom') {
           // 소돔: 종말론적 유황불빛 붉은 안개
           scene.background = new THREE.Color(0x502820);
-          scene.fog = new THREE.FogExp2(0x803828, 0.022);
+          scene.fog = new THREE.FogExp2(0x803828, 0.015);
           sun.color.setHex(0xf36820);
           sun.intensity = 2.3;
           hemi.color.setHex(0xddc438);
@@ -166,18 +170,50 @@ export function createGame(): void {
         } else {
           // 브엘세바 & 모리아: 메마른 광야 & 장엄한 산지
           scene.background = new THREE.Color(0xa67450);
-          scene.fog = new THREE.FogExp2(0xcca872, 0.014);
           sun.color.setHex(0xffe8c0);
-          sun.intensity = 2.3;
+          sun.intensity = 2.4;
           hemi.color.setHex(0xe8d0b0);
           hemi.groundColor.setHex(0x9a7452);
+          hemi.intensity = 1.3;
         }
         break;
     }
   }
 
+  // ── 카메라 조망 및 씬 컨텍스트 ──
+  const cameraFocus = new THREE.Vector3();
+  const sceneCtx: SceneContext = {
+    renderer: pr,
+    hud,
+    audio,
+    player,
+    beam,
+    setCameraFocus: (x: number, y: number, z: number) => {
+      cameraFocus.set(x, y, z);
+    },
+  };
+
   // ── 챕터 로딩 및 전환 라이프사이클 ──
   function setupInteractiveLoop(): void {
+    if (curBook === 1) {
+      const st = stageManager.stage;
+      if (st && st.urDetails) {
+        setupBook1Actions({
+          interactions,
+          hud,
+          audio,
+          particles,
+          cutscene,
+          sceneCtx,
+          urStage: st.urDetails,
+          onBook1Complete: () => {
+            advanceChapter();
+          },
+        });
+        return;
+      }
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -214,6 +250,7 @@ export function createGame(): void {
     crowd.clear();
     particles.clear();
     cutsceneEngine.stop();
+    cutscene.abort();
 
     const ctx = getChapterContext(curBook, curChapter);
     setPlayableProtagonist(ctx.hero);
@@ -221,12 +258,21 @@ export function createGame(): void {
     const stage = stageManager.loadStage(ctx.stageId);
     applyAtmosphere(stage.region, stage.id);
 
-    playerActor.root.position.set(stage.spawn.x, 0, stage.spawn.z);
-    playerActor.setPose('stand');
+    player.root.position.set(stage.spawn.x, 0, stage.spawn.z);
 
     hud.goal = ctx.defaultGoal;
     audio.playBgm(stage.bgm);
     audio.playAmbience(stage.ambience);
+
+    // 1권인 경우: alaskah-noah 스타일의 풍부한 우르 시가지와 액션 루프 구동!
+    if (curBook === 1) {
+      setupInteractiveLoop();
+      // 첫 시작 시 인트로 재생
+      if (!loaded || playSeconds < 2) {
+        cutscene.play(createBook1IntroSteps(sceneCtx), undefined, 'book1_intro');
+      }
+      return;
+    }
 
     const chData = bData.chapters[curChapter];
     if (chData && chData.steps && chData.steps.length > 0) {
@@ -311,10 +357,14 @@ export function createGame(): void {
     },
   }, 10);
 
-  // 3. 컷신 대사 넘기기 [Space / Enter]
+  // 3. 컷신 대사 넘기기 [Space / Enter / E]
   panels.addKey({
-    get open() { return cutsceneEngine.running; },
+    get open() { return cutsceneEngine.running || cutscene.running; },
     key(e) {
+      if (cutscene.running) {
+        cutscene.key(e);
+        return true;
+      }
       if (e.code === 'Space' || e.code === 'Enter') {
         cutsceneEngine.advance();
         return true;
@@ -336,15 +386,17 @@ export function createGame(): void {
     },
     pick: (x, z) => pickInteractable(interactions.values(), x, z),
     walkTo: (x, z) => {
-      if (cutsceneEngine.running) {
-        cutsceneEngine.advance();
+      if (cutsceneEngine.running || cutscene.running) {
+        if (cutscene.running) cutscene.key(new KeyboardEvent('keydown', { code: 'Space' }));
+        else cutsceneEngine.advance();
         return;
       }
       walk.on = true; walk.x = x; walk.z = z; walk.act = null;
     },
     walkToAct: (a) => {
-      if (cutsceneEngine.running) {
-        cutsceneEngine.advance();
+      if (cutsceneEngine.running || cutscene.running) {
+        if (cutscene.running) cutscene.key(new KeyboardEvent('keydown', { code: 'Space' }));
+        else cutsceneEngine.advance();
         return;
       }
       const p = a.pos(); walk.on = true; walk.x = p.x; walk.z = p.z; walk.act = a;
@@ -375,7 +427,7 @@ export function createGame(): void {
   // ── 저장 라이프사이클 ──
   const snapshot = (): Omit<SaveData, 'version' | 'savedAt'> => ({
     story: { book: curBook, chapter: curChapter, hero: currentHero },
-    player: { x: playerActor.root.position.x, z: playerActor.root.position.z },
+    player: { x: player.root.position.x, z: player.root.position.z },
     playSeconds: Math.floor(playSeconds),
   });
   const write = (): WriteOutcome => {
@@ -407,13 +459,33 @@ export function createGame(): void {
     if (cutsceneEngine.running) {
       cutsceneEngine.update(dt);
     }
+    if (cutscene.running) {
+      cutscene.update(dt);
+      hud.caption = cutscene.caption;
+    } else if (!cutsceneEngine.running) {
+      hud.caption = null;
+    }
     crowd.update(dt);
     particles.update(dt);
+    beam.update(dt);
     updateEnvironmentWind(now * 0.001, 0, pr.fx);
 
     const st = stageManager.stage;
-    const b = st ? st.bounds : { minX: -10, maxX: 10, minZ: -10, maxZ: 10 };
-    const p = playerActor.root.position;
+    const p = player.root.position;
+
+    // 미니맵 위치 동기화 및 플레이어 화면 좌표 추적
+    hud.minimap.playerX = p.x;
+    hud.minimap.playerZ = p.z;
+    hud.minimap.playerFacing = player.facing;
+    hud.markerFrom.x = p.x;
+    hud.markerFrom.z = p.z;
+
+    // NPC 애니메이션 업데이트
+    if (st && st.urDetails) {
+      for (const a of st.urDetails.actors) {
+        a.updateAnimation(dt, false);
+      }
+    }
 
     // 동적 횃불/화로 조명 깜빡임
     if (st && (st.id === 'ur_furnace' || st.id === 'sodom')) {
@@ -424,7 +496,8 @@ export function createGame(): void {
     }
 
     // 플레이어 이동 (컷신 중이 아닐 때만)
-    if (!cutsceneEngine.running && !hud.chapterSelect.open && !hud.pauseMenu.open) {
+    const inAnyCutscene = cutsceneEngine.running || cutscene.running;
+    if (!inAnyCutscene && !hud.chapterSelect.open && !hud.pauseMenu.open) {
       let dx = (keys.has('KeyD') || keys.has('ArrowRight') ? 1 : 0) - (keys.has('KeyA') || keys.has('ArrowLeft') ? 1 : 0);
       let dz = (keys.has('KeyS') || keys.has('ArrowDown') ? 1 : 0) - (keys.has('KeyW') || keys.has('ArrowUp') ? 1 : 0);
 
@@ -438,20 +511,13 @@ export function createGame(): void {
         } else { dx = wx / wd; dz = wz / wd; }
       }
 
-      const isMoving = Boolean(dx || dz);
-      if (isMoving) {
-        const len = Math.hypot(dx, dz);
-        dx /= len; dz /= len;
-        playerActor.face(Math.atan2(dx, dz));
-        p.x = Math.max(b.minX + 0.5, Math.min(b.maxX - 0.5, p.x + dx * SPEED * dt));
-        p.z = Math.max(b.minZ + 0.5, Math.min(b.maxZ - 0.5, p.z + dz * SPEED * dt));
-      }
-      playerActor.updateAnimation(dt, isMoving);
+      const isRunning = keys.has('ShiftLeft') || keys.has('ShiftRight');
+      player.update(dt, { x: dx, z: dz, run: isRunning }, st?.col ?? dummyCol, []);
 
-      aimed = interactions.nearest(p.x, p.z, playerActor.facing);
+      aimed = interactions.nearest(p.x, p.z, player.facing);
     } else {
       aimed = null;
-      playerActor.updateAnimation(dt, false);
+      player.update(dt, { x: 0, z: 0, run: false }, st?.col ?? dummyCol, []);
     }
 
     let pp: Prompt | null = null;
@@ -462,7 +528,11 @@ export function createGame(): void {
       pp = prompt;
     }
 
-    focus.set(p.x, 0.7, p.z);
+    if (cutscene.running && cameraFocus.lengthSq() > 0) {
+      focus.copy(cameraFocus);
+    } else {
+      focus.set(p.x, 0.7, p.z);
+    }
     pr.follow(focus);
     pr.render();
     hud.draw(dt, pp);

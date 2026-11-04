@@ -360,8 +360,8 @@ export class PixelRenderer {
   }
 
   toVista() {
-    this.setTilt(4);
-    this.setFraming(2.5);
+    this.setTilt(18);
+    this.setFraming(2.0);
   }
 
   resetTilt() {
