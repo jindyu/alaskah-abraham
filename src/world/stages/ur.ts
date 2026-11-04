@@ -25,13 +25,13 @@ export interface UrStage {
   actors: Actor[];
 }
 
-const UR_HALF = 48; // 96x96 광활한 고대 수메르 대지
+const UR_HALF = 40; // 80x80 메인 시가지 고해상도 지면 (TD=16 기준 1280x1280 노아 정통 고해상도 픽셀 지면!)
 
-/** 우르의 자연스러운 모래흙, 벽돌길, 자갈 지면 텍스처 평면 생성 */
+/** 우르의 고해상도 벽돌길, 사막 모래흙, 오아시스 초목 지면 텍스처 평면 생성 (노아 TD=16 벤치마크) */
 function buildUrGround(): THREE.Mesh {
-  const N = UR_HALF * 2 * 2; // 192x192 텍셀 해상도
+  const N = UR_HALF * 2 * TD; // 1280x1280 노아 정통 고해상도 지면!
   const px = new Px(N, N);
-  const toW = (idx: number) => -UR_HALF + (idx + 0.5) * (UR_HALF * 2 / N);
+  const toW = (idx: number) => -UR_HALF + (idx + 0.5) / TD;
   const reg = PAL_REGION.MESOPOTAMIA;
 
   for (let j = 0; j < N; j++) {
@@ -39,45 +39,92 @@ function buildUrGround(): THREE.Mesh {
     for (let i = 0; i < N; i++) {
       const x = toW(i);
 
-      // 기본 메소포타미아 황토/사막 모래 베이스
-      const nBase = fbm(x / 4, z / 4, 301, 2);
-      let c = ditherPick([reg.ground, 0xc49c68, 0xb88e54, 0xa57c44], nBase, i, j, 0.4);
+      // 1. 기본 대지: 메소포타미아 황토와 고운 사막 모래 (노아의 grassColor 기법을 사막 흙에 적용)
+      const nBase = fbm(x / 10, z / 10, 301, 2) * 0.45 + valueNoise(i / 16, j / 16, 302) * 0.35 + hash2(i, j, 303) * 0.2;
+      let c = ditherPick([reg.ground, 0xd2a874, 0xc49c68, 0xb88e54, 0xa87d46], nBase, i, j, 0.32);
 
-      // 도로 구역 (중앙 동서 도로: z: 1 ~ 6, x: -30 ~ 30)
-      if (z >= 1.0 && z <= 6.2 && Math.abs(x) < 32) {
-        const nRoad = valueNoise(i / 2, j / 2, 401);
-        c = ditherPick([reg.brick, 0x8a5830, 0xa46c3c, reg.ground], nRoad, i, j, 0.2);
-        // 벽돌 틈새 디테일
-        if (hash2(i, j, 11) < 0.08) c = 0x6e4020;
+      // 모래알 및 미세 자갈 스펙클
+      const hGrit = hash2(i, j, 305);
+      if (hGrit < 0.012) c = 0x8a623c;
+      else if (hash2(i, j - 1, 305) < 0.012) c = 0xe4cc9c;
+
+      // 2. 동서 대로 (z: 1.5 ~ 6.0, |x| < 26) 및 공방 진입로 (|x| < 2.6, z: -8.0 ~ 1.5)
+      const isEastWestRoad = z >= 1.5 && z <= 5.8 && Math.abs(x) < 25.5;
+      const isWorkshopPath = Math.abs(x) < 2.5 && z >= -7.5 && z <= 1.5;
+      const isRoadArea = isEastWestRoad || isWorkshopPath;
+
+      if (isRoadArea) {
+        const roadEdgeDist = isEastWestRoad
+          ? Math.min(z - 1.5, 5.8 - z, 25.5 - Math.abs(x))
+          : Math.min(x - (-2.5), 2.5 - x, z - (-7.5), 1.5 - z);
+
+        if (roadEdgeDist > 0.08) {
+          // 벽돌 패턴 (cellW: 10, cellH: 5 텍셀 = 가로 62cm, 세로 31cm 고대 소성 벽돌)
+          const cellW = 10, cellH = 5;
+          const row = Math.floor(j / cellH);
+          const shiftX = (row % 2) * (cellW / 2);
+          const col = Math.floor((i + shiftX) / cellW);
+          const li = (i + shiftX) % cellW;
+          const lj = j % cellH;
+
+          // 벽돌 틈새 줄눈
+          if (li === 0 || lj === 0) {
+            c = hash2(i, j, 411) < 0.2 ? 0x6e4828 : 0x845a34;
+          } else {
+            // 벽돌 색상 변량 (가마에서 구워진 벽돌마다 다른 황토/테라코타 톤)
+            const brickTones = [0xb87c4a, 0xae7244, 0xc68a56, 0xa2683c];
+            const tone = brickTones[Math.floor(hash2(col, row, 412) * brickTones.length)];
+            // 입체감 베벨 (상/좌측 밝음, 하/우측 어두움)
+            if (li === 1 || lj === 1) c = 0xd49a68;
+            else if (li === cellW - 1 || lj === cellH - 1) c = 0x86502a;
+            else {
+              const nBrick = valueNoise(i / 2, j / 2, 413);
+              c = nBrick > 0.65 ? 0xc28652 : tone;
+            }
+            if (hash2(i, j, 414) < 0.025) c = 0x764220; // 흠집
+          }
+
+          // 도로 가장자리 풍화 마모
+          if (roadEdgeDist < 0.35 && hash2(i, j, 415) < (0.35 - roadEdgeDist) * 2.2) {
+            c = ditherPick([reg.ground, 0xb88e54, 0x8a623c], hash2(i, j, 416), i, j);
+          }
+        }
       }
 
-      // 공방 진입로 (x: -3 ~ 3, z: -8 ~ 1)
-      if (Math.abs(x) < 3.2 && z >= -8.0 && z <= 1.0) {
-        const nPath = valueNoise(i / 2, j / 2, 419);
-        c = ditherPick([reg.brick, 0x9c6838, 0xa46c3c], nPath, i, j, 0.3);
+      // 3. 서쪽 우물 광장 (x: -12.0, z: 3.5): 방사형 포석 + 오아시스 초목
+      const dWell = Math.hypot(x - (-12.0), z - 3.5);
+      if (dWell < 5.4) {
+        if (dWell < 2.6) {
+          // 우물 바로 주변: 젖은 판석 및 물기 머금은 바닥
+          const cellP = 8;
+          const cxP = Math.floor(i / cellP), cyP = Math.floor(j / cellP);
+          const liP = i % cellP, ljP = j % cellP;
+          if (liP === 0 || ljP === 0) {
+            c = 0x4a3a2a; // 젖은 흙 줄눈
+          } else {
+            const stoneTones = [0x9a9484, 0xa8a090, 0x8c8676, 0xb2aa98];
+            c = stoneTones[Math.floor(hash2(cxP, cyP, 511) * 4)];
+            if (liP === 1 || ljP === 1) c = 0xc0b8a4;
+            if (hash2(i, j, 512) < 0.08) c = PAL.water[0]; // 튄 물방울
+          }
+        } else {
+          // 우물 바깥 잔디 및 대추야자 잎 그늘 (노아의 grassColor)
+          const nGrass = fbm(x * 2, z * 2, 521, 2);
+          if (nGrass > 0.40) {
+            c = ditherPick([PAL.grass[2], PAL.grass[3], PAL.dryGrass[1], reg.ground], nGrass, i, j, 0.4);
+            if (hash2(i, j, 523) < 0.02) c = PAL.grass[4]; // 풀싹
+          }
+        }
       }
 
-      // 서쪽 우물 광장 (x: -12, z: 3.5, r: 4.5)
-      const dWell = Math.hypot(x - (-12), z - 3.5);
-      if (dWell < 4.8) {
-        const nWell = fbm(x * 2, z * 2, 501, 2);
-        // 물기 머금은 짙은 흙과 작은 오아시스 잔디 흔적
-        c = dWell < 2.8
-          ? ditherPick([PAL.dirt[0], PAL.dirt[1], PAL.water[0]], nWell, i, j, 0.5)
-          : ditherPick([reg.ground, PAL.dryGrass[1], PAL.grass[2]], nWell, i, j, 0.4);
-      }
-
-      // 남쪽 시장 광장 (x: 4, z: 12)
-      if (x >= -4 && x <= 16 && z >= 8 && z <= 16) {
+      // 4. 남쪽 장터 (x: -2 ~ 12, z: 8.5 ~ 13.5): 단단히 다져진 마당 + 짚과 향신료 흔적
+      if (x >= -3.5 && x <= 13.5 && z >= 8.2 && z <= 13.5) {
         const nMarket = fbm(x * 1.5, z * 1.5, 601, 2);
-        c = ditherPick([0xc89868, reg.brick, PAL.dirt[2], 0xdeaa74], nMarket, i, j, 0.35);
-      }
-
-      // 외곽 거친 자갈과 바위 지대 노이즈
-      const dCenter = Math.hypot(x, z);
-      if (dCenter > 28) {
-        const nWild = fbm(x / 6, z / 6, 701, 2);
-        if (nWild > 0.6) c = hash2(i, j, 99) < 0.4 ? PAL.stone[1] : 0x8a623c;
+        if (nMarket > 0.48) {
+          c = ditherPick([0xc29462, 0xd4a872, 0xaf7e4e, 0x9e6e40], nMarket, i, j, 0.35);
+          if (hash2(i, j, 603) < 0.03) c = PAL.straw[1]; // 흩뿌려진 짚
+          if (hash2(i, j, 604) < 0.015) c = 0xa43828; // 석류/향신료 얼룩
+        }
       }
 
       px.set(i, j, c);
@@ -202,19 +249,19 @@ export function buildUrStage(): UrStage {
   col.addBox(WX, WZ - 2.2, 1.6, 1.4);
 
   // ─────────────────────────────────────────────────────────────
-  // 5. 이웃 가옥들 및 골목길 (밀도 높은 고대 도시감)
+  // 5. 이웃 가옥들 및 골목길 (밀도 높은 고대 도시감, 가옥-NPC 충분한 간격 확보)
   // ─────────────────────────────────────────────────────────────
-  // 동쪽 이웃집 1 (데라 가족 안채: x: 13.5, z: -6.5)
-  P.house(b, col, 13.5, -6.5, {
+  // 동쪽 이웃집 1 (데라 가족 안채: x: 14.5, z: -8.0, 앞마당을 넉넉히 비워 사래 배치)
+  P.house(b, col, 14.5, -8.0, {
     w: 6.2, d: 5.0, h: 3.0,
     style: 'brick',
     awning: 'stripeRed',
     stairs: 1,
   });
-  P.oven(b, col, 9.8, -4.8);
-  P.woodpile(b, col, 17.2, -4.6, Math.PI / 2);
-  P.pot(b, 10.2, -3.5, 0.9);
-  P.pot(b, 10.7, -3.6, 0.7, PAL.clay[1]);
+  P.oven(b, col, 10.2, -6.5);
+  P.woodpile(b, col, 18.5, -6.5, Math.PI / 2);
+  P.pot(b, 10.5, -4.8, 0.9);
+  P.pot(b, 11.0, -4.9, 0.7, PAL.clay[1]);
 
   // 서쪽 가옥 (x: -17.5, z: -5.5)
   P.house(b, col, -17.5, -5.5, {
@@ -241,24 +288,23 @@ export function buildUrStage(): UrStage {
   P.rock(b, col, -7.5, 1.2, 0.7);
   P.rock(b, col, 8.2, -2.5, 0.8);
   P.rock(b, col, -18.2, 4.5, 0.6);
-  P.tuft(b, -8.2, 1.8);
-  P.tuft(b, -6.5, 2.2);
+  P.tuft(b, -7.0, 2.2);
   P.tuft(b, 7.8, -1.8);
 
   // ─────────────────────────────────────────────────────────────
-  // 6. 서쪽 광장: 우물과 종려나무(대추야자) 쉼터
+  // 6. 서쪽 광장: 우물과 종려나무(대추야자) 쉼터 (중앙 마당을 넓혀 롯이 시원하게 보이도록 배치)
   // ─────────────────────────────────────────────────────────────
-  P.well(b, col, -12.0, 3.5);
-  P.palmTree(b, col, -15.5, 1.5);
-  P.palmTree(b, col, -8.5, 1.8);
-  P.palmTree(b, col, -15.2, 6.2);
-  P.palmTree(b, col, -9.0, 6.5);
-  P.bench(b, col, -11.8, 6.2);
-  P.bench(b, col, -8.8, 4.0);
-  P.pot(b, -10.2, 2.5, 0.95);
-  P.pot(b, -13.8, 2.7, 0.8, PAL.clay[2]);
-  P.torchPost(b, col, -12.0, 0.8);
-  LAMPS.push({ x: -12.0, y: 1.8, z: 0.8, kind: 'torch' });
+  P.well(b, col, -12.5, 3.5);
+  P.palmTree(b, col, -16.5, 1.0);
+  P.palmTree(b, col, -6.5, 0.5);
+  P.palmTree(b, col, -16.5, 6.0);
+  P.palmTree(b, col, -6.5, 6.5);
+  P.bench(b, col, -12.5, 6.0);
+  P.bench(b, col, -12.5, 1.0);
+  P.pot(b, -14.5, 2.0, 0.95);
+  P.pot(b, -14.5, 5.0, 0.8, PAL.clay[2]);
+  P.torchPost(b, col, -14.5, 3.5);
+  LAMPS.push({ x: -14.5, y: 1.8, z: 3.5, kind: 'torch' });
 
   // ─────────────────────────────────────────────────────────────
   // 7. 남쪽 장터: 활기찬 수메르 장터 (과일, 토기, 양탄자 가판대)
@@ -306,36 +352,40 @@ export function buildUrStage(): UrStage {
   root.add(ziggurat);
 
   // ─────────────────────────────────────────────────────────────
-  // 10. 주요 3D 복셀 NPC들
+  // 10. 주요 3D 복셀 NPC들 (건물·소품과 겹치지 않는 탁 트인 마당에 배치)
   // ─────────────────────────────────────────────────────────────
   const actors: Actor[] = [];
 
+  // 아버지 데라: 공방 앞마당 (차양 기둥과 2m 이상 떨어진 넓은 공방 마당)
   const terahActor = new Actor('terah', 'terah');
-  terahActor.root.position.set(-2.0, 0, 2.2);
+  terahActor.root.position.set(-2.5, 0, 0.8);
   terahActor.face(Math.PI * 0.25);
   root.add(terahActor.root);
-  col.addCircle(-2.0, 2.2, 0.45);
+  col.addCircle(-2.5, 0.8, 0.45);
   actors.push(terahActor);
 
+  // 조카 어린 롯: 우물가 동쪽 잔디 쉼터 (우물·종려나무와 3.5m 이상 떨어진 햇살 드는 잔디밭)
   const lotActor = new Actor('lot', 'lot');
-  lotActor.root.position.set(-10.5, 0, 3.5);
+  lotActor.root.position.set(-8.5, 0, 3.5);
   lotActor.face(Math.PI * 0.5);
   root.add(lotActor.root);
-  col.addCircle(-10.5, 3.5, 0.45);
+  col.addCircle(-8.5, 3.5, 0.45);
   actors.push(lotActor);
 
+  // 아내 사래: 안채 앞 넓은 마당 (가옥 외벽·차양과 4m 이상 떨어진 탁 트인 마당)
   const saraiActor = new Actor('sarai', 'sarai');
-  saraiActor.root.position.set(11.5, 0, -4.0);
+  saraiActor.root.position.set(12.0, 0, -1.5);
   saraiActor.face(-Math.PI * 0.25);
   root.add(saraiActor.root);
-  col.addCircle(11.5, -4.0, 0.45);
+  col.addCircle(12.0, -1.5, 0.45);
   actors.push(saraiActor);
 
+  // 수메르 장터 상인: 장터 광장 북쪽 (가판대 차양 밖, 도로에서 내려오는 손님을 맞는 탁 트인 자리)
   const merchantActor = new Actor('merchant', 'citizen');
-  merchantActor.root.position.set(4.5, 0, 9.0);
+  merchantActor.root.position.set(4.0, 0, 7.8);
   merchantActor.face(0);
   root.add(merchantActor.root);
-  col.addCircle(4.5, 9.0, 0.45);
+  col.addCircle(4.0, 7.8, 0.45);
   actors.push(merchantActor);
 
   root.add(b.build());

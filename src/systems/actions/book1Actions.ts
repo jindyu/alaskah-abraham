@@ -60,7 +60,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   // 아버지 데라 (공방 앞마당)
   interactions.add({
     id: 'npc_terah',
-    pos: () => ({ x: WX - 2.0, z: 2.2 }),
+    pos: () => ({ x: -2.5, z: 0.8 }),
     height: 1.2,
     r: 1.8,
     label: () => (placedAxeOnBigIdol ? '데라와 담판 짓기' : '아버지 데라와 대화'),
@@ -87,7 +87,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   // 조카 어린 롯 (우물가 쉼터)
   interactions.add({
     id: 'npc_lot',
-    pos: () => ({ x: -10.5, z: 3.5 }),
+    pos: () => ({ x: -8.5, z: 3.5 }),
     height: 1.0,
     r: 1.8,
     label: () => '조카 롯과 대화',
@@ -103,7 +103,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   // 아내 사래 (동쪽 안채 앞마당)
   interactions.add({
     id: 'npc_sarai',
-    pos: () => ({ x: 11.5, z: -4.0 }),
+    pos: () => ({ x: 12.0, z: -1.5 }),
     height: 1.1,
     r: 1.8,
     label: () => '사래와 대화',
@@ -119,7 +119,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   // 수메르 장터 상인
   interactions.add({
     id: 'npc_merchant',
-    pos: () => ({ x: 4.5, z: 9.0 }),
+    pos: () => ({ x: 4.0, z: 7.8 }),
     height: 1.1,
     r: 1.8,
     label: () => '장터 상인과 대화',

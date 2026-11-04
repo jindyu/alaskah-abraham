@@ -40,17 +40,26 @@ async function runQa() {
   }
   await sleep(600);
 
-  // 2. 데라에게 다가가서 대화하기 (E 키)
+  // 2. 데라에게 다가가서 대화하기 (공방 앞마당 Terah 위치: -2.5, 0.8)
+  await page.keyboard.down('KeyA');
+  await page.keyboard.down('KeyW');
+  await sleep(650);
+  await page.keyboard.up('KeyW');
+  await page.keyboard.up('KeyA');
+  await sleep(300);
   await page.keyboard.press('KeyE');
   await sleep(600);
   await page.screenshot({ path: path.join(QA_DIR, '06_talk_terah.png') });
   console.log('  ✓ 캡처 6: 06_talk_terah.png (아버지 데라와의 대화 토스트)');
 
-  // 3. 서쪽 우물가 롯에게 이동 후 대화 (Left-Shift 달리기)
+  // 3. 서쪽 우물가 롯에게 이동 후 대화 (Left-Shift 달리기, Lot 위치: -8.5, 3.5)
   await page.keyboard.down('ShiftLeft');
   await page.keyboard.down('KeyA');
-  await sleep(1800);
+  await sleep(1300);
   await page.keyboard.up('KeyA');
+  await page.keyboard.down('KeyS');
+  await sleep(400);
+  await page.keyboard.up('KeyS');
   await page.keyboard.up('ShiftLeft');
   await sleep(400);
   await page.keyboard.press('KeyE');
@@ -58,13 +67,13 @@ async function runQa() {
   await page.screenshot({ path: path.join(QA_DIR, '07_talk_lot.png') });
   console.log('  ✓ 캡처 7: 07_talk_lot.png (조카 롯과의 대화 토스트)');
 
-  // 4. 동쪽 안채 사래에게 이동 후 대화 (Left-Shift 달리기)
+  // 4. 동쪽 안채 사래에게 이동 후 대화 (Left-Shift 달리기, Sarai 위치: 12.0, -1.5)
   await page.keyboard.down('ShiftLeft');
   await page.keyboard.down('KeyD');
-  await sleep(3500);
+  await sleep(3400);
   await page.keyboard.up('KeyD');
   await page.keyboard.down('KeyW');
-  await sleep(1200);
+  await sleep(950);
   await page.keyboard.up('KeyW');
   await page.keyboard.up('ShiftLeft');
   await sleep(400);
