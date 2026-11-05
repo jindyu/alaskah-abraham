@@ -14,7 +14,10 @@ import {
 } from './props/biblicalProps';
 
 import { buildUrStage, type UrStage } from './stages/ur';
-import type { Collision } from './collision';
+import { buildUrFurnaceStage, type FurnaceStage } from './stages/furnace';
+import { Collision } from './collision';
+import * as P from './props';
+import { Camel, Sheep } from '../entities/animals';
 
 export type StageId =
   | 'ur_workshop'
@@ -42,6 +45,7 @@ export interface StageInfo {
   ambience: string;
   col?: Collision;
   urDetails?: UrStage;
+  furnaceDetails?: FurnaceStage;
 }
 
 export class StageManager {
@@ -146,26 +150,16 @@ export class StageManager {
 
   // ── 3. 우르 풀무불 광장 ──
   private buildUrFurnace(): StageInfo {
-    const root = new THREE.Group();
-    const fb = new VoxelBuilder(9, false);
-
-    fb.box(0, -0.25, 0, 28, 0.5, 28, 0x5a4232, { tex: 'soil' });
-    // 관람 석조 난간
-    fb.box(0, 0.45, 6, 20, 0.9, 0.6, PAL.stone[2], { tex: 'stone' });
-    root.add(fb.build());
-
-    // 거대 화로 중앙 배치
-    const furnace = buildFurnace();
-    furnace.position.set(0, 0, -4);
-    root.add(furnace);
-
+    const f = buildUrFurnaceStage();
     return {
       id: 'ur_furnace',
       name: '우르 풀무불 광장',
       region: 'MESOPOTAMIA',
-      spawn: { x: 0, z: 4 },
-      bounds: { minX: -9, maxX: 9, minZ: -8, maxZ: 9 },
-      root,
+      spawn: f.spawn,
+      bounds: f.bounds,
+      root: f.root,
+      col: f.col,
+      furnaceDetails: f,
       bgm: 'bgm_judgment_fire',
       ambience: 'amb_cave',
     };
@@ -174,24 +168,47 @@ export class StageManager {
   // ── 4. 하란 정착 캠프 ──
   private buildHaran(): StageInfo {
     const root = new THREE.Group();
+    const col = new Collision();
+    col.bounds = { minX: -16, maxX: 16, minZ: -16, maxZ: 16 };
     const hb = new VoxelBuilder(9, false);
 
-    hb.box(0, -0.25, 0, 26, 0.5, 26, PAL_REGION.MESOPOTAMIA.ground, { tex: 'soil' });
+    // 하란 오아시스 지면
+    hb.box(0, -0.25, 0, 36, 0.5, 36, PAL_REGION.MESOPOTAMIA.ground, { tex: 'soil' });
+    // 작은 오아시스 초목과 물가
+    hb.box(6, 0.02, -5, 6, 0.05, 5, PAL.grass[2], { tex: 'grassTop' });
+    hb.box(6, 0.03, -5, 4, 0.06, 3, PAL.water[1], { tex: 'water' });
+
+    // 야외 모닥불
+    P.campfire(hb, col, 0, 0);
+
+    // 오아시스 종려나무와 덤불
+    P.palmTree(hb, col, 7.5, -3.0);
+    P.palmTree(hb, col, 5.0, -7.0);
+    P.bush(hb, col, -6.0, 4.0, 0.9);
+
     root.add(hb.build());
 
+    // 장막 2채 (아브람/사래 장막 및 데라의 장막)
     const tent1 = buildNomadTent(PAL.fabric.redDark);
-    tent1.position.set(-4, 0, -3);
+    tent1.position.set(-4.5, 0, -3.5);
     const tent2 = buildNomadTent(PAL_REGION.CANAAN.tentBlack);
-    tent2.position.set(4, 0, -2);
+    tent2.position.set(4.0, 0, 2.5);
     root.add(tent1, tent2);
+
+    // 쉬고 있는 낙타와 양
+    const camel = new Camel(6.5, 4.5, true);
+    camel.root.rotation.y = -Math.PI * 0.3;
+    const sheep = new Sheep(-5.0, 3.0);
+    root.add(camel.root, sheep.root);
 
     return {
       id: 'haran',
-      name: '하란 캠프',
+      name: '하란 오아시스 캠프',
       region: 'MESOPOTAMIA',
       spawn: { x: 0, z: 3 },
-      bounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
+      bounds: col.bounds,
       root,
+      col,
       bgm: 'bgm_lament',
       ambience: 'amb_night',
     };

@@ -36,3 +36,6 @@ Always read [`PLAN.md`](./PLAN.md) first. It defines:
    - Use `josa()` / `josaRo()` for dynamic Korean particles.
 4. **Verification Before Completion**:
    - Every stage must pass `npm test` (Vitest) and `npm run build` (`tsc --noEmit && vitest run && vite build`), plus headless browser visual/flow QA in `docs/qa/`.
+5. **No Automatic Commit / Push / Deploy**:
+   - Do NOT commit, push, or deploy automatically upon task completion.
+   - Always wait until the user explicitly gives the signal/instruction before performing `git commit`, `git push`, or deployment.

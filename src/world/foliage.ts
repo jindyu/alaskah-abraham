@@ -195,11 +195,11 @@ export function palmTree(b: VoxelBuilder, col: Collision | null, x: number, z: n
           const rib = 0.07 - k * 0.008;
           const col = PAL.palm[Math.min(3, Math.floor((k + (f % 2)) / 1.5))];
           b.at(dist, y, 0, 0, () => {
-            b.box(0, 0, 0, 0.31, 0.05, rib, PAL.palm[0], { ao: false, jitter: 0 });
+            b.box(0, 0, 0, 0.31, 0.05, rib, PAL.palm[0], { tex: 'canopy', ao: false, jitter: 0 });
             for (const s of [-1, 1])
               for (const off of [-0.06, 0.06]) {
                 b.at(off, -0.01, s * 0.03, s * 0.3, () =>
-                  b.box(0, 0, s * len / 2, 0.07, 0.04, len, col, { ao: false, jitter: 0.06 }), s * 0.3);
+                  b.box(0, 0, s * len / 2, 0.07, 0.04, len, col, { tex: 'canopy', ao: false, jitter: 0.06 }), s * 0.3);
               }
           }, 0, Math.atan(slope / step));
         }

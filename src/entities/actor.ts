@@ -11,7 +11,11 @@ export type ActorPose =
   | 'pray'
   | 'carry_wood'
   | 'swing_axe'
-  | 'offer';
+  | 'offer'
+  | 'bound'
+  | 'cower'
+  | 'command'
+  | 'sit_throne';
 
 export type EmoteType = '!' | '?' | '...' | 'heart' | 'anger' | 'sweat';
 
@@ -28,6 +32,10 @@ export class Actor {
   private rightLeg = new THREE.Group();
   private propContainer = new THREE.Group();
   private bubbleContainer = new THREE.Group();
+  private wingsLeft?: THREE.Group;
+  private wingsRight?: THREE.Group;
+  private halo?: THREE.Group;
+  private ropeMesh?: THREE.Group;
 
   private pose: ActorPose = 'stand';
   private walkTime = 0;
@@ -118,6 +126,54 @@ export class Actor {
     // 머리 위 말풍선 컨테이너
     this.bubbleContainer.position.set(0, 1.85, 0);
 
+    // ── 천사 전용: 날개와 황금 후광 (Angel Wings & Golden Halo) ──
+    if (c.id === 'angel' || this.id.includes('angel')) {
+      const wingMat = { tex: 'fabricCream' as const };
+      // 좌측 날개
+      const leftWingGroup = new THREE.Group();
+      const lb = new VoxelBuilder(11, false);
+      lb.box(-0.15, 0.25, -0.15, 0.12, 0.45, 0.12, 0xffffff, wingMat);
+      lb.box(-0.32, 0.50, -0.22, 0.10, 0.65, 0.30, 0xffffff, wingMat);
+      lb.box(-0.48, 0.72, -0.26, 0.08, 0.75, 0.26, 0xffffff, wingMat);
+      lb.box(-0.42, 0.82, -0.24, 0.06, 0.22, 0.14, 0xffdf78); // 황금 깃털 테두리
+      leftWingGroup.add(lb.build());
+      leftWingGroup.position.set(-0.18, 0.45, -0.18);
+      leftWingGroup.rotation.y = -0.25;
+      this.wingsLeft = leftWingGroup;
+      this.body.add(leftWingGroup);
+
+      // 우측 날개
+      const rightWingGroup = new THREE.Group();
+      const rb = new VoxelBuilder(11, false);
+      rb.box(0.15, 0.25, -0.15, 0.12, 0.45, 0.12, 0xffffff, wingMat);
+      rb.box(0.32, 0.50, -0.22, 0.10, 0.65, 0.30, 0xffffff, wingMat);
+      rb.box(0.48, 0.72, -0.26, 0.08, 0.75, 0.26, 0xffffff, wingMat);
+      rb.box(0.42, 0.82, -0.24, 0.06, 0.22, 0.14, 0xffdf78); // 황금 깃털 테두리
+      rightWingGroup.add(rb.build());
+      rightWingGroup.position.set(0.18, 0.45, -0.18);
+      rightWingGroup.rotation.y = 0.25;
+      this.wingsRight = rightWingGroup;
+      this.body.add(rightWingGroup);
+
+      // 황금 후광 (Halo)
+      const haloGroup = new THREE.Group();
+      const hb = new VoxelBuilder(9, false);
+      hb.box(0, 0.56, 0.18, 0.38, 0.05, 0.05, 0xffdf78);
+      hb.box(0, 0.56, -0.18, 0.38, 0.05, 0.05, 0xffdf78);
+      hb.box(-0.19, 0.56, 0, 0.05, 0.05, 0.38, 0xffdf78);
+      hb.box(0.19, 0.56, 0, 0.05, 0.05, 0.38, 0xffdf78);
+      haloGroup.add(hb.build());
+      this.halo = haloGroup;
+      this.head.add(haloGroup);
+    }
+
+    // 결박용 밧줄 메쉬 (기본 숨김)
+    const ropeB = new VoxelBuilder(11, false);
+    ropeB.box(0, 0.35, 0, 0.56, 0.34, 0.36, 0x7c5535, { tex: 'soil' });
+    this.ropeMesh = ropeB.build();
+    this.ropeMesh.visible = false;
+    this.body.add(this.ropeMesh);
+
     // 계층 조립
     this.body.add(this.head);
     this.body.add(this.leftArm);
@@ -181,6 +237,47 @@ export class Actor {
         this.rightArm.rotation.x = -Math.PI / 2.5;
         break;
 
+      case 'bound':
+        this.leftArm.rotation.x = Math.PI / 6;
+        this.leftArm.rotation.y = Math.PI / 3;
+        this.leftArm.position.z = -0.12;
+        this.rightArm.rotation.x = Math.PI / 6;
+        this.rightArm.rotation.y = -Math.PI / 3;
+        this.rightArm.position.z = -0.12;
+        if (this.ropeMesh) this.ropeMesh.visible = true;
+        break;
+
+      case 'cower':
+        this.body.position.y = 0.45;
+        this.body.rotation.x = -Math.PI / 10;
+        this.leftLeg.rotation.x = Math.PI / 5;
+        this.rightLeg.rotation.x = Math.PI / 5;
+        this.leftArm.rotation.x = -Math.PI * 0.65;
+        this.leftArm.rotation.z = Math.PI / 4;
+        this.rightArm.rotation.x = -Math.PI * 0.65;
+        this.rightArm.rotation.z = -Math.PI / 4;
+        this.head.rotation.x = Math.PI / 8;
+        break;
+
+      case 'command':
+        this.rightArm.rotation.x = -Math.PI * 0.48;
+        this.rightArm.rotation.z = -Math.PI / 12;
+        this.leftArm.rotation.x = Math.PI / 8;
+        this.leftArm.rotation.z = Math.PI / 8;
+        break;
+
+      case 'sit_throne':
+        this.body.position.y = 0.45;
+        this.leftLeg.rotation.x = -Math.PI / 2;
+        this.leftLeg.position.y = 0.45;
+        this.leftLeg.position.z = 0.22;
+        this.rightLeg.rotation.x = -Math.PI / 2;
+        this.rightLeg.position.y = 0.45;
+        this.rightLeg.position.z = 0.22;
+        this.leftArm.rotation.x = -Math.PI / 3;
+        this.rightArm.rotation.x = -Math.PI / 3;
+        break;
+
       case 'stand':
       case 'walk':
       default:
@@ -189,6 +286,7 @@ export class Actor {
   }
 
   private resetJoints(): void {
+    if (this.ropeMesh) this.ropeMesh.visible = false;
     this.root.rotation.x = 0;
     this.root.rotation.z = 0;
     this.root.position.y = 0;
@@ -226,6 +324,19 @@ export class Actor {
       if (this.swingTimer <= 0) {
         this.setPose('stand');
       }
+    }
+
+    if (this.wingsLeft && this.wingsRight) {
+      const flap = Math.sin(this.walkTime * 2.8) * 0.16;
+      this.wingsLeft.rotation.y = -0.25 + flap;
+      this.wingsRight.rotation.y = 0.25 - flap;
+    }
+    if (this.halo) {
+      this.halo.position.y = 0.05 + Math.sin(this.walkTime * 1.8) * 0.03;
+    }
+    if (this.pose === 'cower') {
+      this.body.position.x = (Math.random() - 0.5) * 0.03;
+      this.head.rotation.z = (Math.random() - 0.5) * 0.06;
     }
 
     if (this.pose === 'walk' || isMoving) {
@@ -344,6 +455,17 @@ export class Actor {
 
       case 'jewelry': // 금 장신구 상자
         pb.box(0, 0, 0, 0.22, 0.16, 0.2, 0xf5c022);
+        break;
+
+      case 'scepter': // 니므롯 왕실 홀
+        pb.box(0, 0, 0, 0.06, 0.85, 0.06, 0xd4af37);
+        pb.box(0, 0.44, 0, 0.14, 0.14, 0.14, 0xb71c1c);
+        pb.box(0, 0.52, 0, 0.22, 0.08, 0.08, 0xf5c022);
+        break;
+
+      case 'spear': // 바벨 왕실 근위병 장창
+        pb.box(0, 0.2, 0, 0.05, 1.8, 0.05, 0x5a3d24);
+        pb.box(0, 1.15, 0, 0.08, 0.32, 0.12, 0xc8963e, { tex: 'metal' });
         break;
 
       default:

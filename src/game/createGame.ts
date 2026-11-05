@@ -18,7 +18,13 @@ import { Collision } from '../world/collision';
 import { Cutscene } from '../systems/cutscene/cutscene';
 import { Beam } from '../entities/beam';
 import { setupBook1Actions } from '../systems/actions/book1Actions';
-import { createBook1IntroSteps, type SceneContext } from '../systems/scenes/book1/book1Scenes';
+import {
+  createBook1IntroSteps,
+  createFurnaceMiracleSteps,
+  createNightCallingSteps,
+  createHaranSteps,
+  type SceneContext,
+} from '../systems/scenes/book1/book1Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -188,6 +194,14 @@ export function createGame(): void {
     audio,
     player,
     beam,
+    stageManager,
+    particles,
+    scene,
+    lights: {
+      sun,
+      hemi,
+      torchLight,
+    },
     setCameraFocus: (x: number, y: number, z: number) => {
       cameraFocus.set(x, y, z);
     },
@@ -283,6 +297,51 @@ export function createGame(): void {
   }
 
   // ── 키보드 / 입력 라우팅 ──
+  // 0. 대화 2지선다 선택지 모달 [↑/↓, 1/2, Enter/Space/E]
+  panels.addKey({
+    get open() { return !!hud.choice; },
+    key(e) {
+      if (!hud.choice) return false;
+      const ch = hud.choice;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') {
+        ch.selectedIndex = Math.max(0, ch.selectedIndex - 1);
+        audio.playSfx('ui_confirm');
+        return true;
+      }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        ch.selectedIndex = Math.min(ch.options.length - 1, ch.selectedIndex + 1);
+        audio.playSfx('ui_confirm');
+        return true;
+      }
+      if (e.code === 'Digit1') {
+        ch.selectedIndex = 0;
+        audio.playSfx('ui_confirm');
+        hud.choice = null;
+        ch.onSelect(0);
+        return true;
+      }
+      if (e.code === 'Digit2' && ch.options.length > 1) {
+        ch.selectedIndex = 1;
+        audio.playSfx('ui_confirm');
+        hud.choice = null;
+        ch.onSelect(1);
+        return true;
+      }
+      if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyE') {
+        const idx = ch.selectedIndex;
+        audio.playSfx('ui_confirm');
+        hud.choice = null;
+        ch.onSelect(idx);
+        return true;
+      }
+      return true;
+    },
+    pointer(ev) {
+      if (!hud.choice || ev.kind !== 'down') return false;
+      return hud.handleChoiceClick(ev.x, ev.y);
+    },
+  }, 2);
+
   // 1. 권/장 선택 오버레이 [Tab]
   panels.addKey({
     get open() { return hud.chapterSelect.open; },
@@ -406,7 +465,7 @@ export function createGame(): void {
 
   bindInput(window, {
     hud, keys, panels, click,
-    panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open,
+    panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open || !!hud.choice,
     transitioning: () => false,
     aim: () => aimed,
     onAct: (a) => {
@@ -484,10 +543,28 @@ export function createGame(): void {
     hud.markerFrom.x = p.x;
     hud.markerFrom.z = p.z;
 
-    // NPC 애니메이션 업데이트
+    // NPC 및 동물 애니메이션 업데이트
     if (st && st.urDetails) {
       for (const a of st.urDetails.actors) {
         a.updateAnimation(dt, false);
+      }
+      if (st.urDetails.animals) {
+        for (const an of st.urDetails.animals) {
+          an.update(dt, now * 0.001, p.x, p.z);
+        }
+      }
+    }
+
+    // 고대 우르 대기 중 미세 모래 먼지(Dust Motes) 방출
+    if (st && st.urDetails && !cutsceneEngine.running && !cutscene.running) {
+      if (Math.random() < 0.22) {
+        particles.emit(
+          'desert_dust',
+          p.x - 12 + Math.random() * 24,
+          0.4 + Math.random() * 2.2,
+          p.z - 12 + Math.random() * 24,
+          1,
+        );
       }
     }
 
@@ -542,5 +619,41 @@ export function createGame(): void {
     hud.draw(dt, pp);
     requestAnimationFrame(frame);
   };
+
+  const debugApi = {
+    triggerFurnace: () => {
+      cutscene.play(
+        createFurnaceMiracleSteps(sceneCtx),
+        () => {
+          hud.celebrate('풀무불의 승리', '불길 속에서 살아나온 아브람!');
+        },
+        'furnace_miracle',
+      );
+    },
+    triggerNightCalling: () => {
+      cutscene.play(
+        createNightCallingSteps(sceneCtx),
+        undefined,
+        'night_calling',
+      );
+    },
+    triggerHaranJourney: () => {
+      cutscene.play(
+        createHaranSteps(sceneCtx),
+        undefined,
+        'haran_journey',
+      );
+    },
+    advanceCutscene: () => cutscene.key(new KeyboardEvent('keydown', { code: 'Space' })),
+    loadStage: (stageId: StageId) => stageManager.loadStage(stageId),
+    sceneCtx,
+    stageManager,
+    hud,
+    cutscene,
+  };
+
+  (window as any).__AGY_DEBUG__ = debugApi;
+  (window as any).__GAME__ = debugApi;
+
   requestAnimationFrame(frame);
 }

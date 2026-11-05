@@ -1,7 +1,7 @@
 import { dev, frame, hudScale, inset, policyTextSize, snapRect, TEXT_POLICY_NONE, textGrow, textWiden, widenWidth, type Frame, type TextPolicy } from './uiScale';
 import { centerY, densityOf, drawDigits, pixelText } from './pixelText';
 import type { CaptionState } from '../systems/caption';
-import { ACCENT, CREAM, INK, INK_SOFT, INK_WARM, OUTLINE, PAPER, PAPER_SHADOW, WOOD, WOOD_LIGHT } from './theme';
+import { ACCENT, ACCENT_LIGHT, CREAM, INK, INK_SOFT, INK_WARM, OUTLINE, PAPER, PAPER_LIGHT, PAPER_SHADOW, RULE, WOOD, WOOD_LIGHT } from './theme';
 import { wrapLines, wrapParagraphs } from './wrap';
 import { tr } from '../i18n/tr';
 import { CATALOG } from '../systems/story';
@@ -12,6 +12,25 @@ export interface ActiveDialogue {
   life: number;
 }
 
+export interface GoalProgress {
+  current: number;
+  total: number;
+  label?: string;
+}
+
+export interface DialogueOption {
+  text: string;
+  badge?: string;
+  badgeColor?: string;
+}
+
+export interface DialogueChoice {
+  prompt: string;
+  options: DialogueOption[];
+  selectedIndex: number;
+  onSelect: (index: number) => void;
+}
+
 /** 풍경을 덜 가리면서 읽을 수 있는 할 일 글자 크기 */
 const GOAL_PX = 12;
 import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
@@ -19,8 +38,8 @@ import { touchClusterTopCss, touchSideClearCss } from './touchControls';
 import { TOAST_LINE_H, TOAST_H, TOAST_GAP, toastCenterX, toastHeight, toastSlideY, toastSpan } from './toastLayout';
 
 
-/** 할 일 패널 글 최대 줄 수 (핵심 줄 + 부가 줄: 방주 재료의 획득처까지 보이도록 4줄) */
-const GOAL_MAX_LINES = 4;
+/** 할 일 패널 글 최대 줄 수 (핵심 줄 + 세부 목표 + 획득처) */
+const GOAL_MAX_LINES = 6;
 /** 터치 기기 왼쪽 위 도움말 DOM 단추의 폭 (CSS px, 안전 영역 여백 안쪽부터. 알림이 그 오른쪽부터 시작) */
 const TOUCH_GUIDE_BTN_CSS = 124;
 /** 할 일 완료 띠 높이 (UI 좌표) */
@@ -90,6 +109,9 @@ export class Hud {
   caption: CaptionState | null = null;
   /** 대화 패널 */
   dialogue: { speaker: string; text: string; portrait: string | null } | null = null;
+  /** 인터랙티브 대화 2지선다 선택지 패널 */
+  choice: DialogueChoice | null = null;
+  private choiceOptionRects: { x: number; y: number; w: number; h: number }[] = [];
   /** 캐릭터 아래 활성 대사창 (크고 또렷하게 표시) */
   activeDialogue: ActiveDialogue | null = null;
   /** 시네마틱 챕터 타이틀 */
@@ -100,8 +122,12 @@ export class Hud {
   pauseMenu = { open: false, selectedItem: 0 };
   /** 시계 패널의 날짜 대신 쓸 글 (방주 안: "비 n일째") */
   dayOverride: string | null = null;
-  /** 지금 할 일 (시계 아래 작은 패널). main.ts의 objective()가 매 프레임 채움 */
+  /** 지금 할 일 (우상단 퀘스트 패널). */
   goal: string | null = null;
+  /** 목표 카테고리 (우상단 퀘스트 패널 헤더: 예: "주요 임무", "제1권 · 갈대아 우르") */
+  goalCategory: string | null = null;
+  /** 목표 진행도 (우상단 퀘스트 패널 진행바 및 수치) */
+  goalProgress: GoalProgress | null = null;
   /** 좌상단 고대 메소포타미아 미니맵 */
   minimap = {
     visible: true,
@@ -466,6 +492,7 @@ export class Hud {
     if (this.cinematicTitle) this.drawCinematicTitle(this.cinematicTitle);
     this.drawDialogue(dt);
     if (this.dialogue) this.drawDialoguePanel(this.dialogue);
+    if (this.choice) this.drawChoicePanel(this.choice);
     if (this.chapterSelect.open) this.drawChapterSelect();
     if (this.pauseMenu.open) this.drawPauseMenu();
   }
@@ -639,6 +666,108 @@ export class Hud {
     // 다음 대사 넘기기 힌트
     const advanceHint = this.txt('▼ Enter / 클릭', 10, INK_SOFT);
     this.put(advanceHint, x + panelW - this.tw(advanceHint) - 16, y + panelH - 18);
+  }
+
+  showChoice(prompt: string, options: DialogueOption[], onSelect: (index: number) => void): void {
+    this.choice = {
+      prompt,
+      options,
+      selectedIndex: 0,
+      onSelect,
+    };
+  }
+
+  handleChoiceClick(x: number, y: number): boolean {
+    if (!this.choice) return false;
+    for (let i = 0; i < this.choiceOptionRects.length; i++) {
+      const r = this.choiceOptionRects[i];
+      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+        this.choice.selectedIndex = i;
+        const cb = this.choice.onSelect;
+        this.choice = null;
+        cb(i);
+        return true;
+      }
+    }
+    return true; // 모달 바깥 클릭 시에도 월드 이동 삼킴
+  }
+
+  private drawChoicePanel(ch: DialogueChoice): void {
+    const g = this.ctx;
+    const e = this.edge;
+    this.choiceOptionRects = [];
+
+    const optH = 44;
+    const headerH = 32;
+    const footerH = 20;
+    const panelW = Math.min(580, Math.round(this.w * 0.94));
+    const panelH = headerH + ch.options.length * optH + footerH + 8;
+    const x = Math.round((this.w - panelW) / 2);
+    // 대사창 바로 위에 가지런히 배치
+    const y = Math.max(16, this.h - panelH - (this.dialogue ? 116 : 28) - e.bottom);
+
+    this.panel(x, y, panelW, panelH);
+
+    // 제목/상황 프롬프트 바
+    const pTitle = this.txt(ch.prompt || '아브람의 대답 선택', 11, '#ffffff');
+    const bw = Math.round(this.tw(pTitle)) + 20;
+    const bh = 22;
+    const bx = x + 14;
+    const by = y - 11;
+    const f = this.frame(bx, by, bw, bh);
+    this.fillIn(OUTLINE, f, 1, 0, 1, 0);
+    this.fillIn(OUTLINE, f, 0, 1, 0, 1);
+    this.fillIn('#4a2e1b', f, 1, 1, 1, 1);
+    this.put(pTitle, bx + 10, centerY(pTitle, by, by + bh - 1));
+
+    // 선택지 리스트
+    const startY = y + headerH;
+    ch.options.forEach((opt, idx) => {
+      const isSel = idx === ch.selectedIndex;
+      const oy = startY + idx * optH;
+      const ox = x + 14;
+      const ow = panelW - 28;
+      const oh = optH - 6;
+
+      this.choiceOptionRects.push({ x: ox, y: oy, w: ow, h: oh });
+
+      // 카드 배경
+      g.fillStyle = isSel ? '#fff7e4' : '#ede2ce';
+      g.fillRect(ox, oy, ow, oh);
+
+      // 테두리
+      g.strokeStyle = isSel ? '#d48236' : '#c8b69c';
+      g.lineWidth = isSel ? 2 : 1;
+      g.strokeRect(ox, oy, ow, oh);
+
+      // 선택 인디케이터
+      if (isSel) {
+        g.fillStyle = '#d48236';
+        g.fillRect(ox, oy, 4, oh);
+      }
+
+      // 뱃지 (예: [미드라시 풍자] / [성경적 직언])
+      let textOffsetX = ox + (isSel ? 16 : 12);
+      if (opt.badge) {
+        const badgeColor = opt.badgeColor || (idx === 0 ? '#b85422' : '#28629e');
+        const bText = this.txt(opt.badge, 10, '#ffffff');
+        const bW = Math.round(this.tw(bText)) + 12;
+        const bH = 18;
+        const bY = oy + Math.round((oh - bH) / 2);
+        g.fillStyle = badgeColor;
+        g.fillRect(textOffsetX, bY, bW, bH);
+        this.put(bText, textOffsetX + 6, bY + 3);
+        textOffsetX += bW + 8;
+      }
+
+      // 옵션 본문
+      const optText = this.txt(opt.text, 12, isSel ? '#2a1a10' : INK);
+      this.put(optText, textOffsetX, oy + Math.round((oh - 14) / 2));
+    });
+
+    // 하단 키 안내
+    const hintText = this.txt('[↑/↓] 선택  ·  [1, 2] 단축키  ·  [Enter / 클릭] 결정', 10, INK_SOFT);
+    this.put(hintText, x + Math.round((panelW - this.tw(hintText)) / 2), y + panelH - 17);
   }
 
   private drawChapterSelect(): void {
@@ -832,62 +961,176 @@ export class Hud {
 
 
 
-  /** 목표: 오른쪽 위, 은 조각 아래. 글 길이에 맞춰 폭을 정하되 화면 폭의 55%(최대 360)를 넘으면 세 줄까지 줄바꿈 (넘치면 …) */
+  /** 목표: 오른쪽 위 퀘스트 패널. 카테고리 헤더, 체크리스트, 진행바, 안내선 및 골드 플래시 지원 */
   private goalPanel(text: string, y0: number) {
-    const lab = this.txt('할 일', 10, INK_SOFT);
-    // 줄 높이는 글자 크기를 따라감 (기본: 할 일 15 · 안내 13, 글 시작 16)
-    const top = 16 + this.grow(10), LH = GOAL_PX + 3 + this.grow(GOAL_PX), HL = 13 + this.grow(10);
-    const height = (n: number, m: number) => top + 6 + n * LH + m * HL;
-    const base = Math.max(120, Math.min(this.wide(310), Math.round(this.w * 0.43)) - 18);
-    // 터치: 오른쪽 아래 단추 무리 위에서 멈춤 (글자가 커져 줄이 늘면 패널이 단추 밑으로 들어가 읽을 수 없으므로)
+    const catText = this.goalCategory ? this.goalCategory : '주요 임무';
+    const lab = this.txt(catText, 10, '#8a5a36');
+    const top = 22 + this.grow(10), LH = GOAL_PX + 4 + this.grow(GOAL_PX), HL = 13 + this.grow(10);
+
+    // 자동 진행도 감지 또는 명시적 goalProgress
+    const pMatch = text.match(/\((\d+)\s*\/\s*(\d+)\)/);
+    const prog = this.goalProgress || (pMatch ? { current: parseInt(pMatch[1], 10), total: parseInt(pMatch[2], 10) } : null);
+    const hasProg = !!(prog && prog.total > 0);
+    const progH = hasProg ? 16 : 0;
+
+    const height = (n: number, m: number) => top + 4 + n * LH + progH + (m > 0 ? m * HL + 3 : 0) + 4;
+    const base = Math.max(160, Math.min(this.wide(320), Math.round(this.w * 0.44)) - 18);
     const floor = this.touch ? this.h - this.edge.bottom - Math.ceil(touchClusterTopCss(this.cssH) / this.cssScale) - 4 : Infinity;
     const translatedGoal = tr(text), translatedHint = this.hint ? tr(this.hint) : '';
-    const key = `${base}|${floor}|${this.textRev}|${y0}`;
+    const progKey = prog ? `${prog.current}/${prog.total}` : '';
+    const key = `${base}|${floor}|${this.textRev}|${y0}|${catText}|${progKey}`;
+
     if (translatedGoal !== this.goalSrc || translatedHint !== this.hintSrc || key !== this.goalKey) {
       this.goalSrc = translatedGoal; this.hintSrc = translatedHint; this.goalKey = key;
       const lay = (maxText: number, goalMax: number) => {
         const goal = wrapParagraphs(text, maxText, (s) => this.tw(this.txt(s, GOAL_PX, INK)), goalMax);
-        // 안내는 '\n' 으로 나눈 줄마다 폭(할 일 패널과 같은 한도)을 넘으면 최대 2줄로 줄바꿈
         const hint = translatedHint ? translatedHint.split('\n').flatMap((l) => wrapLines(l, maxText, (s) => this.tw(this.txt(s, 10, INK_WARM)), 2)) : [];
         return { goal, hint };
       };
       const avail = floor - y0;
       let r = lay(base, GOAL_MAX_LINES);
       if (height(r.goal.length, r.hint.length) > avail) {
-        // 넘치면 먼저 패널을 넓혀 줄 수를 줄이고, 그래도 넘치면 안내 줄 → 할 일 줄 순으로 덜어 냄 (할 일은 적어도 한 줄)
         const wider = Math.max(base, Math.min(Math.round(this.w * 0.55), this.wide(400)) - 18);
         if (wider > base) r = lay(wider, GOAL_MAX_LINES);
-        const fitGoal = Math.max(1, Math.floor((avail - top - 6) / LH));
+        const fitGoal = Math.max(1, Math.floor((avail - top - 6 - progH) / LH));
         if (r.goal.length > fitGoal) r = { goal: wrapParagraphs(text, wider, (s) => this.tw(this.txt(s, GOAL_PX, INK)), fitGoal), hint: r.hint };
         const fitHint = Math.max(0, Math.floor((avail - height(r.goal.length, 0)) / HL));
         if (r.hint.length > fitHint) r.hint = r.hint.slice(0, fitHint);
       }
       this.goalLines = r.goal; this.hintLines = r.hint;
     }
+
     const gs = this.gsBuf;
     gs.length = 0;
-    let wide = 0;
-    for (const s of this.goalLines) { const c = this.txt(s, GOAL_PX, INK); gs.push(c); wide = Math.max(wide, this.tw(c)); }
+    let wide = this.tw(lab) + 20;
+
+    for (let i = 0; i < this.goalLines.length; i++) {
+      const s = this.goalLines[i];
+      const isCheck = /^([✓]|\[x\])/.test(s);
+      const isBullet = /^([▪\-•]|\[ \])/.test(s);
+      const clean = s.replace(/^([✓▪\-•]|\[[ x]\])\s*/, '');
+      const col = isCheck ? INK_SOFT : INK;
+      const c = this.txt(clean, GOAL_PX, col);
+      gs.push(c);
+      const lineW = this.tw(c) + (isCheck || isBullet ? 16 : 0);
+      wide = Math.max(wide, lineW);
+    }
+
     const hs = this.hsBuf;
     hs.length = 0;
-    for (const s of this.hintLines) { const h = this.txt(s, 10, INK_WARM); hs.push(h); wide = Math.max(wide, this.tw(h)); }
-    const extra = (gs.length - 1) * LH;
-    const W = Math.max(78, Math.round(wide) + 18), H = height(gs.length, hs.length), x0 = this.w - W - 8 - this.edge.right;
+    for (const s of this.hintLines) {
+      const h = this.txt(s, 10, INK_WARM);
+      hs.push(h);
+      wide = Math.max(wide, this.tw(h) + 12);
+    }
+
+    if (hasProg && prog) {
+      const pLabel = prog.label ?? `${prog.current}/${prog.total}`;
+      const pText = this.txt(pLabel, 9, INK_WARM);
+      wide = Math.max(wide, this.tw(pText) + 80);
+    }
+
+    const W = Math.max(120, Math.round(wide) + 22), H = height(gs.length, hs.length), x0 = this.w - W - 8 - this.edge.right;
     this.toastRight = Math.min(this.toastRight, x0);
     this.panel(x0, y0, W, H);
+
+    const g = this.ctx;
+
+    // 진행 골드 플래시 (목표 갱신/진행 시 테두리 발광)
     if (this.goalFlash > 0) {
-      // 진행이 한 칸 나아갔을 때 금빛 테두리가 잠깐 빛남
-      const g = this.ctx;
+      g.save();
       g.globalAlpha = Math.min(1, this.goalFlash);
       g.fillStyle = '#ffd23a';
-      g.fillRect(x0 - 2, y0 - 2, W + 4, 2); g.fillRect(x0 - 2, y0 + H, W + 4, 2); g.fillRect(x0 - 2, y0, 2, H); g.fillRect(x0 + W, y0, 2, H);
-      g.globalAlpha = 1;
+      g.fillRect(x0 - 2, y0 - 2, W + 4, 2);
+      g.fillRect(x0 - 2, y0 + H, W + 4, 2);
+      g.fillRect(x0 - 2, y0, 2, H);
+      g.fillRect(x0 + W, y0, 2, H);
+      if (this.goalFlash > 0.4) {
+        g.globalAlpha = (this.goalFlash - 0.4) * 0.7;
+        g.fillStyle = '#fff6b0';
+        g.fillRect(x0 - 3, y0 - 3, W + 6, 1);
+        g.fillRect(x0 - 3, y0 + H + 2, W + 6, 1);
+        g.fillRect(x0 - 3, y0 - 2, 1, H + 4);
+        g.fillRect(x0 + W + 2, y0 - 2, 1, H + 4);
+      }
+      g.restore();
     }
+
+    // 헤더 카테고리 텍스트
     this.put(lab, x0 + 9, y0 + 5);
-    for (let i = 0; i < gs.length; i++) this.put(gs[i], x0 + 9, centerY(gs[i], y0 + top + i * LH, y0 + top + (i + 1) * LH));
+
+    // 헤더 장식 구분선
+    g.fillStyle = RULE;
+    g.fillRect(x0 + 8, y0 + 17, W - 16, 1);
+    g.fillStyle = PAPER_LIGHT;
+    g.fillRect(x0 + 8, y0 + 18, W - 16, 1);
+    g.fillStyle = '#e8a020';
+    g.fillRect(x0 + 8, y0 + 16, 3, 3);
+
+    // 목표 텍스트 및 서브태스크 체크박스
+    for (let i = 0; i < this.goalLines.length; i++) {
+      const raw = this.goalLines[i];
+      const isCheck = /^([✓]|\[x\])/.test(raw);
+      const isBullet = /^([▪\-•]|\[ \])/.test(raw);
+      const cy = y0 + top + i * LH;
+
+      if (isCheck) {
+        // 녹색 완료 체크박스 [✓]
+        g.fillStyle = OUTLINE; g.fillRect(x0 + 9, cy + 3, 8, 8);
+        g.fillStyle = '#4a8e2e'; g.fillRect(x0 + 10, cy + 4, 6, 6);
+        g.fillStyle = '#ffffff';
+        g.fillRect(x0 + 11, cy + 6, 1, 2);
+        g.fillRect(x0 + 12, cy + 7, 2, 1);
+        g.fillRect(x0 + 14, cy + 4, 1, 3);
+        this.put(gs[i], x0 + 21, centerY(gs[i], cy, cy + LH));
+      } else if (isBullet) {
+        // 앰버 진행중 체크박스 [▪]
+        g.fillStyle = OUTLINE; g.fillRect(x0 + 9, cy + 3, 8, 8);
+        g.fillStyle = '#fff4d8'; g.fillRect(x0 + 10, cy + 4, 6, 6);
+        g.fillStyle = '#d49020'; g.fillRect(x0 + 12, cy + 6, 2, 2);
+        this.put(gs[i], x0 + 21, centerY(gs[i], cy, cy + LH));
+      } else {
+        this.put(gs[i], x0 + 9, centerY(gs[i], cy, cy + LH));
+      }
+    }
+
+    let nextY = y0 + top + gs.length * LH;
+
+    // 진행도 바 (Progress Bar)
+    if (hasProg && prog) {
+      const barX = x0 + 9, barW = W - 18, barH = 5;
+      const barY = nextY + 7;
+
+      // 수치 레이블
+      const pctNum = Math.round(Math.min(1, prog.current / prog.total) * 100);
+      const progStr = prog.label ?? `${prog.current}/${prog.total} (${pctNum}%)`;
+      const progTxt = this.txt(progStr, 9, INK_WARM);
+      this.put(progTxt, x0 + W - 9 - this.tw(progTxt), nextY + 1);
+
+      // 바 테두리 및 홈
+      g.fillStyle = OUTLINE; g.fillRect(barX, barY, barW, barH);
+      g.fillStyle = PAPER_SHADOW; g.fillRect(barX + 1, barY + 1, barW - 2, barH - 2);
+
+      // 바 채우기
+      const pct = Math.max(0, Math.min(1, prog.current / prog.total));
+      const fillW = Math.round((barW - 2) * pct);
+      if (fillW > 0) {
+        const isDone = prog.current >= prog.total;
+        g.fillStyle = isDone ? '#4a8e2e' : ACCENT;
+        g.fillRect(barX + 1, barY + 1, fillW, barH - 2);
+        g.fillStyle = isDone ? '#76c448' : ACCENT_LIGHT;
+        g.fillRect(barX + 1, barY + 1, fillW, 1);
+      }
+
+      nextY += 16;
+    }
+
+    // 하단 조작/장소 힌트 (안내)
     for (let i = 0; i < hs.length; i++) {
-      const hy = y0 + top + 2 + LH + extra + i * HL;
-      this.put(hs[i], x0 + 9, centerY(hs[i], hy, hy + HL - 1));
+      const hy = nextY + 1 + i * HL;
+      g.fillStyle = '#e8a020';
+      g.fillRect(x0 + 9, hy + 4, 3, 3);
+      this.put(hs[i], x0 + 16, centerY(hs[i], hy, hy + HL - 1));
     }
   }
 

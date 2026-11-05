@@ -2,12 +2,26 @@ import * as THREE from 'three';
 import { VoxelBuilder } from '../voxel';
 import { PAL, PAL_REGION } from '../palette';
 
-/** 우상 4종 및 파편 빌더 */
+export function buildOfferingBowl(): THREE.Group {
+  const grp = new THREE.Group();
+  const b = new VoxelBuilder(9, false);
+  // 점토 사발 바닥 및 테두리 (미드라시 여인이 바친 고운 밀가루 그릇)
+  b.box(0, 0.05, 0, 0.45, 0.1, 0.45, 0xa6603a, { tex: 'brick' });
+  b.box(0, 0.14, 0, 0.52, 0.12, 0.52, 0x985430, { tex: 'brick' });
+  // 고운 흰 밀가루 소복한 둔덕
+  b.box(0, 0.18, 0, 0.38, 0.08, 0.38, 0xf4eee2, { tex: 'plain' });
+  b.box(0, 0.23, 0, 0.24, 0.06, 0.24, 0xfffcf5, { tex: 'plain' });
+  grp.add(b.build());
+  return grp;
+}
+
+/** 우상 4종 및 파편, 미드라시 제물 그릇 빌더 */
 export function buildIdols(): {
   smallIdols: THREE.Group[];
   largeIdol: THREE.Group;
   axeMesh: THREE.Group;
   brokenRubble: THREE.Group;
+  offeringBowl: THREE.Group;
 } {
   const smallIdols: THREE.Group[] = [];
 
@@ -64,8 +78,9 @@ export function buildIdols(): {
     rubbleBuilder.box(rx, 0.06, rz, 0.2 + Math.random() * 0.2, 0.12, 0.2 + Math.random() * 0.2, PAL.stone[1], { tex: 'stone' });
   }
   const brokenRubble = rubbleBuilder.build();
+  const offeringBowl = buildOfferingBowl();
 
-  return { smallIdols, largeIdol: largeGroup, axeMesh, brokenRubble };
+  return { smallIdols, largeIdol: largeGroup, axeMesh, brokenRubble, offeringBowl };
 }
 
 /** 우르 풀무불 거대 화로 */

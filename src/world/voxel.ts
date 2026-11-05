@@ -34,7 +34,7 @@ export function materialFor(key: TexKey): THREE.Material {
       roughness: key === 'metal' ? 0.48 : key === 'wetStone' ? 0.5 : cloth ? 1 : key === 'wood' ? 0.9 : 0.97,
       bumpMap: getRelief(key), bumpScale: cloth ? 0.008 : key === 'metal' ? 0.006 : key === 'wood' ? 0.018 : 0.024,
     }) : new THREE.MeshLambertMaterial({ map: getTexture(key), vertexColors: true });
-    if (key === 'canopy') addFoliageWind(m);
+    if (key === 'canopy' || key.startsWith('stripe') || key === 'leafVine') addFoliageWind(m);
     materials.set(key, m);
   }
   return m;

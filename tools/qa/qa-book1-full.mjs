@@ -82,21 +82,29 @@ async function runQa() {
   await page.screenshot({ path: path.join(QA_DIR, '08_talk_sarai.png') });
   console.log('  ✓ 캡처 8: 08_talk_sarai.png (사래와의 대화 토스트)');
 
-  // 5. 공방 안으로 들어가서 작은 우상 3개 조사
+  // 5. 공방 안으로 들어가서 작은 우상 3개 조사 (도어 x: 0 통과)
+  await page.keyboard.down('ShiftLeft');
   await page.keyboard.down('KeyA');
-  await sleep(2400);
+  await sleep(2000);
   await page.keyboard.up('KeyA');
+  await page.keyboard.up('ShiftLeft');
+  await sleep(200);
+
+  // 문을 통과해 공방 내부로 직진 후 작업대로 이동
   await page.keyboard.down('KeyW');
-  await sleep(1800);
+  await sleep(1700);
   await page.keyboard.up('KeyW');
-  await sleep(500);
+  await page.keyboard.down('KeyA');
+  await sleep(600);
+  await page.keyboard.up('KeyA');
+  await sleep(400);
 
   // 우상 1번째 조사
   await page.keyboard.press('KeyE');
-  await sleep(400);
+  await sleep(450);
   // 우상 2번째 조사
   await page.keyboard.press('KeyE');
-  await sleep(400);
+  await sleep(450);
   // 우상 3번째 조사
   await page.keyboard.press('KeyE');
   await sleep(600);

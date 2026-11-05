@@ -7,8 +7,14 @@ import { buildZiggurat, buildWorkshopDetails, buildRooftopTerrace } from '../pro
 import { buildIdols } from '../props/biblicalProps';
 import { LAMPS } from '../../systems/lighting';
 import { Actor } from '../../entities/actor';
+import { Pigeon, KidGoat, Camel } from '../../entities/animals';
 import { Px, TD, ditherPick } from '../textures';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+
+export interface UrAnimal {
+  root: THREE.Group;
+  update(dt: number, time: number, playerX: number, playerZ: number): void;
+}
 
 export interface UrStage {
   root: THREE.Group;
@@ -20,9 +26,11 @@ export interface UrStage {
     largeIdol: THREE.Group;
     axeMesh: THREE.Group;
     brokenRubble: THREE.Group;
+    offeringBowl: THREE.Group;
   };
   rooftopSpot: { x: number; y: number; z: number };
   actors: Actor[];
+  animals: UrAnimal[];
 }
 
 const UR_HALF = 40; // 80x80 메인 시가지 고해상도 지면 (TD=16 기준 1280x1280 노아 정통 고해상도 픽셀 지면!)
@@ -248,6 +256,10 @@ export function buildUrStage(): UrStage {
   root.add(idols.largeIdol);
   col.addBox(WX, WZ - 2.2, 1.6, 1.4);
 
+  // 미드라시 제물 그릇 (공방 우측 선반에 진열)
+  idols.offeringBowl.position.set(WX + 3.8, 0.82, WZ - 1.5);
+  root.add(idols.offeringBowl);
+
   // ─────────────────────────────────────────────────────────────
   // 5. 이웃 가옥들 및 골목길 (밀도 높은 고대 도시감, 가옥-NPC 충분한 간격 확보)
   // ─────────────────────────────────────────────────────────────
@@ -388,6 +400,34 @@ export function buildUrStage(): UrStage {
   col.addCircle(4.0, 7.8, 0.45);
   actors.push(merchantActor);
 
+  // ─────────────────────────────────────────────────────────────
+  // 11. 생동감 넘치는 고대 도시 동물들 (우물가 비둘기 무리, 장터 낙타, 안채 아기 염소)
+  // ─────────────────────────────────────────────────────────────
+  const animals: UrAnimal[] = [];
+
+  // 우물가 비둘기 3마리 (플레이어가 다가가면 푸드덕 날아올라 선회)
+  const p1 = new Pigeon(-12.0, 3.2, 0);
+  const p2 = new Pigeon(-13.4, 4.0, 1);
+  const p3 = new Pigeon(-11.2, 2.7, 2);
+  animals.push(p1, p2, p3);
+  root.add(p1.root, p2.root, p3.root);
+
+  // 남쪽 장터 대상의 짐실은 낙타 (한가로운 고개 끄덕임과 되새김질)
+  const marketCamel = new Camel(5.5, 12.0, false);
+  marketCamel.root.rotation.y = -Math.PI * 0.4;
+  animals.push({
+    root: marketCamel.root,
+    update: (dt, time) => marketCamel.update(dt, time),
+  });
+  root.add(marketCamel.root);
+  col.addCircle(5.5, 12.0, 0.75);
+
+  // 안채 앞마당 귀여운 아기 염소 (꼬리 살랑거리며 아브람을 쳐다봄)
+  const yardGoat = new KidGoat(9.8, -4.8);
+  animals.push(yardGoat);
+  root.add(yardGoat.root);
+  col.addCircle(9.8, -4.8, 0.45);
+
   root.add(b.build());
 
   return {
@@ -398,5 +438,6 @@ export function buildUrStage(): UrStage {
     idols,
     rooftopSpot: { x: WX, y: 3.6, z: WZ },
     actors,
+    animals,
   };
 }
