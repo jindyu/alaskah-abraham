@@ -8,6 +8,8 @@ import {
   createNightCallingSteps,
   createFurnaceMiracleSteps,
   createHaranSteps,
+  createNimrodTrialSteps,
+  createEsauLentilStewSteps,
   type SceneContext,
 } from '../scenes/book1/book1Scenes';
 import type { Actor } from '../../entities/actor';
@@ -32,6 +34,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   // 상태 플래그
   let examinedIdols = 0;
   const talkedPeople = new Set<string>();
+  let metOldCustomer = false;
   let hasFlourBowl = false;
   let placedFlourBowl = false;
   let hasAxe = false;
@@ -209,6 +212,60 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       hud.toast('terah', null, '데라: "아들아, 오늘은 저 큰 우상 곁에 세울 작은 신상들을 손질하거라."');
       hud.goalFlash = 1.0;
       checkIntroProgress();
+    },
+  });
+
+  // 미드라시 50세 노인 손님 (창세기 라바 38:13 명장면)
+  interactions.add({
+    id: 'npc_old_customer',
+    pos: () => ({ x: -5.5, z: 1.2 }),
+    height: 1.1,
+    r: 1.8,
+    label: () => (metOldCustomer ? '돌아서는 노인 손님' : '우상 사러 온 노인 손님과 대화'),
+    act: () => {
+      audio.playSfx('ui_confirm');
+      if (metOldCustomer) {
+        hud.toast('customer', null, '노인 손님: "참으로 부끄럽도다... 어찌 하루살이 우상을 신이라 섬기려 했던가..."');
+        return;
+      }
+      hud.toast('customer', null, '노인 손님: "젊은이, 내 집안을 지켜줄 크고 영험한 신상을 하나 골라주시게."');
+      hud.showChoice(
+        '우상을 사러 온 50세 노인 손님에게 건넬 말 (창세기 라바 38:13)',
+        [
+          {
+            badge: '미드라시 일침',
+            badgeColor: '#b85422',
+            text: '1. "어르신, 연세가 어떻게 되십니까?"',
+          },
+        ],
+        () => {
+          setTimeout(() => {
+            hud.toast('customer', null, '노인 손님: "내 올해로 꼭 쉰 살이 되었소만, 그건 왜 묻는가?"');
+            setTimeout(() => {
+              hud.showChoice(
+                '노인 손님에게 건넬 아브람의 일침',
+                [
+                  {
+                    badge: '창조주 신앙',
+                    badgeColor: '#28629e',
+                    text: '1. "쉰 살이나 되신 어르신께서 어제 아버지가 빚은 하루살이 신상에 절하려 하십니까?"',
+                  },
+                ],
+                () => {
+                  metOldCustomer = true;
+                  hud.unlockCodex('old_customer');
+                  setTimeout(() => {
+                    hud.toast('customer', null, '노인 손님: "내 쉰 평생 살면서 이토록 부끄러운 일은 처음이로다... 스스로 서지도 못하는 것을 복의 근원이라 섬기려 했다니!"');
+                    hud.celebrate('미드라시 전승 완수', '우상의 헛됨을 깨달은 손님이 빈손으로 돌아갔다!', true);
+                    talkedPeople.add('old_customer');
+                    checkIntroProgress();
+                  }, 800);
+                },
+              );
+            }, 800);
+          }, 600);
+        },
+      );
     },
   });
 
@@ -448,6 +505,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       if (smashedIdols >= 3 && !placedAxeOnBigIdol) {
         placedAxeOnBigIdol = true;
         audio.playSfx('ui_confirm');
+        hud.unlockCodex('the_axe');
         if ('setHeld' in sceneCtx.player) {
           (sceneCtx.player as any).setHeld(null);
         }
@@ -468,7 +526,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
   });
 
   // ─────────────────────────────────────────────────────────────
-  // 4. 성문 회랑 & 니므롯 왕궁·풀무불·하란 이동 (Ch.5 ~ Ch.7)
+  // 4. 성문 회랑 & 니므롯 왕궁·풀무불·하란·팥죽 코다 이동 (Ch.5 ~ Ch.Coda)
   // ─────────────────────────────────────────────────────────────
   interactions.add({
     id: 'city_gate_exit',
@@ -490,19 +548,41 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       if (!furnaceTriggered) {
         furnaceTriggered = true;
         audio.playSfx('ui_confirm');
-        // 풀무불 기적 클라이맥스 연출
-        cutscene.play(createFurnaceMiracleSteps(sceneCtx), () => {
-          hud.celebrate('풀무불의 승리', '불길 속에서 살아나온 아브람!');
-        }, 'furnace_miracle');
+        // 1) 먼저 니므롯 왕궁 심문 및 신학 재판 컷신 실행
+        cutscene.play(
+          createNimrodTrialSteps(sceneCtx, () => {
+            // 2) 신학 재판 종료 후 즉시 풀무불 가마 기적 클라이맥스로 연결!
+            cutscene.play(
+              createFurnaceMiracleSteps(sceneCtx),
+              () => {
+                hud.celebrate('풀무불의 승리', '불길 속에서 살아나온 아브람!');
+              },
+              'furnace_miracle',
+            );
+          }),
+          undefined,
+          'nimrod_trial',
+        );
         return;
       }
 
-      // 하란 이동 및 데라 임종
+      // 하란 이동 및 데라 임종 -> 에서 팥죽 코다 피날레로 연결!
       audio.playSfx('ui_confirm');
-      cutscene.play(createHaranSteps(sceneCtx), () => {
-        hud.celebrate('제1권 완주', '믿음의 조상 아브람의 첫 발걸음!');
-        onBook1Complete();
-      }, 'haran_journey');
+      cutscene.play(
+        createHaranSteps(sceneCtx),
+        () => {
+          // 하란 임종 및 75세 소명 후 -> 에서와 붉은 팥죽 코다로 연결!
+          cutscene.play(
+            createEsauLentilStewSteps(sceneCtx, () => {
+              hud.celebrate('제1권 완주', '불과 팥죽 — 믿음의 조상 아브람의 첫 발걸음!');
+              onBook1Complete();
+            }),
+            undefined,
+            'esau_coda',
+          );
+        },
+        'haran_journey',
+      );
     },
   });
 }

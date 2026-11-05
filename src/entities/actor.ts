@@ -15,9 +15,12 @@ export type ActorPose =
   | 'bound'
   | 'cower'
   | 'command'
-  | 'sit_throne';
+  | 'sit_throne'
+  | 'stir_pot'
+  | 'faint_hunger'
+  | 'point_accuse';
 
-export type EmoteType = '!' | '?' | '...' | 'heart' | 'anger' | 'sweat';
+export type EmoteType = '!' | '?' | '...' | 'heart' | 'anger' | 'sweat' | 'panic' | 'resolve';
 
 export class Actor {
   readonly id: string;
@@ -278,6 +281,31 @@ export class Actor {
         this.rightArm.rotation.x = -Math.PI / 3;
         break;
 
+      case 'stir_pot':
+        this.body.position.y = 0.45;
+        this.leftLeg.rotation.x = -Math.PI / 2.2;
+        this.rightLeg.rotation.x = -Math.PI / 2.2;
+        this.leftArm.rotation.x = -Math.PI / 4;
+        this.rightArm.rotation.x = -Math.PI / 2.4;
+        this.rightArm.rotation.z = Math.PI / 6;
+        break;
+
+      case 'faint_hunger':
+        this.body.position.y = 0.35;
+        this.body.rotation.x = Math.PI / 12;
+        this.leftLeg.rotation.x = Math.PI / 3;
+        this.rightLeg.rotation.x = Math.PI / 2.5;
+        this.leftArm.rotation.x = -Math.PI / 6;
+        this.rightArm.rotation.x = -Math.PI / 6;
+        this.head.rotation.x = -Math.PI / 8; // 위를 쳐다봄
+        break;
+
+      case 'point_accuse':
+        this.rightArm.rotation.x = -Math.PI * 0.55;
+        this.rightArm.rotation.z = -Math.PI / 8;
+        this.head.rotation.x = Math.PI / 12;
+        break;
+
       case 'stand':
       case 'walk':
       default:
@@ -468,6 +496,16 @@ export class Actor {
         pb.box(0, 1.15, 0, 0.08, 0.32, 0.12, 0xc8963e, { tex: 'metal' });
         break;
 
+      case 'ladle': // 팥죽 국자
+        pb.box(0, 0, 0, 0.04, 0.6, 0.04, 0x7a5238);
+        pb.box(0, 0.28, 0.06, 0.12, 0.08, 0.12, 0x5a3a22);
+        break;
+
+      case 'bow': // 사냥용 활
+        pb.box(0, 0, 0, 0.06, 1.1, 0.06, 0x4a301e, { tex: 'wood' });
+        pb.box(0, 0, -0.06, 0.02, 1.0, 0.02, 0xdddddd);
+        break;
+
       default:
         pb.box(0, 0, 0, 0.1, 0.1, 0.1, 0xcccccc);
         break;
@@ -514,6 +552,15 @@ export class Actor {
         break;
       case 'sweat':
         bb.box(0, 0, 0.04, 0.14, 0.22, 0.04, 0x00bcd4);
+        break;
+      case 'panic':
+        bb.box(-0.08, 0.05, 0.04, 0.06, 0.2, 0.04, 0x9c27b0);
+        bb.box(0.08, 0.05, 0.04, 0.06, 0.2, 0.04, 0x9c27b0);
+        bb.box(0, -0.08, 0.04, 0.16, 0.06, 0.04, 0x9c27b0);
+        break;
+      case 'resolve':
+        bb.box(0, 0, 0.04, 0.22, 0.22, 0.04, 0xfbc02d);
+        bb.box(0, 0, 0.05, 0.12, 0.12, 0.04, 0xffeb3b);
         break;
       case '...':
       default:

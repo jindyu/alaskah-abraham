@@ -15,6 +15,8 @@ import {
 
 import { buildUrStage, type UrStage } from './stages/ur';
 import { buildUrFurnaceStage, type FurnaceStage } from './stages/furnace';
+import { buildUrPalaceStage, type UrPalaceStage } from './stages/urPalace';
+import { buildEsauCampStage, type EsauCampStage } from './stages/esauCamp';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -32,7 +34,8 @@ export type StageId =
   | 'beersheba'
   | 'moriah'
   | 'hebron_machpelah'
-  | 'nahor_well';
+  | 'nahor_well'
+  | 'esau_camp';
 
 export interface StageInfo {
   id: StageId;
@@ -46,6 +49,8 @@ export interface StageInfo {
   col?: Collision;
   urDetails?: UrStage;
   furnaceDetails?: FurnaceStage;
+  palaceDetails?: UrPalaceStage;
+  esauCampDetails?: EsauCampStage;
 }
 
 export class StageManager {
@@ -82,6 +87,15 @@ export class StageManager {
     this.currentStage = null;
   }
 
+  update(dt: number, time: number): void {
+    if (this.currentStage?.palaceDetails) {
+      this.currentStage.palaceDetails.updateAnimations(dt, time);
+    }
+    if (this.currentStage?.esauCampDetails) {
+      this.currentStage.esauCampDetails.updateAnimations(dt, time);
+    }
+  }
+
   private buildStage(id: StageId): StageInfo {
     switch (id) {
       case 'ur_workshop': return this.buildUrWorkshop();
@@ -97,6 +111,7 @@ export class StageManager {
       case 'moriah': return this.buildMoriah();
       case 'hebron_machpelah': return this.buildHebronMachpelah();
       case 'nahor_well': return this.buildNahorWell();
+      case 'esau_camp': return this.buildEsauCamp();
       default: return this.buildUrWorkshop();
     }
   }
@@ -118,33 +133,37 @@ export class StageManager {
     };
   }
 
-  // ── 2. 우르 니므롯 궁정 ──
+  // ── 2. 우르 니므롯 궁정 (고밀도 복셀 왕궁) ──
   private buildUrPalace(): StageInfo {
-    const root = new THREE.Group();
-    const pb = new VoxelBuilder(9, false);
-    const reg = PAL_REGION.MESOPOTAMIA;
-
-    pb.box(0, -0.25, 0, 26, 0.5, 26, 0x4a3222, { tex: 'brick' });
-    // 이슈타르 청유리 기둥 4쌍
-    for (let z = -8; z <= 6; z += 4.5) {
-      pb.box(-5, 2.2, z, 0.9, 4.4, 0.9, reg.ishtarBlue, { tex: 'stone' });
-      pb.box(5, 2.2, z, 0.9, 4.4, 0.9, reg.ishtarBlue, { tex: 'stone' });
-    }
-    // 니므롯 왕좌 단
-    pb.box(0, 0.6, -9, 4.4, 1.2, 3.0, 0xd4a024);
-    pb.box(0, 1.6, -9.8, 2.4, 2.0, 0.8, 0x8a2018);
-
-    root.add(pb.build());
-
+    const p = buildUrPalaceStage();
     return {
       id: 'ur_palace',
       name: '우르 니므롯 왕궁',
       region: 'MESOPOTAMIA',
-      spawn: { x: 0, z: 4 },
-      bounds: { minX: -7, maxX: 7, minZ: -9, maxZ: 9 },
-      root,
+      spawn: p.spawn,
+      bounds: p.bounds,
+      root: p.root,
+      col: p.col,
+      palaceDetails: p,
       bgm: 'bgm_nimrod_empire',
       ambience: 'amb_palace',
+    };
+  }
+
+  // ── 3. 가나안 헤브론 장막 (붉은 팥죽 코다) ──
+  private buildEsauCamp(): StageInfo {
+    const c = buildEsauCampStage();
+    return {
+      id: 'esau_camp',
+      name: '가나안 헤브론 장막 (붉은 팥죽)',
+      region: 'CANAAN',
+      spawn: c.spawn,
+      bounds: c.bounds,
+      root: c.root,
+      col: c.col,
+      esauCampDetails: c,
+      bgm: 'bgm_covenant_stars',
+      ambience: 'amb_field',
     };
   }
 

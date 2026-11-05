@@ -32,6 +32,7 @@ export interface SceneContext {
 export function createBook1IntroSteps(c: SceneContext): Step[] {
   return [
     { do: () => {
+      c.hud.unlockCodex('babel_nimrod');
       c.hud.cinematicTitle = '제1권 · 불과 팥죽\n갈대아 우르와 니므롯';
       c.renderer.toVista();
       c.setCameraFocus(-36, 6.0, -28); // 원경 거대 지구라트 조망
@@ -69,6 +70,7 @@ export function createNightCallingSteps(c: SceneContext): Step[] {
   return [
     // 1막: 해질녘 옥상 오름 (붉은 석양과 지구라트 원경)
     { do: () => {
+      c.hud.unlockCodex('ur_night_call');
       c.audio.playBgm('bgm_divine_call');
       c.hud.cinematicTitle = '하나님의 첫 부르심\n사도행전 7:2-3';
       c.renderer.setTilt(26);
@@ -389,9 +391,21 @@ export function createFurnaceMiracleSteps(c: SceneContext): Step[] {
       angelActor?.setPose('offer');
       c.audio.playSfx('fx_covenant_chime');
       furnaceStage?.garden.show();
+      c.hud.unlockCodex('furnace_roses');
+      if (furnaceStage?.garden.group) {
+        furnaceStage.garden.group.scale.set(1, 0.05, 1);
+      }
       c.particles?.emit('miracle_dew', 0, 1.4, -3.5, 45);
       c.particles?.emit('rose_petals', 0, 4.0, -3.5, 50);
     } },
+    {
+      animate: 1.5,
+      frame: (p) => {
+        if (furnaceStage?.garden.group) {
+          furnaceStage.garden.group.scale.set(1, Math.min(1, Math.max(0.05, p)), 1);
+        }
+      },
+    },
     { caption: '천사가 손을 펴자 맹렬하던 불길이 시원한 아침 이슬바람으로 바뀌었다!', hold: 4.5 },
     { caption: '타오르던 숯불은 푸른 풀밭과 향기로운 장미꽃 동산으로 피어났고, 맑은 시냇물이 솟아올랐다.', hold: 4.8 },
     {
@@ -582,6 +596,7 @@ export function createHaranSteps(c: SceneContext): Step[] {
       c.stageManager?.loadStage('haran');
       c.audio.playBgm('bgm_lament');
       c.hud.cinematicTitle = '하란의 장막\n아버지 데라의 안식 (창 11:32)';
+      c.hud.unlockCodex('terah_peace');
       c.renderer.setTilt(26);
       c.setCameraFocus(0, 1.2, 0);
 
@@ -666,8 +681,223 @@ export function createHaranSteps(c: SceneContext): Step[] {
       if (c.player && 'root' in c.player) {
         c.player.root.visible = true;
       }
-      c.hud.cinematicTitle = '제1권 완주\n제2권 [약속의 땅]으로 이어집니다';
-      c.hud.celebrate('제1권 완주', '믿음의 조상 아브람의 첫 발걸음!');
+      c.hud.cinematicTitle = '하란의 안식과 대소명\n약속의 땅으로의 결단';
+      c.hud.celebrate('하란 여정 완료', '약속의 땅으로 부르심을 받은 아브람!');
+    } },
+  ];
+}
+
+/** 5. 니므롯 왕궁 심문과 4단계 신학 논쟁 (Ch.5 신학 재판) */
+export function createNimrodTrialSteps(c: SceneContext, onTrialComplete?: () => void): Step[] {
+  const cutsceneActors: Actor[] = [];
+  let cutsceneGroup: THREE.Group | null = null;
+  let nimrodActor: Actor | null = null;
+  let abramActor: Actor | null = null;
+  let guard1: Actor | null = null;
+  let guard2: Actor | null = null;
+  let terahActor: Actor | null = null;
+
+  const cleanupActors = () => {
+    if (cutsceneGroup && c.scene) {
+      c.scene.remove(cutsceneGroup);
+    }
+    for (const a of cutsceneActors) {
+      a.dispose();
+    }
+    cutsceneActors.length = 0;
+    cutsceneGroup = null;
+  };
+
+  return [
+    // 1막: 바벨 이슈타르 왕궁 진입
+    { do: () => {
+      c.stageManager?.loadStage('ur_palace');
+      c.player.root.visible = false;
+
+      cutsceneGroup = new THREE.Group();
+      cutsceneGroup.name = 'nimrod_palace_actors';
+      c.scene?.add(cutsceneGroup);
+
+      // 니므롯 왕좌에 앉음
+      nimrodActor = new Actor('nimrod', 'nimrod');
+      nimrodActor.root.position.set(0, 1.4, -10.5);
+      nimrodActor.face(0);
+      nimrodActor.attachProp('scepter');
+      nimrodActor.setPose('sit_throne');
+
+      guard1 = new Actor('g1', 'guard');
+      guard1.root.position.set(-2.8, 0, -8.0);
+      guard1.face(0);
+      guard1.attachProp('spear');
+
+      guard2 = new Actor('g2', 'guard');
+      guard2.root.position.set(2.8, 0, -8.0);
+      guard2.face(0);
+      guard2.attachProp('spear');
+
+      abramActor = new Actor('p_abram', 'abram_young');
+      abramActor.root.position.set(0, 0, -2.5);
+      abramActor.face(Math.PI);
+      abramActor.setPose('bound');
+
+      terahActor = new Actor('p_terah', 'terah');
+      terahActor.root.position.set(-2.2, 0, -1.8);
+      terahActor.face(Math.PI * 0.8);
+      terahActor.setPose('cower');
+
+      const actors = [nimrodActor, guard1, guard2, abramActor, terahActor];
+      for (const a of actors) {
+        cutsceneGroup.add(a.root);
+        cutsceneActors.push(a);
+      }
+
+      c.renderer.setTilt(24);
+      c.setCameraFocus(0, 2.2, -10.0);
+      c.audio.playBgm('bgm_nimrod_empire');
+      c.audio.playSfx('war_drum_stinger');
+      c.hud.cinematicTitle = '니므롯의 궁정과 신학 재판\n창세기 라바 38:13 / 탈무드 페사힘 118a';
+      c.hud.unlockCodex('nimrod_court');
+    } },
+    { wait: 1.2 },
+    { do: () => { c.hud.cinematicTitle = null; } },
+    { caption: '우상을 부순 죄목으로 체포된 아브람은, 바벨의 황제 니므롯의 푸른 유약벽돌 궁정으로 끌려왔다.', hold: 4.5 },
+    { do: () => {
+      nimrodActor?.showBubble('anger');
+      c.setCameraFocus(0, 2.8, -10.5);
+    } },
+    { caption: '니므롯: "갈대아 우르의 신들을 깨뜨린 오만한 자여! 너는 세상의 모든 것을 삼키는 거룩한 불을 경배하라!"', hold: 5.2 },
+    { do: () => {
+      c.setCameraFocus(0, 1.2, -2.5);
+      abramActor?.face(Math.PI);
+    } },
+    { caption: '아브람: "불을 꺼뜨리는 물을 섬기오리까? 아니면 물을 품어 나르는 구름을 섬기오리까?"', hold: 5.0 },
+    { do: () => {
+      c.setCameraFocus(0, 2.8, -10.5);
+      nimrodActor?.showBubble('!');
+    } },
+    { caption: '니므롯: "그렇다면 구름을 흩뜨리는 거센 바람을 섬기라!"', hold: 4.2 },
+    { do: () => {
+      c.setCameraFocus(0, 1.2, -2.5);
+      abramActor?.showBubble('resolve');
+    } },
+    { caption: '아브람: "바람에 맞서는 사람을 섬기오리까? 오직 하늘과 땅을 지으신 살아계신 여호와 하나님만이 참신이십니다!"', hold: 5.2 },
+    { do: () => {
+      nimrodActor?.setPose('point_accuse');
+      nimrodActor?.showBubble('anger');
+      c.setCameraFocus(0, 2.8, -10.5);
+      c.renderer.shake(0.3, 0.25);
+      c.audio.playSfx('war_drum_stinger');
+    } },
+    { caption: '니므롯: "네가 요사스러운 말로 짐을 조롱하는구나! 어디 네가 말하는 신이 맹렬한 불길 속에서 너를 구원하는지 보리라!"', hold: 5.4 },
+    { caption: '니므롯: "저 불경한 자를 풀무불 가마 앞으로 끌고 가라! 칠 배나 뜨겁게 달구어라!"', hold: 4.8 },
+    { do: () => {
+      cleanupActors();
+      c.renderer.resetTilt();
+      if (onTrialComplete) onTrialComplete();
+    } },
+  ];
+}
+
+/** 6. 에필로그: 에서와 붉은 팥죽 (Ch.Coda - '불과 팥죽'의 완성) */
+export function createEsauLentilStewSteps(c: SceneContext, onComplete?: () => void): Step[] {
+  const cutsceneActors: Actor[] = [];
+  let cutsceneGroup: THREE.Group | null = null;
+  let jacobActor: Actor | null = null;
+  let esauActor: Actor | null = null;
+
+  const cleanupActors = () => {
+    if (cutsceneGroup && c.scene) {
+      c.scene.remove(cutsceneGroup);
+    }
+    for (const a of cutsceneActors) {
+      a.dispose();
+    }
+    cutsceneActors.length = 0;
+    cutsceneGroup = null;
+  };
+
+  return [
+    // 1막: 시대 전환 - 가나안 헤브론 장막
+    { do: () => {
+      c.stageManager?.loadStage('esau_camp');
+      c.player.root.visible = false;
+
+      cutsceneGroup = new THREE.Group();
+      cutsceneGroup.name = 'esau_coda_actors';
+      c.scene?.add(cutsceneGroup);
+
+      // 야곱이 솥 곁에 앉아 팥죽을 젓고 있음
+      jacobActor = new Actor('c_jacob', 'jacob');
+      jacobActor.root.position.set(-1.4, 0, 0.5);
+      jacobActor.face(-Math.PI * 0.3);
+      jacobActor.setPose('stir_pot');
+      jacobActor.attachProp('ladle');
+
+      // 에서는 들판에서 걸어옴
+      esauActor = new Actor('c_esau', 'esau');
+      esauActor.root.position.set(0, 0, 8.5);
+      esauActor.face(Math.PI);
+      esauActor.attachProp('bow');
+
+      cutsceneActors.push(jacobActor, esauActor);
+      cutsceneGroup.add(jacobActor.root, esauActor.root);
+
+      c.renderer.setTilt(24);
+      c.setCameraFocus(0, 1.4, 3.5);
+      c.audio.playBgm('bgm_lament');
+      c.hud.cinematicTitle = '에필로그 · 에서와 붉은 팥죽\n창세기 25:29-34 / 탈무드 바바 바트라 16b';
+      c.hud.unlockCodex('lentil_stew');
+    } },
+    { wait: 1.2 },
+    { do: () => { c.hud.cinematicTitle = null; } },
+    { caption: '세월이 흘러 먼 훗날 가나안 땅... 조부 아브라함이 별세한 날, 야곱은 장례를 애도하며 붉은 렌즈콩 팥죽을 끓이고 있었다.', hold: 5.2 },
+    // 에서가 비틀거리며 장막 솥으로 다가옴
+    {
+      animate: 2.8,
+      frame: (p) => {
+        if (esauActor) {
+          esauActor.root.position.z = 8.5 + (1.6 - 8.5) * p;
+          esauActor.updateAnimation(0.016, true);
+        }
+        c.setCameraFocus(0, 1.2, 8.5 * (1 - p) + 1.2 * p);
+      },
+    },
+    { do: () => {
+      esauActor?.setPose('faint_hunger');
+      esauActor?.showBubble('sweat');
+      c.audio.playSfx('ui_confirm');
+      c.renderer.shake(0.2, 0.2);
+    } },
+    { caption: '사냥터에서 며칠을 헤매다 굶주림에 쓰러진 맏아들 에서가 비틀거리며 솥 앞에 무릎을 꿇었다.', hold: 4.8 },
+    { caption: '에서: "내가 사냥에 지쳐 곤비하여 죽게 되었으니, 저 붉은 팥죽을 내게 먹게 하라!"', hold: 4.8 },
+    { do: () => {
+      jacobActor?.face(Math.PI * 0.4);
+      c.setCameraFocus(-0.8, 1.2, 0.5);
+    } },
+    { caption: '야곱: "형의 장자의 명분을 오늘 내게 파십시오."', hold: 4.2 },
+    { do: () => {
+      esauActor?.showBubble('!');
+      c.setCameraFocus(1.2, 1.0, 0.8);
+    } },
+    { caption: '에서: "내가 지금 굶어 죽게 되었으니, 이 장자권이 내게 무슨 유익이 있으리요!"', hold: 5.0 },
+    { caption: '에서는 하나님이 아브라함에게 주신 언약의 장자권을 맹세하여 넘기고, 붉은 팥죽 한 그릇을 받아 꿀꺽 삼켰다.', hold: 5.4 },
+    { do: () => {
+      esauActor?.setPose('stand');
+      esauActor?.face(0);
+      c.audio.playBgm('bgm_ancient_memory');
+      c.audio.playSfx('ending_resolve');
+      c.renderer.setTilt(22);
+      c.setCameraFocus(0, 1.4, 2.0);
+    } },
+    { caption: '배를 채운 에서는 곧장 일어나 장막을 떠나갔다. 성경은 "에서가 장자의 명분을 가볍게 여김이었더라" 기록한다.', hold: 5.6 },
+    { caption: '갈대아 우르의 풀무불에서 가나안의 붉은 팥죽까지, 믿음의 가문을 세우시는 하나님의 섭리가 이루어졌다.', hold: 5.4 },
+    { do: () => {
+      cleanupActors();
+      c.player.root.visible = true;
+      c.renderer.resetTilt();
+      c.hud.celebrate('제1권 [불과 팥죽] 완주', '믿음과 언약의 대단원!');
+      c.hud.cinematicTitle = '제1권 · 불과 팥죽 완주\n제2권 [약속의 땅]으로 이어집니다';
+      if (onComplete) onComplete();
     } },
   ];
 }

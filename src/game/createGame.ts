@@ -23,6 +23,8 @@ import {
   createFurnaceMiracleSteps,
   createNightCallingSteps,
   createHaranSteps,
+  createNimrodTrialSteps,
+  createEsauLentilStewSteps,
   type SceneContext,
 } from '../systems/scenes/book1/book1Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
@@ -327,6 +329,20 @@ export function createGame(): void {
         ch.onSelect(1);
         return true;
       }
+      if (e.code === 'Digit3' && ch.options.length > 2) {
+        ch.selectedIndex = 2;
+        audio.playSfx('ui_confirm');
+        hud.choice = null;
+        ch.onSelect(2);
+        return true;
+      }
+      if (e.code === 'Digit4' && ch.options.length > 3) {
+        ch.selectedIndex = 3;
+        audio.playSfx('ui_confirm');
+        hud.choice = null;
+        ch.onSelect(3);
+        return true;
+      }
       if (e.code === 'Enter' || e.code === 'Space' || e.code === 'KeyE') {
         const idx = ch.selectedIndex;
         audio.playSfx('ui_confirm');
@@ -377,6 +393,33 @@ export function createGame(): void {
         return true;
       }
       return true;
+    },
+  }, 10);
+
+  // 1-2. 성경 & 미드라시 도감 오버레이 [C]
+  panels.addKey({
+    get open() { return hud.codex.open; },
+    key(e) {
+      if (e.code === 'KeyC' || e.code === 'Escape') {
+        hud.codex.open = false;
+        return true;
+      }
+      const count = hud.codex.entries.length;
+      if (e.code === 'ArrowUp' || e.code === 'KeyW') {
+        hud.codex.selectedIndex = (hud.codex.selectedIndex + count - 1) % count;
+        audio.playSfx('ui_confirm');
+        return true;
+      }
+      if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+        hud.codex.selectedIndex = (hud.codex.selectedIndex + 1) % count;
+        audio.playSfx('ui_confirm');
+        return true;
+      }
+      return true;
+    },
+    pointer(ev) {
+      if (!hud.codex.open || ev.kind !== 'down') return false;
+      return hud.handleCodexClick(ev.x, ev.y);
     },
   }, 10);
 
@@ -463,9 +506,20 @@ export function createGame(): void {
     cancel: () => { walk.on = false; walk.act = null; },
   };
 
+  hud.onBlip = (speaker) => {
+    audio.playVoiceBlip(speaker);
+  };
+
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'KeyC' && !cutsceneEngine.running && !cutscene.running && !hud.chapterSelect.open && !hud.pauseMenu.open && !hud.choice) {
+      hud.codex.open = !hud.codex.open;
+      if (hud.codex.open) audio.playSfx('ui_confirm');
+    }
+  });
+
   bindInput(window, {
     hud, keys, panels, click,
-    panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open || !!hud.choice,
+    panelOpen: () => panels.anyOpen() || hud.chapterSelect.open || hud.pauseMenu.open || hud.codex.open || !!hud.choice,
     transitioning: () => false,
     aim: () => aimed,
     onAct: (a) => {
@@ -532,6 +586,7 @@ export function createGame(): void {
     particles.update(dt);
     beam.update(dt);
     updateEnvironmentWind(now * 0.001, 0, pr.fx);
+    stageManager.update(dt, now * 0.001);
 
     const st = stageManager.stage;
     const p = player.root.position;
@@ -643,6 +698,23 @@ export function createGame(): void {
         undefined,
         'haran_journey',
       );
+    },
+    triggerNimrodTrial: () => {
+      cutscene.play(
+        createNimrodTrialSteps(sceneCtx),
+        undefined,
+        'nimrod_trial',
+      );
+    },
+    triggerEsauCoda: () => {
+      cutscene.play(
+        createEsauLentilStewSteps(sceneCtx),
+        undefined,
+        'esau_coda',
+      );
+    },
+    toggleCodex: () => {
+      hud.codex.open = !hud.codex.open;
     },
     advanceCutscene: () => cutscene.key(new KeyboardEvent('keydown', { code: 'Space' })),
     loadStage: (stageId: StageId) => stageManager.loadStage(stageId),

@@ -31,6 +31,15 @@ export interface DialogueChoice {
   onSelect: (index: number) => void;
 }
 
+export interface CodexEntry {
+  id: string;
+  title: string;
+  source: string;
+  summary: string;
+  detail: string;
+  unlocked: boolean;
+}
+
 /** 풍경을 덜 가리면서 읽을 수 있는 할 일 글자 크기 */
 const GOAL_PX = 12;
 import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
@@ -120,6 +129,80 @@ export class Hud {
   chapterSelect = { open: false, bookIndex: 1, chapterIndex: 0 };
   /** 일시정지 메뉴 [Esc] */
   pauseMenu = { open: false, selectedItem: 0 };
+  /** 성경 & 미드라시 도감 (Biblical Lore Codex) [C] */
+  codex = {
+    open: false,
+    selectedIndex: 0,
+    entries: [
+      {
+        id: 'babel_nimrod',
+        title: '바벨탑과 니므롯의 제국',
+        source: '창세기 10~11장',
+        summary: '하늘에 닿으려 한 인간의 오만과 신이 되고자 한 니므롯의 시작',
+        detail: '노아의 방주 이후 인류는 시날 평지에 모여 "우리의 이름을 내고 흩어짐을 면하자"며 거대한 바벨탑을 쌓았습니다. 세상의 첫 용사 사냥꾼 니므롯은 스스로 신이 되어 제국을 다스렸고, 온 세상은 우상 숭배로 어두워졌습니다.',
+        unlocked: true,
+      },
+      {
+        id: 'old_customer',
+        title: '50세 노인 손님과 우상의 헛됨',
+        source: '창세기 라바 38:13',
+        summary: '50세 노인이 어제 빚은 하루살이 우상에 절하려다 아브람의 일침에 부끄러워함',
+        detail: '데라의 우상 공방에 한 노인이 찾아와 신상을 사려 했습니다. 아브람이 "어르신 연세가 어찌 되십니까?" 묻자 노인은 "쉰 살이오"라 답했습니다. 아브람이 "쉰 살이나 되신 분이 어제 아버지가 빚은 하루살이 조각상에 머리를 조아리려 하십니까?"라고 묻자, 노인은 깊이 부끄러워하며 빈손으로 돌아갔습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'ur_night_call',
+        title: '갈대아 우르의 밤하늘과 첫 부르심',
+        source: '사도행전 7:2-3 / 느헤미야 9:7',
+        summary: '달신 숭배의 도성 우르에서 밤하늘 별을 올려다보던 아브람에게 임한 영광의 하나님',
+        detail: '갈대아 우르 온 도성이 달신 난나(Nanna)를 섬길 때, 아브람은 공방 옥상에 올라 하늘의 별들을 지으신 참된 창조주를 고뇌했습니다. 그때 영광의 하나님이 메소포타미아에 나타나 "너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여줄 땅으로 가라" 명하셨습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'the_axe',
+        title: '도끼와 부서진 우상들의 침묵',
+        source: '창세기 라바 38:13',
+        summary: '여인의 밀가루 제물과 큰 우상 손에 쥐여준 도끼, 데라와의 논쟁',
+        detail: '어떤 여인이 우상들에게 바치라며 고운 밀가루 사발을 가져왔습니다. 아브람은 이를 큰 우상 앞에 두고, 청동 도끼로 작은 우상들을 다 부순 뒤 가장 큰 우상의 손에 도끼를 쥐여주었습니다. "신들이 음식을 두고 서로 다투다 큰 신상이 다 부쉈습니다"라는 아브람의 말에, 데라는 스스로 "저것들이 어찌 움직이느냐!"고 소리치며 우상의 무능함을 자인하게 되었습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'nimrod_court',
+        title: '니므롯 왕 앞에서의 4단 신학 논쟁',
+        source: '탈무드 페사힘 118a / 창세기 라바 38:13',
+        summary: '불 → 물 → 구름 → 바람 → 사람을 거쳐 오직 하나님만이 참신이심을 논증',
+        detail: '분노한 데라에 의해 니므롯 왕 앞에 끌려간 아브람은 담대히 논쟁했습니다. "불을 섬기라"는 왕에게 아브람은 "불을 끄는 물을 섬기오리까? 물을 품은 구름을 섬기오리까? 구름을 흩뜨리는 바람을 섬기오리까? 바람을 견디는 사람을 섬기오리까?" 반문하며, 피조물이 아닌 만물의 창조주 하나님 한 분만을 증언했습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'furnace_roses',
+        title: '풀무불의 기적과 장미꽃 동산',
+        source: '탈무드 페사힘 118a / 창세기 라바 38:13',
+        summary: '칠 배나 달구어진 화염이 시원한 아침 이슬과 만발한 붉은 장미꽃 동산으로 변함',
+        detail: '니므롯의 명령으로 칠 배나 뜨거운 가마에 던져진 아브람. 그러나 하늘에서 주의 천사가 내려와 결박을 풀었습니다. 타오르던 숯불은 향기로운 장미꽃 동산과 푸른 풀밭으로 변했고, 아브람은 옷자락 하나 그을리지 않은 채 천사와 거닐었습니다. 이를 본 니므롯은 황금 홀을 떨어뜨리며 경악했습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'terah_peace',
+        title: '하란의 안식과 75세의 대소명',
+        source: '창세기 11:31~12:4',
+        summary: '오아시스 하란에서 데라의 평안한 임종과 마침내 시작된 가나안 대장정',
+        detail: '우르를 탈출하여 유프라테스를 거슬러 올라간 아브람 일행은 하란에 머물렀습니다. 아버지 데라는 향년 205세로 평안히 숨을 거두며 아들에게 살아계신 하나님을 따르라는 유언을 남겼습니다. 슬픔을 딛고 75세의 아브람은 "너는 복이 될지라"는 약속을 품고 가나안으로 출발했습니다.',
+        unlocked: false,
+      },
+      {
+        id: 'lentil_stew',
+        title: '에서와 붉은 팥죽 한 그릇',
+        source: '창세기 25:29-34 / 탈무드 바바 바트라 16b',
+        summary: '아브라함의 장례 날 끓인 붉은 렌즈콩 팥죽 한 그릇에 장자권을 판 에서',
+        detail: '탈무드에 따르면 야곱이 팥죽(붉은 렌즈콩)을 끓이던 날은 조부 아브라함이 별세하여 가문이 애도하던 날이었습니다(렌즈콩은 둥근 모양으로 인생의 윤회를 상징하는 조문 음식). 사냥에서 굶주려 돌아온 에서는 "내가 죽게 되었으니 장자권이 내게 무엇이 유익하리요"라며 하나님의 언약과 장자의 특권을 팥죽 한 그릇에 팔아넘겼습니다.',
+        unlocked: false,
+      },
+    ] as CodexEntry[],
+  };
+  private codexItemRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  /** 음성 칩 사운드 발생 콜백 */
+  onBlip?: (speaker: string) => void;
   /** 시계 패널의 날짜 대신 쓸 글 (방주 안: "비 n일째") */
   dayOverride: string | null = null;
   /** 지금 할 일 (우상단 퀘스트 패널). */
@@ -284,6 +367,9 @@ export class Hud {
 
   /** 주인공 캐릭터 아래 대사 표시 */
   showDialogue(speaker: string | null, text: string, life = 4.5): void {
+    if (speaker && this.onBlip) {
+      this.onBlip(speaker);
+    }
     this.activeDialogue = {
       speaker,
       text,
@@ -493,6 +579,7 @@ export class Hud {
     this.drawDialogue(dt);
     if (this.dialogue) this.drawDialoguePanel(this.dialogue);
     if (this.choice) this.drawChoicePanel(this.choice);
+    if (this.codex.open) this.drawCodex();
     if (this.chapterSelect.open) this.drawChapterSelect();
     if (this.pauseMenu.open) this.drawPauseMenu();
   }
@@ -886,6 +973,132 @@ export class Hud {
       const t = this.txt((selected ? '▶ ' : '   ') + item, 12, color);
       this.put(t, px + 28, py + 54 + idx * 32);
     });
+  }
+
+  unlockCodex(id: string): boolean {
+    const entry = this.codex.entries.find((e) => e.id === id);
+    if (entry && !entry.unlocked) {
+      entry.unlocked = true;
+      this.celebrate('미드라시 도감 기록', `[${entry.title}]`, true);
+      this.toast('codex', null, `성경·미드라시 도감이 기록되었습니다: [${entry.title}] (C키로 열람)`);
+      return true;
+    }
+    return false;
+  }
+
+  handleCodexClick(x: number, y: number): boolean {
+    if (!this.codex.open) return false;
+    for (const r of this.codexItemRects) {
+      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
+        this.codex.selectedIndex = r.index;
+        return true;
+      }
+    }
+    return true;
+  }
+
+  private drawCodex(): void {
+    const g = this.ctx;
+    g.fillStyle = 'rgba(0, 0, 0, 0.65)';
+    g.fillRect(0, 0, this.w, this.h);
+
+    const mw = Math.min(680, this.w - 32);
+    const mh = Math.min(440, this.h - 32);
+    const mx = Math.round((this.w - mw) / 2);
+    const my = Math.round((this.h - mh) / 2);
+
+    this.panel(mx, my, mw, mh);
+    this.codexItemRects = [];
+
+    // 상단 헤더
+    const headerTitle = this.txt('📖 성경 & 미드라시 도감 (Biblical Lore Codex)', 14, INK);
+    this.put(headerTitle, mx + 24, my + 16);
+
+    const unlockedCount = this.codex.entries.filter((e) => e.unlocked).length;
+    const countText = this.txt(`기록된 전승: ${unlockedCount} / ${this.codex.entries.length}`, 11, INK_SOFT);
+    this.put(countText, mx + mw - this.tw(countText) - 24, my + 18);
+
+    // 구분선
+    g.fillStyle = '#c8b496';
+    g.fillRect(mx + 20, my + 38, mw - 40, 1);
+
+    // 좌측: 목록 (폭 240)
+    const listX = mx + 20;
+    const listY = my + 48;
+    const listW = 230;
+    const itemH = 36;
+
+    this.codex.entries.forEach((entry, idx) => {
+      const isSel = idx === this.codex.selectedIndex;
+      const iy = listY + idx * itemH;
+
+      this.codexItemRects.push({ x: listX, y: iy, w: listW, h: itemH - 4, index: idx });
+
+      if (isSel) {
+        g.fillStyle = '#eddcc2';
+        g.fillRect(listX, iy, listW, itemH - 4);
+        g.fillStyle = ACCENT;
+        g.fillRect(listX, iy, 4, itemH - 4);
+      }
+
+      const icon = entry.unlocked ? '📜 ' : '🔒 ';
+      const titleStr = entry.unlocked ? entry.title : '미지의 성서 전승';
+      const col = isSel ? ACCENT : (entry.unlocked ? INK : INK_SOFT);
+      const titleEl = this.txt(icon + titleStr, 11, col);
+      this.put(titleEl, listX + 8, iy + 6);
+
+      const srcStr = entry.unlocked ? entry.source : '???';
+      const srcEl = this.txt(srcStr, 9, INK_WARM);
+      this.put(srcEl, listX + 24, iy + 20);
+    });
+
+    // 중앙 수직 구분선
+    g.fillStyle = '#c8b496';
+    g.fillRect(mx + 258, my + 48, 1, mh - 84);
+
+    // 우측: 상세 정보 패널 (폭 mw - 280)
+    const detailX = mx + 274;
+    const detailY = my + 48;
+    const detailW = mw - 296;
+
+    const sel = this.codex.entries[this.codex.selectedIndex];
+    if (sel && sel.unlocked) {
+      // 제목
+      const titleEl = this.txt(sel.title, 13, INK);
+      this.put(titleEl, detailX, detailY);
+
+      // 출처 뱃지
+      const srcEl = this.txt(`[출처: ${sel.source}]`, 10, '#b85422');
+      this.put(srcEl, detailX, detailY + 20);
+
+      // 요약 인용 박스
+      const boxY = detailY + 38;
+      g.fillStyle = '#f4ebd8';
+      g.fillRect(detailX, boxY, detailW, 36);
+      g.strokeStyle = '#dfd0b4';
+      g.lineWidth = 1;
+      g.strokeRect(detailX, boxY, detailW, 36);
+
+      const sumLines = wrapLines(sel.summary, detailW - 16, (s) => this.tw(this.txt(s, 10, INK)), 2);
+      sumLines.forEach((sl, sIdx) => {
+        this.put(this.txt(sl, 10, INK), detailX + 8, boxY + 5 + sIdx * 14);
+      });
+
+      // 상세 해설 본문
+      const detLines = wrapLines(sel.detail, detailW, (s) => this.tw(this.txt(s, 11, INK_SOFT)), 10);
+      detLines.forEach((dl, dIdx) => {
+        this.put(this.txt(dl, 11, INK_SOFT), detailX, boxY + 46 + dIdx * 16);
+      });
+    } else if (sel) {
+      const lockTitle = this.txt('🔒 미해금 전승 기록', 13, INK_SOFT);
+      this.put(lockTitle, detailX, detailY);
+      const lockDesc = this.txt('아브라함의 여정을 진행하며 해당 사건을 경험하면 도감이 기록됩니다.', 11, INK_WARM);
+      this.put(lockDesc, detailX, detailY + 28);
+    }
+
+    // 하단 닫기 안내
+    const footerHint = this.txt('▼ [C / Esc] 닫기  |  [↑ / ↓] 항목 이동  |  [클릭] 선택', 10, INK_SOFT);
+    this.put(footerHint, mx + 24, my + mh - 24);
   }
 
   /**

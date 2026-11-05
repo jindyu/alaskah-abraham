@@ -194,6 +194,59 @@ export class AudioManager {
     return audio;
   }
 
+  private audioCtx: AudioContext | null = null;
+
+  /** 대사 출력 시 캐릭터별 음성 칩 사운드(Typewriter Voice Pitch Blip) 재생 */
+  playVoiceBlip(character = 'narrator'): void {
+    if (this.muted) return;
+    try {
+      if (!this.audioCtx) {
+        const AudioContextClass = typeof window !== 'undefined' ? (window.AudioContext || (window as any).webkitAudioContext) : null;
+        if (!AudioContextClass) return;
+        this.audioCtx = new AudioContextClass();
+      }
+      if (this.audioCtx.state === 'suspended') {
+        this.audioCtx.resume();
+      }
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      const now = this.audioCtx.currentTime;
+
+      let freq = 320;
+      let type: OscillatorType = 'triangle';
+      switch (character) {
+        case 'terah': freq = 210; type = 'sawtooth'; break;
+        case 'nimrod': freq = 160; type = 'sawtooth'; break;
+        case 'abram':
+        case 'abram_young': freq = 320; type = 'triangle'; break;
+        case 'sarai':
+        case 'sarah': freq = 480; type = 'sine'; break;
+        case 'lot':
+        case 'lot_young': freq = 580; type = 'triangle'; break;
+        case 'jacob': freq = 360; type = 'triangle'; break;
+        case 'esau': freq = 270; type = 'sawtooth'; break;
+        case 'customer':
+        case 'old_man': freq = 230; type = 'sawtooth'; break;
+        case 'god':
+        case 'voice': freq = 130; type = 'sine'; break;
+        default: freq = 340; type = 'sine'; break;
+      }
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, now);
+      osc.frequency.exponentialRampToValueAtTime(freq * 0.85, now + 0.045);
+
+      gain.gain.setValueAtTime(this.masterVol * this.voiceVol * 0.15, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+
+      osc.start(now);
+      osc.stop(now + 0.05);
+    } catch {}
+  }
+
   stopVoice(): void {
     if (this.currentVoiceAudio) {
       this.currentVoiceAudio.pause();
