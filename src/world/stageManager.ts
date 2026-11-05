@@ -21,6 +21,7 @@ import { buildShechemBethelStage, type ShechemBethelStage } from './stages/shech
 import { buildEgyptStage, type EgyptStage } from './stages/egypt';
 import { buildSiddimHobahStage, type SiddimHobahStage } from './stages/siddimHobah';
 import { buildMamreStage, type MamreStage } from './stages/mamre';
+import { buildSodomStage, type SodomStage } from './stages/sodom';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -59,6 +60,7 @@ export interface StageInfo {
   egyptDetails?: EgyptStage;
   siddimDetails?: SiddimHobahStage;
   mamreDetails?: MamreStage;
+  sodomDetails?: SodomStage;
 }
 
 export class StageManager {
@@ -113,6 +115,9 @@ export class StageManager {
     }
     if (this.currentStage?.mamreDetails) {
       this.currentStage.mamreDetails.update(dt, time);
+    }
+    if (this.currentStage?.sodomDetails) {
+      this.currentStage.sodomDetails.update(dt, time);
     }
   }
 
@@ -323,31 +328,18 @@ export class StageManager {
 
   // ── 9. 소돔 성문 및 거리 ──
   private buildSodom(): StageInfo {
-    const root = new THREE.Group();
-    const sb = new VoxelBuilder(9, false);
-
-    sb.box(0, -0.25, 0, 26, 0.5, 26, PAL_REGION.SODOM_NEGEV.canyonRed, { tex: 'soil' });
-    // 소돔 성벽과 성문
-    sb.box(-6, 2.5, -8, 8, 5.0, 1.4, PAL.stone[2], { tex: 'brick' });
-    sb.box(6, 2.5, -8, 8, 5.0, 1.4, PAL.stone[2], { tex: 'brick' });
-    sb.box(0, 4.2, -8, 4, 1.6, 1.4, PAL.stone[2], { tex: 'brick' }); // 성문 아치
-
-    // 소금 기둥 받침대
-    sb.box(7, 0.4, 5, 1.2, 0.8, 1.2, PAL.stone[1]);
-    // 회백색 소금 기둥
-    sb.box(7, 1.6, 5, 0.5, 1.6, 0.5, PAL_REGION.SODOM_NEGEV.saltPillar);
-
-    root.add(sb.build());
-
+    const details = buildSodomStage();
     return {
       id: 'sodom',
       name: '소돔 성문과 거리',
       region: 'SODOM_NEGEV',
       spawn: { x: 0, z: 2 },
-      bounds: { minX: -8, maxX: 8, minZ: -7, maxZ: 8 },
-      root,
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_danger_pursuit',
-      ambience: 'amb_cave',
+      ambience: 'amb_fire_aftermath',
+      sodomDetails: details,
     };
   }
 

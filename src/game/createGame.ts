@@ -20,6 +20,7 @@ import { Beam } from '../entities/beam';
 import { setupBook1Actions } from '../systems/actions/book1Actions';
 import { setupBook2Actions } from '../systems/actions/book2Actions';
 import { setupBook3Actions } from '../systems/actions/book3Actions';
+import { setupBook4Actions } from '../systems/actions/book4Actions';
 import {
   createBook1IntroSteps,
   createFurnaceMiracleSteps,
@@ -37,6 +38,10 @@ import {
 import {
   createStarsCovenantSteps,
 } from '../systems/scenes/book3/book3Scenes';
+import {
+  createThreeVisitorsSteps,
+  createSodomRiotSteps,
+} from '../systems/scenes/book4/book4Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -274,6 +279,25 @@ export function createGame(): void {
       return;
     }
 
+    if (curBook === 4) {
+      const st = stageManager.stage;
+      if (st) {
+        setupBook4Actions({
+          interactions,
+          hud,
+          audio,
+          particles,
+          cutscene,
+          sceneCtx,
+          stageId: st.id,
+          onBook4Complete: () => {
+            advanceChapter();
+          },
+        });
+        return;
+      }
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -352,6 +376,17 @@ export function createGame(): void {
       setupInteractiveLoop();
       if (curChapter === 0) {
         cutscene.play(createStarsCovenantSteps(sceneCtx), undefined, 'book3_stars');
+      }
+      return;
+    }
+
+    // 4권인 경우: 마므레 세 천사 영접과 소돔 멸망 탈출(롯 시점) 액션 루프 구동!
+    if (curBook === 4) {
+      setupInteractiveLoop();
+      if (curChapter === 0) {
+        cutscene.play(createThreeVisitorsSteps(sceneCtx), undefined, 'book4_visitors');
+      } else if (curChapter === 1 || curChapter === 2) {
+        cutscene.play(createSodomRiotSteps(sceneCtx), undefined, 'book4_sodom');
       }
       return;
     }
