@@ -19,6 +19,7 @@ import { Cutscene } from '../systems/cutscene/cutscene';
 import { Beam } from '../entities/beam';
 import { setupBook1Actions } from '../systems/actions/book1Actions';
 import { setupBook2Actions } from '../systems/actions/book2Actions';
+import { setupBook3Actions } from '../systems/actions/book3Actions';
 import {
   createBook1IntroSteps,
   createFurnaceMiracleSteps,
@@ -33,6 +34,9 @@ import {
   createEgyptBorderSteps,
   createHobahRescueSteps,
 } from '../systems/scenes/book2/book2Scenes';
+import {
+  createStarsCovenantSteps,
+} from '../systems/scenes/book3/book3Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -255,6 +259,21 @@ export function createGame(): void {
       }
     }
 
+    if (curBook === 3) {
+      setupBook3Actions({
+        interactions,
+        hud,
+        audio,
+        particles,
+        cutscene,
+        sceneCtx,
+        onBook3Complete: () => {
+          advanceChapter();
+        },
+      });
+      return;
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -324,6 +343,15 @@ export function createGame(): void {
         cutscene.play(createEgyptBorderSteps(sceneCtx), undefined, 'book2_egypt');
       } else if (curChapter === 6) {
         cutscene.play(createHobahRescueSteps(sceneCtx), undefined, 'book2_hobah');
+      }
+      return;
+    }
+
+    // 3권인 경우: 별과 횃불 언약, 할례와 새 이름의 마므레 장막 액션 루프 구동!
+    if (curBook === 3) {
+      setupInteractiveLoop();
+      if (curChapter === 0) {
+        cutscene.play(createStarsCovenantSteps(sceneCtx), undefined, 'book3_stars');
       }
       return;
     }

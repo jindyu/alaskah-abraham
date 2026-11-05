@@ -20,6 +20,7 @@ import { buildEsauCampStage, type EsauCampStage } from './stages/esauCamp';
 import { buildShechemBethelStage, type ShechemBethelStage } from './stages/shechemBethel';
 import { buildEgyptStage, type EgyptStage } from './stages/egypt';
 import { buildSiddimHobahStage, type SiddimHobahStage } from './stages/siddimHobah';
+import { buildMamreStage, type MamreStage } from './stages/mamre';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -57,6 +58,7 @@ export interface StageInfo {
   shechemDetails?: ShechemBethelStage;
   egyptDetails?: EgyptStage;
   siddimDetails?: SiddimHobahStage;
+  mamreDetails?: MamreStage;
 }
 
 export class StageManager {
@@ -108,6 +110,9 @@ export class StageManager {
     }
     if (this.currentStage?.siddimDetails) {
       this.currentStage.siddimDetails.update(dt, time);
+    }
+    if (this.currentStage?.mamreDetails) {
+      this.currentStage.mamreDetails.update(dt, time);
     }
   }
 
@@ -301,38 +306,18 @@ export class StageManager {
 
   // ── 8. 마므레 상수리나무 ──
   private buildMamre(): StageInfo {
-    const root = new THREE.Group();
-    const mb = new VoxelBuilder(9, false);
-
-    mb.box(0, -0.25, 0, 28, 0.5, 28, PAL_REGION.CANAAN.ground, { tex: 'soil' });
-    // 식사 대접 야외 평상
-    mb.box(2, 0.3, 0, 2.0, 0.6, 1.4, PAL.wood[2], { tex: 'wood' });
-    root.add(mb.build());
-
-    // 마므레 상수리나무
-    const oak = buildMamreOak();
-    oak.position.set(0, 0, -2);
-    root.add(oak);
-
-    // 아브라함과 사라의 장막
-    const tent = buildNomadTent(PAL_REGION.CANAAN.tentBlack);
-    tent.position.set(-6, 0, 2);
-    root.add(tent);
-
-    // 우물
-    const well = buildWell();
-    well.position.set(6, 0, 4);
-    root.add(well);
-
+    const details = buildMamreStage();
     return {
       id: 'mamre',
       name: '마므레 상수리나무 장막',
       region: 'CANAAN',
       spawn: { x: 1, z: 3 },
-      bounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
-      root,
-      bgm: 'bgm_family_warmth',
-      ambience: 'amb_pastoral',
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
+      bgm: 'bgm_pastoral_home',
+      ambience: 'amb_field_day',
+      mamreDetails: details,
     };
   }
 
