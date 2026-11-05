@@ -22,6 +22,7 @@ import { setupBook2Actions } from '../systems/actions/book2Actions';
 import { setupBook3Actions } from '../systems/actions/book3Actions';
 import { setupBook4Actions } from '../systems/actions/book4Actions';
 import { setupBook5Actions } from '../systems/actions/book5Actions';
+import { setupBook6Actions } from '../systems/actions/book6Actions';
 import {
   createBook1IntroSteps,
   createFurnaceMiracleSteps,
@@ -48,6 +49,12 @@ import {
   createRoadToMoriahSteps,
   createMountMoriahAkedahSteps,
 } from '../systems/scenes/book5/book5Scenes';
+import {
+  createSarahMourningSteps,
+  createEphronBargainSteps,
+  createRebekahWellSteps,
+  createAbrahamPassingSteps,
+} from '../systems/scenes/book6/book6Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -331,6 +338,33 @@ export function createGame(): void {
       }
     }
 
+    if (curBook === 6) {
+      const st = stageManager.stage;
+      if (st) {
+        setupBook6Actions({
+          interactions,
+          hud,
+          audio,
+          particles,
+          cutscene,
+          sceneCtx,
+          stageId: st.id,
+          onBook6Complete: () => {
+            advanceChapter();
+          },
+          onSwitchStage: (sId: string) => {
+            const newStage = stageManager.loadStage(sId as any);
+            applyAtmosphere(newStage.region, newStage.id);
+            player.root.position.set(newStage.spawn.x, 0, newStage.spawn.z);
+            audio.playBgm(newStage.bgm);
+            audio.playAmbience(newStage.ambience);
+            setupInteractiveLoop();
+          },
+        });
+        return;
+      }
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -433,6 +467,21 @@ export function createGame(): void {
         cutscene.play(createRoadToMoriahSteps(sceneCtx), undefined, 'book5_moriah_road');
       } else if (curChapter === 6) {
         cutscene.play(createMountMoriahAkedahSteps(sceneCtx), undefined, 'book5_moriah_akedah');
+      }
+      return;
+    }
+
+    // 6권인 경우: 막벨라 굴 매입과 리브가 만남, 아브라함의 평안한 안식 액션 루프 구동!
+    if (curBook === 6) {
+      setupInteractiveLoop();
+      if (curChapter === 0) {
+        cutscene.play(createSarahMourningSteps(sceneCtx), undefined, 'book6_sarah');
+      } else if (curChapter === 1) {
+        cutscene.play(createEphronBargainSteps(sceneCtx), undefined, 'book6_ephron');
+      } else if (curChapter === 4) {
+        cutscene.play(createRebekahWellSteps(sceneCtx), undefined, 'book6_rebekah');
+      } else if (curChapter === 6) {
+        cutscene.play(createAbrahamPassingSteps(sceneCtx), undefined, 'book6_abraham_death');
       }
       return;
     }

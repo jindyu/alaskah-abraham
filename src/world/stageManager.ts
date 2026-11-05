@@ -24,6 +24,8 @@ import { buildMamreStage, type MamreStage } from './stages/mamre';
 import { buildSodomStage, type SodomStage } from './stages/sodom';
 import { buildBeershebaStage, type BeershebaStage } from './stages/beersheba';
 import { buildMoriahStage, type MoriahStage } from './stages/moriah';
+import { buildHebronMachpelahStage, type HebronMachpelahStage } from './stages/hebronMachpelah';
+import { buildNahorWellStage, type NahorWellStage } from './stages/nahorWell';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -65,6 +67,8 @@ export interface StageInfo {
   sodomDetails?: SodomStage;
   beershebaDetails?: BeershebaStage;
   moriahDetails?: MoriahStage;
+  machpelahDetails?: HebronMachpelahStage;
+  nahorWellDetails?: NahorWellStage;
 }
 
 export class StageManager {
@@ -128,6 +132,12 @@ export class StageManager {
     }
     if (this.currentStage?.moriahDetails) {
       this.currentStage.moriahDetails.update(dt, time);
+    }
+    if (this.currentStage?.machpelahDetails) {
+      this.currentStage.machpelahDetails.update(dt, time);
+    }
+    if (this.currentStage?.nahorWellDetails) {
+      this.currentStage.nahorWellDetails.update(dt, time);
     }
   }
 
@@ -389,50 +399,35 @@ export class StageManager {
 
   // ── 12. 헤브론 막벨라 굴 ──
   private buildHebronMachpelah(): StageInfo {
-    const root = new THREE.Group();
-    const hb = new VoxelBuilder(9, false);
-
-    hb.box(0, -0.25, 0, 26, 0.5, 26, PAL_REGION.CANAAN.ground, { tex: 'soil' });
-    root.add(hb.build());
-
-    // 막벨라 굴 입구
-    const cave = buildMachpelahCave();
-    cave.position.set(0, 0, -6);
-    root.add(cave);
-
+    const details = buildHebronMachpelahStage();
     return {
       id: 'hebron_machpelah',
       name: '헤브론 막벨라 굴',
       region: 'CANAAN',
-      spawn: { x: 0, z: 4 },
-      bounds: { minX: -9, maxX: 9, minZ: -8, maxZ: 8 },
-      root,
+      spawn: { x: -4, z: 5 },
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_hope_legacy',
-      ambience: 'amb_pastoral',
+      ambience: 'amb_cave',
+      machpelahDetails: details,
     };
   }
 
   // ── 13. 나홀의 성 우물가 ──
   private buildNahorWell(): StageInfo {
-    const root = new THREE.Group();
-    const nb = new VoxelBuilder(9, false);
-
-    nb.box(0, -0.25, 0, 26, 0.5, 26, PAL_REGION.MESOPOTAMIA.ground, { tex: 'soil' });
-    root.add(nb.build());
-
-    const well = buildWell();
-    well.position.set(0, 0, 0);
-    root.add(well);
-
+    const details = buildNahorWellStage();
     return {
       id: 'nahor_well',
       name: '나홀의 성 우물가',
       region: 'MESOPOTAMIA',
       spawn: { x: 0, z: 4 },
-      bounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
-      root,
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_nomad_journey',
-      ambience: 'amb_wind',
+      ambience: 'amb_well',
+      nahorWellDetails: details,
     };
   }
 }
