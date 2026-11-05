@@ -22,6 +22,8 @@ import { buildEgyptStage, type EgyptStage } from './stages/egypt';
 import { buildSiddimHobahStage, type SiddimHobahStage } from './stages/siddimHobah';
 import { buildMamreStage, type MamreStage } from './stages/mamre';
 import { buildSodomStage, type SodomStage } from './stages/sodom';
+import { buildBeershebaStage, type BeershebaStage } from './stages/beersheba';
+import { buildMoriahStage, type MoriahStage } from './stages/moriah';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -61,6 +63,8 @@ export interface StageInfo {
   siddimDetails?: SiddimHobahStage;
   mamreDetails?: MamreStage;
   sodomDetails?: SodomStage;
+  beershebaDetails?: BeershebaStage;
+  moriahDetails?: MoriahStage;
 }
 
 export class StageManager {
@@ -118,6 +122,12 @@ export class StageManager {
     }
     if (this.currentStage?.sodomDetails) {
       this.currentStage.sodomDetails.update(dt, time);
+    }
+    if (this.currentStage?.beershebaDetails) {
+      this.currentStage.beershebaDetails.update(dt, time);
+    }
+    if (this.currentStage?.moriahDetails) {
+      this.currentStage.moriahDetails.update(dt, time);
     }
   }
 
@@ -345,65 +355,35 @@ export class StageManager {
 
   // ── 10. 브엘세바 우물터 ──
   private buildBeersheba(): StageInfo {
-    const root = new THREE.Group();
-    const bb = new VoxelBuilder(9, false);
-
-    bb.box(0, -0.25, 0, 26, 0.5, 26, PAL_REGION.SODOM_NEGEV.desertSand, { tex: 'plain' });
-    root.add(bb.build());
-
-    // 브엘세바 우물
-    const well = buildWell();
-    well.position.set(0, 0, 0);
-    root.add(well);
-
-    // 에셀나무
-    const tamarisk = buildTamarisk();
-    tamarisk.position.set(-5, 0, -3);
-    root.add(tamarisk);
-
-    // 암양 우리 울타리
-    const fenceBuilder = new VoxelBuilder(9, false);
-    fenceBuilder.box(5, 0.4, -2, 4, 0.8, 0.2, PAL.wood[1], { tex: 'wood' });
-    fenceBuilder.box(5, 0.4, 2, 4, 0.8, 0.2, PAL.wood[1], { tex: 'wood' });
-    fenceBuilder.box(7, 0.4, 0, 0.2, 0.8, 4, PAL.wood[1], { tex: 'wood' });
-    root.add(fenceBuilder.build());
-
+    const details = buildBeershebaStage();
     return {
       id: 'beersheba',
       name: '브엘세바 우물터',
       region: 'SODOM_NEGEV',
       spawn: { x: 0, z: 4 },
-      bounds: { minX: -9, maxX: 9, minZ: -9, maxZ: 9 },
-      root,
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_feast_celebration',
-      ambience: 'amb_wind',
+      ambience: 'amb_well',
+      beershebaDetails: details,
     };
   }
 
   // ── 11. 모리아 산 정상 및 번제단 ──
   private buildMoriah(): StageInfo {
-    const root = new THREE.Group();
-    const mb = new VoxelBuilder(9, false);
-
-    // 산봉우리 암반 기단
-    mb.box(0, -0.5, 0, 24, 1.0, 24, PAL.stone[2], { tex: 'cliff' });
-    mb.box(0, 0.5, 0, 16, 1.0, 16, PAL.stone[3], { tex: 'cliff' });
-    root.add(mb.build());
-
-    // 번제단
-    const altar = buildStoneAltar(true);
-    altar.position.set(0, 1.0, 0);
-    root.add(altar);
-
+    const details = buildMoriahStage();
     return {
       id: 'moriah',
       name: '모리아 산 정상',
       region: 'SODOM_NEGEV',
-      spawn: { x: 0, z: 6 },
-      bounds: { minX: -6, maxX: 6, minZ: -6, maxZ: 6 },
-      root,
+      spawn: { x: 0, z: 8 },
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_sacred_trial',
-      ambience: 'amb_wind',
+      ambience: 'amb_field_night',
+      moriahDetails: details,
     };
   }
 

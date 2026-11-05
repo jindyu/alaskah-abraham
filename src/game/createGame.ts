@@ -21,6 +21,7 @@ import { setupBook1Actions } from '../systems/actions/book1Actions';
 import { setupBook2Actions } from '../systems/actions/book2Actions';
 import { setupBook3Actions } from '../systems/actions/book3Actions';
 import { setupBook4Actions } from '../systems/actions/book4Actions';
+import { setupBook5Actions } from '../systems/actions/book5Actions';
 import {
   createBook1IntroSteps,
   createFurnaceMiracleSteps,
@@ -42,6 +43,11 @@ import {
   createThreeVisitorsSteps,
   createSodomRiotSteps,
 } from '../systems/scenes/book4/book4Scenes';
+import {
+  createIsaacBirthFeastSteps,
+  createRoadToMoriahSteps,
+  createMountMoriahAkedahSteps,
+} from '../systems/scenes/book5/book5Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -298,6 +304,33 @@ export function createGame(): void {
       }
     }
 
+    if (curBook === 5) {
+      const st = stageManager.stage;
+      if (st) {
+        setupBook5Actions({
+          interactions,
+          hud,
+          audio,
+          particles,
+          cutscene,
+          sceneCtx,
+          stageId: st.id,
+          onBook5Complete: () => {
+            advanceChapter();
+          },
+          onSwitchStage: (sId: string) => {
+            const newStage = stageManager.loadStage(sId as any);
+            applyAtmosphere(newStage.region, newStage.id);
+            player.root.position.set(newStage.spawn.x, 0, newStage.spawn.z);
+            audio.playBgm(newStage.bgm);
+            audio.playAmbience(newStage.ambience);
+            setupInteractiveLoop();
+          },
+        });
+        return;
+      }
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -387,6 +420,19 @@ export function createGame(): void {
         cutscene.play(createThreeVisitorsSteps(sceneCtx), undefined, 'book4_visitors');
       } else if (curChapter === 1 || curChapter === 2) {
         cutscene.play(createSodomRiotSteps(sceneCtx), undefined, 'book4_sodom');
+      }
+      return;
+    }
+
+    // 5권인 경우: 브엘세바 우물과 모리아 산 아케다(이삭 결박 및 여호와 이레) 액션 루프 구동!
+    if (curBook === 5) {
+      setupInteractiveLoop();
+      if (curChapter === 0) {
+        cutscene.play(createIsaacBirthFeastSteps(sceneCtx), undefined, 'book5_isaac_birth');
+      } else if (curChapter === 4 || curChapter === 5) {
+        cutscene.play(createRoadToMoriahSteps(sceneCtx), undefined, 'book5_moriah_road');
+      } else if (curChapter === 6) {
+        cutscene.play(createMountMoriahAkedahSteps(sceneCtx), undefined, 'book5_moriah_akedah');
       }
       return;
     }
