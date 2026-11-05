@@ -41,6 +41,12 @@ export function getChapterContext(
 
   // 1권: 불과 팥죽 (갈대아 우르 시가지, 니므롯 왕궁, 풀무불, 하란, 그리고 에서의 붉은 팥죽)
   if (bookIndex === 1) {
+    if (chapterIndex === 0) {
+      return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '아라랏 산 노아의 방주와 태고의 언약을 묵상하자' };
+    }
+    if (chapterIndex === 1) {
+      return { stageId: 'ur_workshop', hero: 'abram_young', defaultGoal: '시날 평지 바벨탑과 니므롯 제국의 오만을 바라보자' };
+    }
     if (chapterIndex === 6) {
       return { stageId: 'ur_palace', hero: 'abram_young', defaultGoal: '니므롯 왕의 궁정에서 우상의 허망함을 당당히 변증하자' };
     }

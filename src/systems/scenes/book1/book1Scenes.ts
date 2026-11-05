@@ -28,34 +28,72 @@ export interface SceneContext {
   setHour?: (hour: number) => void;
 }
 
-/** 1. 오프닝 프롤로그: 바벨과 갈대아 우르 */
+/** 1. 오프닝 프롤로그: 노아의 방주(아라랏 산) → 바벨탑(시날 평지) → 갈대아 우르 */
 export function createBook1IntroSteps(c: SceneContext): Step[] {
   return [
+    // ── 1막: 노아의 방주와 아라랏 산의 언약 (창세기 9장) ──
     { do: () => {
-      c.hud.unlockCodex('babel_nimrod');
-      c.hud.cinematicTitle = '제1권 · 불과 팥죽\n갈대아 우르와 니므롯';
+      c.hud.unlockCodex('noah_ark_curse');
+      c.hud.cinematicTitle = '프롤로그 I · 태고의 언약\n노아의 방주와 아라랏 산';
       c.renderer.toVista();
-      c.setCameraFocus(-36, 6.0, -28); // 원경 거대 지구라트 조망
+      c.setCameraFocus(-45, 10.0, -32); // 아라랏 산 능선 조망
       c.audio.playBgm('bgm_ancient_memory');
+      c.audio.playVoice('물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.', 'narrator', '000_noahs_curse');
     } },
     { wait: 0.8 },
-    { caption: '노아의 방주 이후, 사람들은 시날 평지에 모여 하늘에 닿을 거대한 탑을 쌓기 시작했다.', hold: 4.2 },
+    { caption: '물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.', hold: 4.2 },
+    { do: () => {
+      c.audio.playVoice('노아와 그 아내, 세 아들과 그 아내들 — 이렇게 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.', 'narrator', '000_noahs_curse');
+    } },
+    { caption: '노아와 그 아내, 세 아들과 그 아내들 — 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.', hold: 4.8 },
+    { caption: '노아가 여호와께 제단을 쌓았을 때, 하늘에는 다시는 물로 멸하지 않겠다는 무지개 언약이 섰다.', hold: 4.5 },
+    { caption: '그러나 세월이 흘러 노아의 장막 안에서 축복과 저주가 갈리었으니...', hold: 3.8 },
+    { do: () => {
+      c.audio.playVoice('가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라.', 'noah', '000_noahs_curse');
+    } },
+    { caption: '"가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라."', hold: 4.5 },
+    { do: () => {
+      c.audio.playVoice('셈의 하나님 여호와를 찬송하리로다. 가나안은 셈의 종이 되고,', 'noah', '000_noahs_curse');
+    } },
+    { caption: '"셈의 하나님 여호와를 찬송하리로다! 가나안은 셈의 종이 되리로다."', hold: 4.5 },
+    { caption: '아브라함은 바로 그 거룩한 축복을 받은 맏아들 셈의 계보를 잇는 믿음의 자손이었다.', hold: 4.2 },
+
+    // ── 2막: 시날 평지와 바벨탑의 오만 (창세기 10~11장) ──
+    { do: () => {
+      c.hud.unlockCodex('babel_nimrod');
+      c.hud.cinematicTitle = '프롤로그 II · 바벨탑과 니므롯\n시날 평지의 제국';
+      c.setCameraFocus(-36, 6.0, -28); // 원경 거대 지구라트 조망
+      c.audio.playBgm('bgm_nimrod_empire');
+      c.audio.playVoice('그의 마음속에서, 보이지 않는 손이 정해놓은 운명에 대한 반감이 조용히 자라났다.', 'narrator', '000_noahs_curse');
+    } },
+    { wait: 0.8 },
+    { caption: '함의 자손 구스가 사냥꾼 니므롯을 낳았고, 그의 마음속에 하나님이 정하신 운명에 대한 반감이 싹텄다.', hold: 4.5 },
+    { do: () => {
+      c.audio.playVoice('니므롯과 그를 따르는 무리가 시날 땅 평지에 이르러 정착하였으니,', 'narrator', '005_tower_of_babel');
+    } },
+    { caption: '사람들은 시날 평지에 모여 견고한 벽돌과 역청으로 하늘에 닿을 거대한 탑을 쌓기 시작했다.', hold: 4.5 },
     { caption: '"우리의 이름을 내고 온 지면에 흩어짐을 면하자!" 오만한 제국 바벨의 시작이었다.', hold: 4.0 },
+    { caption: '여호와께서 강림하사 사람들의 언어를 혼잡하게 하시고 온 지면에 흩으셨다.', hold: 4.2 },
     { do: () => {
       c.setCameraFocus(-18, 3.5, -12); // 우르 도시 전경으로 이동
     } },
-    { caption: '사냥꾼 니므롯은 스스로 신이 되어 백성들을 억압했고, 온 세상은 우상 숭배로 물들었다.', hold: 4.2 },
+    { caption: '그러나 흩어진 땅에서도 용사 니므롯은 스스로 신이 되었고, 온 세상은 우상 숭배로 어두워졌다.', hold: 4.5 },
+
+    // ── 3막: 갈대아 우르와 청년 아브람 ──
     { do: () => {
       c.renderer.resetTilt();
       c.setCameraFocus(0, 1.2, 3.2); // 데라의 공방 마당으로 착지
-      c.hud.cinematicTitle = null;
+      c.hud.cinematicTitle = '제1권 · 불과 팥죽\n갈대아 우르와 청년 아브람';
       c.player.root.position.set(0, 0, 3.2);
       c.player.face(Math.PI);
+      c.audio.playBgm('bgm_family_warmth');
     } },
+    { wait: 0.8 },
     { caption: '이곳 갈대아 우르, 왕실 신상을 만드는 장인 데라의 집에도 아침이 밝아왔다.', hold: 3.8 },
-    { caption: '그리고 그 집의 맏아들, 청년 아브람.', hold: 3.2 },
+    { caption: '달신 난나와 무수한 우상에 둘러싸여 있으나, 홀로 살아계신 참 하나님을 갈망하던 청년, 아브람.', hold: 4.2 },
     { do: () => {
       c.renderer.resetTilt();
+      c.hud.cinematicTitle = null;
       c.hud.goalCategory = '제1권 · 갈대아 우르';
       c.hud.goal = '우르 거리와 공방 둘러보기\n▪ 식구들과 대화하기 (0/2)\n▪ 공방 작은 우상 살펴보기 (0/3)';
       c.hud.goalProgress = { current: 0, total: 5, label: '0/5' };
