@@ -18,6 +18,7 @@ import { Collision } from '../world/collision';
 import { Cutscene } from '../systems/cutscene/cutscene';
 import { Beam } from '../entities/beam';
 import { setupBook1Actions } from '../systems/actions/book1Actions';
+import { setupBook2Actions } from '../systems/actions/book2Actions';
 import {
   createBook1IntroSteps,
   createFurnaceMiracleSteps,
@@ -27,6 +28,11 @@ import {
   createEsauLentilStewSteps,
   type SceneContext,
 } from '../systems/scenes/book1/book1Scenes';
+import {
+  createShechemAltarSteps,
+  createEgyptBorderSteps,
+  createHobahRescueSteps,
+} from '../systems/scenes/book2/book2Scenes';
 import { CutsceneEngine } from '../systems/cutscene/cutsceneEngine';
 import { CrowdManager } from '../entities/crowd';
 import { Actor } from '../entities/actor';
@@ -230,6 +236,25 @@ export function createGame(): void {
       }
     }
 
+    if (curBook === 2) {
+      const st = stageManager.stage;
+      if (st) {
+        setupBook2Actions({
+          interactions,
+          hud,
+          audio,
+          particles,
+          cutscene,
+          sceneCtx,
+          stageId: st.id,
+          onBook2Complete: () => {
+            advanceChapter();
+          },
+        });
+        return;
+      }
+    }
+
     setupChapterActions({
       interactions,
       hud,
@@ -286,6 +311,19 @@ export function createGame(): void {
       // 첫 시작 시 인트로 재생
       if (!loaded || playSeconds < 2) {
         cutscene.play(createBook1IntroSteps(sceneCtx), undefined, 'book1_intro');
+      }
+      return;
+    }
+
+    // 2권인 경우: 세겜, 애굽, 롯 구출의 가나안 대장정 액션 루프 구동!
+    if (curBook === 2) {
+      setupInteractiveLoop();
+      if (curChapter === 0) {
+        cutscene.play(createShechemAltarSteps(sceneCtx), undefined, 'book2_shechem');
+      } else if (curChapter === 1) {
+        cutscene.play(createEgyptBorderSteps(sceneCtx), undefined, 'book2_egypt');
+      } else if (curChapter === 6) {
+        cutscene.play(createHobahRescueSteps(sceneCtx), undefined, 'book2_hobah');
       }
       return;
     }

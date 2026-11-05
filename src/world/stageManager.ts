@@ -17,6 +17,9 @@ import { buildUrStage, type UrStage } from './stages/ur';
 import { buildUrFurnaceStage, type FurnaceStage } from './stages/furnace';
 import { buildUrPalaceStage, type UrPalaceStage } from './stages/urPalace';
 import { buildEsauCampStage, type EsauCampStage } from './stages/esauCamp';
+import { buildShechemBethelStage, type ShechemBethelStage } from './stages/shechemBethel';
+import { buildEgyptStage, type EgyptStage } from './stages/egypt';
+import { buildSiddimHobahStage, type SiddimHobahStage } from './stages/siddimHobah';
 import { Collision } from './collision';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
@@ -51,6 +54,9 @@ export interface StageInfo {
   furnaceDetails?: FurnaceStage;
   palaceDetails?: UrPalaceStage;
   esauCampDetails?: EsauCampStage;
+  shechemDetails?: ShechemBethelStage;
+  egyptDetails?: EgyptStage;
+  siddimDetails?: SiddimHobahStage;
 }
 
 export class StageManager {
@@ -93,6 +99,15 @@ export class StageManager {
     }
     if (this.currentStage?.esauCampDetails) {
       this.currentStage.esauCampDetails.updateAnimations(dt, time);
+    }
+    if (this.currentStage?.shechemDetails) {
+      this.currentStage.shechemDetails.update(dt, time);
+    }
+    if (this.currentStage?.egyptDetails) {
+      this.currentStage.egyptDetails.update(dt, time);
+    }
+    if (this.currentStage?.siddimDetails) {
+      this.currentStage.siddimDetails.update(dt, time);
     }
   }
 
@@ -235,87 +250,52 @@ export class StageManager {
 
   // ── 5. 세겜 & 벧엘 상수리나무 언덕 ──
   private buildShechemBethel(): StageInfo {
-    const root = new THREE.Group();
-    const sb = new VoxelBuilder(9, false);
-
-    sb.box(0, -0.25, 0, 28, 0.5, 28, PAL_REGION.CANAAN.ground, { tex: 'soil' });
-    // 벧엘 언덕 전망대
-    sb.box(6, 0.8, -6, 10, 1.6, 10, PAL.stone[3], { tex: 'cliff' });
-    root.add(sb.build());
-
-    // 첫 제단
-    const altar = buildStoneAltar(true);
-    altar.position.set(0, 0, -2);
-    root.add(altar);
-
-    // 상수리나무
-    const oak = buildMamreOak();
-    oak.position.set(-5, 0, -4);
-    root.add(oak);
-
+    const details = buildShechemBethelStage();
     return {
       id: 'shechem_bethel',
       name: '세겜과 벧엘 언덕',
       region: 'CANAAN',
       spawn: { x: 0, z: 4 },
-      bounds: { minX: -10, maxX: 10, minZ: -10, maxZ: 10 },
-      root,
-      bgm: 'bgm_covenant_stars',
-      ambience: 'amb_wind',
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
+      bgm: 'bgm_peaceful',
+      ambience: 'amb_field_day',
+      shechemDetails: details,
     };
   }
 
   // ── 6. 애굽 국경 및 바로 궁정 ──
   private buildEgypt(): StageInfo {
-    const root = new THREE.Group();
-    const eb = new VoxelBuilder(9, false);
-    const reg = PAL_REGION.EGYPT;
-
-    eb.box(0, -0.25, 0, 26, 0.5, 26, reg.sand, { tex: 'plain' });
-    // 나일강 수로
-    eb.box(-9, -0.05, 0, 4, 0.3, 26, reg.nileWater, { tex: 'water' });
-    // 애굽 국경 관문 기둥들
-    eb.box(2, 2.0, -6, 1.2, 4.0, 1.2, reg.sandstonePillar, { tex: 'stone' });
-    eb.box(7, 2.0, -6, 1.2, 4.0, 1.2, reg.sandstonePillar, { tex: 'stone' });
-    root.add(eb.build());
-
-    // 세관 상자
-    const chest = buildBorderChest();
-    chest.position.set(4.5, 0, -6);
-    root.add(chest);
-
+    const details = buildEgyptStage();
     return {
       id: 'egypt',
       name: '애굽 국경과 궁정',
       region: 'EGYPT',
       spawn: { x: 0, z: 2 },
-      bounds: { minX: -7, maxX: 10, minZ: -8, maxZ: 8 },
-      root,
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_shadow_intrigue',
-      ambience: 'amb_wind',
+      ambience: 'amb_river',
+      egyptDetails: details,
     };
   }
 
   // ── 7. 싯딤 골짜기 및 호바 ──
   private buildSiddimHobah(): StageInfo {
-    const root = new THREE.Group();
-    const wb = new VoxelBuilder(9, false);
-
-    wb.box(0, -0.25, 0, 30, 0.5, 30, PAL_REGION.SODOM_NEGEV.canyonRed, { tex: 'soil' });
-    // 골짜기 협곡 바위들
-    wb.box(-11, 2.2, 0, 6, 4.4, 30, PAL.stone[1], { tex: 'cliff' });
-    wb.box(11, 2.2, 0, 6, 4.4, 30, PAL.stone[1], { tex: 'cliff' });
-    root.add(wb.build());
-
+    const details = buildSiddimHobahStage();
     return {
       id: 'siddim_hobah',
       name: '싯딤 골짜기 전장',
       region: 'SODOM_NEGEV',
       spawn: { x: 0, z: 5 },
-      bounds: { minX: -7, maxX: 7, minZ: -10, maxZ: 10 },
-      root,
+      bounds: details.bounds,
+      root: details.root,
+      col: details.col,
       bgm: 'bgm_battle_deliverance',
-      ambience: 'amb_wind',
+      ambience: 'amb_battlefield',
+      siddimDetails: details,
     };
   }
 
