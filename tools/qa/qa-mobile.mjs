@@ -219,6 +219,39 @@ try {
   check(pst.x >= 0 && pst.x + pst.w <= pst.uiW + 1, `세로 화면의 장 선택 패널이 화면 안에 있다 (x=${Math.round(pst.x)}, w=${Math.round(pst.w)}, ui=${Math.round(pst.uiW)})`);
   await portrait.screenshot({ path: path.join(OUT, 'mobile6_portrait_chapter_select.png') });
   await portrait.close();
+
+  // 세로 화면 구도: 플레이어가 위쪽-가운데에 오고(아래 약 40% 는 조작·대화 몫), 가로로 14~16 유닛이 보인다. 390x844 와 작은 360x640 두 크기 모두
+  for (const [vw, vh, tag] of [[390, 844, '390x844'], [360, 640, '360x640']]) {
+    const pg = await ctx.newPage();
+    pg.on('pageerror', (e) => errors.push(e.message));
+    await pg.setViewport({ width: vw, height: vh, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+    await pg.evaluateOnNewDocument(() => { try { localStorage.setItem('abraham.help.seen.v1', '1'); } catch { /* 저장소 없음 */ } });
+    await pg.goto(`http://localhost:${PORT}/?touch=1`, { waitUntil: 'domcontentloaded' });
+    await ready(pg); await sleep(1500);
+    await pg.evaluate(() => window.__abraham && window.__abraham.skipCutscenes());
+    await sleep(800);
+    const f = await pg.evaluate(() => {
+      const d = window.__AGY_DEBUG__, r = d.sceneCtx.renderer, p = d.sceneCtx.player.root.position;
+      const sp = d.hud.project(p.x, 0, p.z);
+      return { fy: sp.y / d.hud.uiH, fx: sp.x / d.hud.uiW, framing: r && r.viewFraming, ppu: r && r.size ? r.size.ppu : null, w: r && r.size ? r.size.w : null };
+    });
+    const units = f.ppu && f.w ? (f.w / f.ppu) * f.framing : 0;
+    check(f.fy > 0.2 && f.fy < 0.5, `세로 ${tag}: 플레이어가 화면 위쪽-가운데에 있다 (위에서 ${(f.fy * 100).toFixed(0)}%)`);
+    check(units >= 13 && units <= 17, `세로 ${tag}: 가로로 약 ${units.toFixed(1)} 유닛이 보인다 (14~16 목표)`);
+    await pg.screenshot({ path: path.join(OUT, `mobile8_portrait_${tag}_play.png`) });
+    // 장 시작 요약 대사가 떠 있으면 행동 단추로 먼저 넘긴다 (시험용 대사와 겹쳐 찍히지 않게)
+    for (let i = 0; i < 60 && await pg.evaluate(() => !!window.__AGY_DEBUG__.hud.dialogue); i++) await tapElOn(pg, '.abraham-act');
+    // 대사: 행동 단추로 첫 상호작용을 열어, 대사창 높이가 화면의 약 28% 이하인지 본다 (장 시작 요약 대사가 이미 떠 있을 수 있다)
+    await pg.evaluate(() => window.__AGY_DEBUG__.hud.showDialogue('아브람', '여호와께서 내게 말씀하셨다. 너는 네 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라. 내가 너를 큰 민족이 되게 하리라.', 30));
+    await sleep(700);
+    const dh = await pg.evaluate(() => { const h = window.__AGY_DEBUG__.hud; return h.dialogueRect.h > 0 ? { y: h.dialogueRect.y, h: h.dialogueRect.h, uiH: h.uiH } : null; });
+    await pg.screenshot({ path: path.join(OUT, `mobile9_portrait_${tag}_dialogue.png`) });
+    if (dh) check(dh.h <= dh.uiH * 0.28 + 1, `세로 ${tag}: 대사창이 화면 높이의 28% 이하 (${((dh.h / dh.uiH) * 100).toFixed(0)}%)`);
+    await pg.evaluate(() => window.__abraham.setProgress(['1:2'], {}));
+    await tapElOn(pg, '.abraham-g1');
+    await pg.screenshot({ path: path.join(OUT, `mobile10_portrait_${tag}_chapter.png`) });
+    await pg.close();
+  }
   check(errors.length === 0, `콘솔/페이지 오류 0건 (${errors.length}건${errors[0] ? ': ' + errors[0].slice(0, 80) : ''})`);
 } finally {
   await browser.close();

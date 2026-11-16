@@ -8,9 +8,38 @@
 | 항목 | 현재 |
 |---|---|
 | 타입 체크 | 오류 0, 소스에 `as any`/`@ts-ignore` 0건 |
-| 단위·런타임 테스트 | Vitest 40개 파일 **327개** 통과 (진행·라우팅·대본 대사·전승 표기·시간대·가드·타이머·저장·i18n·상호작용·스테이지 해제·**2~6권 액션 루프 구동**) |
+| 단위·런타임 테스트 | 개수는 아래 **자동 숫자 블록**(진행·라우팅·대본 대사·전승 표기·시간대·가드·타이머·저장·i18n·상호작용·스테이지 해제·2~6권 액션 루프 구동·터치 문구) |
 | 프로덕션 번들 | 메인 청크 ~876KB(gzip ~202KB). 1~6권 대본(`abraham_N.json`)과 영어 번역은 별도 지연 청크, `three` 분리. **디버그 전역(`__abraham`/`__AGY_DEBUG__`/`__GAME__`)은 번들에 없음** |
 | 영어 번역 | JSON 대본의 대사·제목 **834줄 전부** + `tr('한국어')` 리터럴 전수 스캔 테스트 |
+
+### 자동 숫자 블록 (`npm run qa:report`)
+
+`npm run qa:perf` 로 `docs/qa/perf.json` 을 만든 뒤 `npm run qa:report`(= `node tools/qa/gen-report-numbers.mjs --write`)를 돌리면 vitest 결과(`npx vitest run --reporter=json`)와 perf.json 에서 아래 구간을 다시 쓴다. 이 구간 밖의 숫자는 손으로 쓴 과거 측정이므로 날짜·조건이 있는 것으로만 읽는다.
+
+<!-- numbers:start -->
+<!-- 이 구간은 `npm run qa:report`(tools/qa/gen-report-numbers.mjs)가 만든다. 손으로 고치지 말 것 -->
+- Vitest: **42개 파일, 338/338개 통과**
+- 성능 측정(`docs/qa/perf.json`): 무대 **14개** 드로우콜·삼각형, 정지 힙 **14개** 장
+- 드로우콜 최대 **162**(ur_furnace) / 예산 180, 삼각형 최대 **174k**(mamre) / 예산 220k
+- 정지 8초 힙(장마다): 잔존 증가 최대 **0.09MB**(mamre) / 예산 0.3MB, 추정 할당률 최대 **1.70MB/s**(ur_palace) / 예산 2.2MB/s
+
+| 무대 | 드로우콜(최악) | 삼각형 | 메시 | 정지 힙 잔존 MB | 할당률 MB/s |
+|---|---|---|---|---|---|
+| ur_workshop | 125 | 172k | 229 | 0.08 | 0.94 |
+| ur_palace | 130 | 74k | 109 | 0.08 | 1.70 |
+| ur_furnace | 162 | 50k | 144 | 0.05 | 1.54 |
+| haran | 120 | 164k | 166 | 0.02 | 0.96 |
+| esau_camp | 130 | 112k | 111 | 0.07 | 1.37 |
+| shechem_bethel | 105 | 142k | 106 | 0.02 | 0.72 |
+| egypt | 90 | 153k | 98 | 0.07 | 0.81 |
+| siddim_hobah | 125 | 82k | 113 | 0.02 | 1.55 |
+| mamre | 106 | 174k | 101 | 0.09 | 1.04 |
+| beersheba | 131 | 143k | 122 | 0.04 | 0.90 |
+| sodom | 76 | 90k | 77 | 0.08 | 0.99 |
+| moriah | 83 | 125k | 86 | 0.03 | 0.76 |
+| hebron_machpelah | 67 | 166k | 75 | 0.03 | 0.71 |
+| nahor_well | 91 | 131k | 101 | 0.01 | 0.83 |
+<!-- numbers:end -->
 
 ## 2. 헤드리스 브라우저 QA (`node tools/qa/qa-abraham.mjs`, 개발 서버 필요: `PORT=… `)
 
@@ -24,8 +53,8 @@
 - **장 내부 진행은 '입력 재생' 방식으로 복원한다** (`src/game/chapterLog.ts`: 실행한 상호작용 id·선택지 번호를 저장 → 이어하기 때 조용히 같은 순서로 재실행). 확인: 2권 1장에서 돌 1개 줍고 저장 → 새로고침 → 목표가 (1/3)로 복원(헤드리스 브라우저), 단위 테스트는 기록·직렬화·재생 모드만 다룬다. **한계**: 액션이 시간 지연·컷신에 의존하면 즉시 실행으로 대체되고, 1권 우르 통합 루프 등 다른 장의 복원은 개별 확인하지 않았다.
 - 1권 우르 공방(도구 장착 흐름)은 자동화로 끝까지 검증하지 못했다.
 - **모바일 터치 QA는 에뮬레이션뿐이다** (`npm run qa:mobile` = `tools/qa/qa-mobile.mjs`: 모바일 가로 뷰포트 + 터치 입력으로 터치 UI 7개 요소 표시, 도움말·장 선택·일시정지 메뉴를 탭으로 열고 닫기를 단언, 스크린샷 `docs/qa/mobile/`). 이 QA 가 도움말 단추가 미니맵을 가리던 결함을 찾아 고쳤다. 실제 기기에서의 성능·터치 감도 기록은 없다.
-- **프레임당 할당은 여전히 0이 아니다 (실측, 이번 작업 후).** `qa-perf` 가 정지 20초 동안 `JSHeapUsedSize` 증가분을 합산한 추정 할당률은 세겜 ~1.0MB/s, 소돔 ~1.2MB/s, 헤브론 ~1.0MB/s (이전 같은 방식 측정 1.3 / 1.2~3.5(튄 값) / 0.8~1.0 — 측정 잡음이 ±0.3MB/s 라 '줄었다'고 단정할 만큼의 차이는 아니다). CDP `HeapProfiler.startSampling` 으로 12초 샘플링한 합계는 ~1.5MB/s → ~1.2MB/s. **목표였던 ≤0.5MB/s 는 달성하지 못했다.** 구성: Three.js 내부(유니폼 업로드 `setValueM4`·`setValueV3f`·`copyArray`·`flatten`, 렌더 리스트 정렬·`projectObject`)가 ~85%(~1.0MB/s)로, 드로우콜·프레임 수에 비례하며 앱 코드로는 고칠 수 없다. 앱 코드 몫은 ~0.25MB/s 로 전부 이번 작업 범위 밖 파일이다: `hudPanels.ts` `goalPanel`·`drawMinimap`, `pixelText.ts`, `entities/player.ts:453 update`, `systems/interaction.ts nearest`. 이번에 고친 것: `frameLoop.ts` 의 `for...of` 이터레이터(actors/animals)를 인덱스 루프로, 클로저에 잡힌 `let` 타이머(쓸 때마다 힙 숫자 할당)를 `Float64Array` 로, `uiScale.snapRect` 가 매번 새로 만들던 `{x0,y0,x1,y1}`+`snapSpan` 배열 2개를 64칸 풀로, `beam.ts` 의 `for...of` 를 인덱스 루프로. 이 몫들은 프로파일에서 합쳐 ~0.05MB/s 라 총량 변화는 잡음에 묻힌다. 그림자 맵을 격프레임으로만 다시 그리게 했지만(`PixelRenderer.shadowRate=2`) 할당 총량에는 눈에 띄는 변화가 없었다. **CLAUDE.md 규칙 1(프레임당 할당 0)은 코드 전체로는 지켜지지 않고 있다.**
-- **드로우콜·삼각형 (이번 작업, `qa-perf` 최악 프레임: 그림자 맵을 매 프레임 갱신시켜 그림자 패스 포함, 후처리 5콜 포함).** 같은 코드 상태에서 병합 개선 끄기(`mergeConfig` 의 `anchors/bones` 끔·그림자 컷 끔·타일 48) 대 켜기로 측정:
+- **프레임당 할당은 여전히 0이 아니다 (실측).** `qa-perf` 가 장마다 정지 8초 동안 `JSHeapUsedSize` 증가분을 합산한 추정 할당률은 위 숫자 블록의 표(무대별)가 현재 값이다 — 장에 따라 약 0.7~1.7MB/s 로 갈리고, 사람·병합 메시·드로우콜이 많은 장(`ur_palace`·`ur_furnace`·`siddim_hobah`·`esau_camp`)이 높다. 측정 잡음은 ±0.3MB/s 라 작은 차이는 의미가 없고, 개발 서버가 다른 작업의 소스 변경으로 페이지를 다시 읽는 동안 재면 14MB/s 처럼 튀므로 소스가 고정된 상태에서 잰다. **목표였던 ≤0.5MB/s 는 달성하지 못했다.** 구성(이전 프로파일링, CDP `HeapProfiler.startSampling`): Three.js 내부(유니폼 업로드 `setValueM4`·`setValueV3f`·`copyArray`·`flatten`, 렌더 리스트 정렬·`projectObject`)가 ~85% 로, 드로우콜·프레임 수에 비례하며 앱 코드로는 고칠 수 없다. 앱 코드 몫은 ~0.25MB/s 로 `hudPanels.ts` `goalPanel`·`drawMinimap`, `pixelText.ts`, `entities/player.ts update`, `systems/interaction.ts nearest` 였다. 이전에 고친 것: `frameLoop.ts` 의 `for...of` 이터레이터를 인덱스 루프로, 클로저에 잡힌 `let` 타이머를 `Float64Array` 로, `uiScale.snapRect` 의 객체·배열 할당을 64칸 풀로, `beam.ts` 의 `for...of` 를 인덱스 루프로. 그림자 맵을 격프레임으로만 다시 그리게 했지만(`PixelRenderer.shadowRate=2`) 할당 총량에는 눈에 띄는 변화가 없었다. **CLAUDE.md 규칙 1(프레임당 할당 0)은 코드 전체로는 지켜지지 않고 있다.**
+- **드로우콜·삼각형 (병합 개선 전후 비교 — 그때 측정한 값이며 현재 값은 위 숫자 블록이 기준, `qa-perf` 최악 프레임: 그림자 맵을 매 프레임 갱신시켜 그림자 패스 포함, 후처리 5콜 포함).** 같은 코드 상태에서 병합 개선 끄기(`mergeConfig` 의 `anchors/bones` 끔·그림자 컷 끔·타일 48) 대 켜기로 측정:
 
   | 무대 | 드로우콜 전 → 후 | 비고 |
   |---|---|---|

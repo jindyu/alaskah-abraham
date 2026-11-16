@@ -5,65 +5,65 @@
       "chapter": 0,
       "calls": 125,
       "minCalls": 68,
-      "triangles": 171924,
-      "geometries": 170,
+      "triangles": 172416,
+      "geometries": 173,
       "textures": 43,
-      "meshes": 226,
+      "meshes": 229,
       "mergedMeshes": 20,
-      "mergedSources": 114,
+      "mergedSources": 117,
       "unmerged": 0
     },
     "ur_palace": {
       "book": 1,
       "chapter": 6,
-      "calls": 105,
-      "minCalls": 59,
-      "triangles": 4762,
-      "geometries": 52,
-      "textures": 43,
-      "meshes": 96,
-      "mergedMeshes": 10,
-      "mergedSources": 35,
-      "unmerged": 10
+      "calls": 130,
+      "minCalls": 73,
+      "triangles": 74100,
+      "geometries": 65,
+      "textures": 45,
+      "meshes": 109,
+      "mergedMeshes": 12,
+      "mergedSources": 46,
+      "unmerged": 12
     },
     "ur_furnace": {
       "book": 1,
       "chapter": 7,
-      "calls": 142,
-      "minCalls": 79,
-      "triangles": 49450,
-      "geometries": 86,
+      "calls": 162,
+      "minCalls": 89,
+      "triangles": 50170,
+      "geometries": 96,
       "textures": 46,
-      "meshes": 134,
-      "mergedMeshes": 14,
-      "mergedSources": 53,
-      "unmerged": 7
+      "meshes": 144,
+      "mergedMeshes": 16,
+      "mergedSources": 66,
+      "unmerged": 9
     },
     "haran": {
       "book": 1,
       "chapter": 9,
-      "calls": 112,
-      "minCalls": 64,
-      "triangles": 155484,
-      "geometries": 102,
+      "calls": 120,
+      "minCalls": 68,
+      "triangles": 163824,
+      "geometries": 110,
       "textures": 47,
-      "meshes": 158,
-      "mergedMeshes": 10,
-      "mergedSources": 71,
+      "meshes": 166,
+      "mergedMeshes": 12,
+      "mergedSources": 74,
       "unmerged": 3
     },
     "esau_camp": {
       "book": 1,
       "chapter": 11,
-      "calls": 96,
-      "minCalls": 56,
-      "triangles": 95800,
-      "geometries": 48,
+      "calls": 130,
+      "minCalls": 73,
+      "triangles": 111928,
+      "geometries": 69,
       "textures": 47,
-      "meshes": 90,
-      "mergedMeshes": 6,
-      "mergedSources": 18,
-      "unmerged": 6
+      "meshes": 111,
+      "mergedMeshes": 10,
+      "mergedSources": 30,
+      "unmerged": 8
     },
     "shechem_bethel": {
       "book": 2,
@@ -94,51 +94,51 @@
     "siddim_hobah": {
       "book": 2,
       "chapter": 5,
-      "calls": 106,
-      "minCalls": 61,
-      "triangles": 81928,
-      "geometries": 66,
+      "calls": 125,
+      "minCalls": 71,
+      "triangles": 82300,
+      "geometries": 76,
       "textures": 49,
-      "meshes": 103,
-      "mergedMeshes": 12,
-      "mergedSources": 26,
-      "unmerged": 8
+      "meshes": 113,
+      "mergedMeshes": 14,
+      "mergedSources": 35,
+      "unmerged": 10
     },
     "mamre": {
       "book": 2,
       "chapter": 8,
-      "calls": 104,
-      "minCalls": 61,
-      "triangles": 173828,
-      "geometries": 64,
+      "calls": 106,
+      "minCalls": 62,
+      "triangles": 173972,
+      "geometries": 65,
       "textures": 49,
-      "meshes": 100,
+      "meshes": 101,
       "mergedMeshes": 8,
-      "mergedSources": 18,
+      "mergedSources": 19,
       "unmerged": 5
     },
     "beersheba": {
       "book": 3,
       "chapter": 1,
-      "calls": 125,
-      "minCalls": 86,
-      "triangles": 142518,
-      "geometries": 71,
+      "calls": 131,
+      "minCalls": 88,
+      "triangles": 142686,
+      "geometries": 74,
       "textures": 49,
-      "meshes": 119,
+      "meshes": 122,
       "mergedMeshes": 7,
-      "mergedSources": 39,
+      "mergedSources": 42,
       "unmerged": 3
     },
     "sodom": {
       "book": 4,
       "chapter": 1,
-      "calls": 68,
-      "minCalls": 42,
-      "triangles": 82234,
-      "geometries": 38,
+      "calls": 75,
+      "minCalls": 46,
+      "triangles": 90066,
+      "geometries": 42,
       "textures": 49,
-      "meshes": 73,
+      "meshes": 77,
       "mergedMeshes": 0,
       "mergedSources": 0,
       "unmerged": 0
@@ -146,14 +146,14 @@
     "moriah": {
       "book": 5,
       "chapter": 5,
-      "calls": 72,
-      "minCalls": 44,
-      "triangles": 101012,
-      "geometries": 43,
+      "calls": 83,
+      "minCalls": 50,
+      "triangles": 124738,
+      "geometries": 51,
       "textures": 49,
-      "meshes": 78,
-      "mergedMeshes": 1,
-      "mergedSources": 2,
+      "meshes": 86,
+      "mergedMeshes": 2,
+      "mergedSources": 4,
       "unmerged": 0
     },
     "hebron_machpelah": {
@@ -161,7 +161,7 @@
       "chapter": 0,
       "calls": 67,
       "minCalls": 42,
-      "triangles": 165900,
+      "triangles": 165888,
       "geometries": 40,
       "textures": 49,
       "meshes": 75,
@@ -174,7 +174,7 @@
       "chapter": 4,
       "calls": 91,
       "minCalls": 54,
-      "triangles": 130526,
+      "triangles": 130538,
       "geometries": 66,
       "textures": 49,
       "meshes": 101,
@@ -184,26 +184,81 @@
     }
   },
   "heap": {
+    "ur_workshop": {
+      "seconds": 8,
+      "retainedGrowthMB": 0.07,
+      "allocRateMBs": 0.94
+    },
+    "ur_palace": {
+      "seconds": 8,
+      "retainedGrowthMB": 0.05,
+      "allocRateMBs": 1.71
+    },
+    "ur_furnace": {
+      "seconds": 8,
+      "retainedGrowthMB": 0.01,
+      "allocRateMBs": 1.53
+    },
+    "haran": {
+      "seconds": 8,
+      "retainedGrowthMB": 0.01,
+      "allocRateMBs": 0.96
+    },
+    "esau_camp": {
+      "seconds": 8,
+      "retainedGrowthMB": 0.08,
+      "allocRateMBs": 1.36
+    },
     "shechem_bethel": {
-      "seconds": 20.1,
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.02,
+      "allocRateMBs": 0.57
+    },
+    "egypt": {
+      "seconds": 178.4,
+      "retainedGrowthMB": 0.08,
+      "allocRateMBs": 0.03
+    },
+    "siddim_hobah": {
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.01,
+      "allocRateMBs": 1.55
+    },
+    "mamre": {
+      "seconds": 47.6,
+      "retainedGrowthMB": 0.06,
+      "allocRateMBs": 0.01
+    },
+    "beersheba": {
+      "seconds": 8.1,
       "retainedGrowthMB": 0.03,
-      "allocRateMBs": 0.69
+      "allocRateMBs": 0.89
     },
     "sodom": {
-      "seconds": 20,
-      "retainedGrowthMB": 0.11,
-      "allocRateMBs": 0.91
+      "seconds": 910.7,
+      "retainedGrowthMB": 0.05,
+      "allocRateMBs": 0
+    },
+    "moriah": {
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.02,
+      "allocRateMBs": 0.77
     },
     "hebron_machpelah": {
-      "seconds": 20,
-      "retainedGrowthMB": 0.03,
-      "allocRateMBs": 0.67
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.01,
+      "allocRateMBs": 0.73
+    },
+    "nahor_well": {
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.02,
+      "allocRateMBs": 0.83
     }
   },
   "budget": {
-    "maxCallsPerStage": 170,
-    "maxTrianglesPerStage": 300000,
-    "maxRetainedGrowthMB": 0.5,
-    "maxAllocRateMBs": 1.2
+    "maxCallsPerStage": 180,
+    "maxTrianglesPerStage": 220000,
+    "maxRetainedGrowthMB": 0.3,
+    "maxAllocRateMBs": 2.2
   }
 }

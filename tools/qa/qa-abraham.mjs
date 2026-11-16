@@ -50,6 +50,10 @@ async function runQa() {
         }
       });
 
+      // 'Failed to load resource' 메시지에는 URL 이 없다 → 응답에서 직접 어떤 요청이 실패했는지 남긴다
+      page.on('response', (res) => {
+        if (res.status() >= 400) console.error(`  [제${bookNum}권 HTTP ${res.status()}]`, res.url().slice(0, 200));
+      });
       page.on('pageerror', (err) => {
         const text = err.message || String(err);
         console.error(`  [제${bookNum}권 Page Error]`, text);

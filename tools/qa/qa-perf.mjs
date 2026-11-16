@@ -5,7 +5,8 @@
  * 예산 초과면 종료 코드 1. 결과는 docs/qa/perf.json 에 저장.
  *   PORT=5174 node tools/qa/qa-perf.mjs
  *   QA_PERF_NO_ASSERT=1  측정만 (기준선 측정용)
- *   IDLE_SECONDS=20      힙 측정 시간
+ *   IDLE_SECONDS=8       장마다 힙 측정 시간 (기본 8초, 모든 장)
+ *   HEAP_STAGES=a,b      힙을 잴 장 id 쉼표 목록 (기본: 방문한 모든 장)
  * Chrome 은 --js-flags=--expose-gc 로 띄워 window.gc / CDP HeapProfiler.collectGarbage 를 쓴다.
  */
 import fs from 'node:fs';
@@ -15,20 +16,24 @@ import { launch as launchBrowser, openGame, gotoChapter as gotoCh, evalRetry, wa
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT ? Number(process.env.PORT) : 5174;
-const IDLE = Number(process.env.IDLE_SECONDS ?? 20);
+/** 장마다 정지 상태로 재는 시간(초). 14개 장 모두를 재므로 8초 (3개 장을 20초 재던 때와 비슷한 총 시간) */
+const IDLE = Number(process.env.IDLE_SECONDS ?? 8);
 const NO_ASSERT = !!process.env.QA_PERF_NO_ASSERT;
 
-/** 예산 (측정값 + 여유, docs/qa/QA_REPORT.md 3절 참고). 드로우콜은 본 패스+그림자 패스(그림자 맵을 매 프레임 갱신시킨 최악 프레임)+후처리 합계.
- * 측정(최악): 드로우콜 최대 151(mamre) → 170, 삼각형 최대 279k(mamre) → 300k, 잔존 힙 ≤0.12MB → 0.5, 정지 할당률 0.65~0.92MB/s(three 유니폼 업로드가 대부분; 앱 쪽 HUD/플레이어/상호작용 할당 제거 후 측정) → 1.2 */
+/** 예산 (측정값 + 여유, docs/qa/QA_REPORT.md 숫자 블록 참고). 드로우콜은 본 패스+그림자 패스(그림자 맵을 매 프레임 갱신시킨 최악 프레임)+후처리 합계.
+ * 측정(14개 장 전부, 고정된 소스 스냅샷에서): 드로우콜 최대 162(ur_furnace) → 180, 삼각형 최대 174k(mamre) → 220k,
+ * 장마다 8초 정지 후 잔존 힙 ≤0.09MB → 0.3, 정지 할당률 0.71~1.72MB/s(three 유니폼 업로드가 대부분; 사람·병합 메시가 많은 ur_palace·ur_furnace·siddim_hobah·esau_camp 가 높다) → 2.2.
+ * 주의: 개발 서버가 다른 작업의 소스 변경으로 페이지를 다시 읽는 동안 재면 힙이 14MB/s 처럼 튄다 — 소스가 안 바뀌는 상태에서 잴 것. */
 export const BUDGET = {
-  maxCallsPerStage: Number(process.env.BUDGET_CALLS ?? 170),
-  maxTrianglesPerStage: Number(process.env.BUDGET_TRIS ?? 300000),
-  /** 20초 정지 후 강제 GC 한 잔존 힙 증가 (MB) — 누수 감시 */
-  maxRetainedGrowthMB: Number(process.env.BUDGET_RETAINED_MB ?? 0.5),
+  maxCallsPerStage: Number(process.env.BUDGET_CALLS ?? 180),
+  maxTrianglesPerStage: Number(process.env.BUDGET_TRIS ?? 220000),
+  /** 정지 후 강제 GC 한 잔존 힙 증가 (MB) — 누수 감시 */
+  maxRetainedGrowthMB: Number(process.env.BUDGET_RETAINED_MB ?? 0.3),
   /** 정지 상태 추정 할당률 (MB/s) */
-  maxAllocRateMBs: Number(process.env.BUDGET_ALLOC_MBS ?? 1.2),
+  maxAllocRateMBs: Number(process.env.BUDGET_ALLOC_MBS ?? 2.2),
 };
-const HEAP_STAGES = (process.env.HEAP_STAGES ?? 'shechem_bethel,sodom,hebron_machpelah').split(',');
+/** 지정이 없으면 이번 실행에서 방문한 모든 장 (아래에서 채움) */
+const HEAP_STAGES_ENV = process.env.HEAP_STAGES ? process.env.HEAP_STAGES.split(',') : null;
 
 const gotoChapter = async (page, b, c) => {
   // 개발 서버가 소스 변경으로 페이지를 다시 읽으면 상태가 사라지므로, 이동+병합 대기를 한 번 더 시도한다
@@ -81,7 +86,7 @@ try {
   }
 
   const heapNow = async () => (await page.metrics()).JSHeapUsedSize;
-  for (const sid of HEAP_STAGES) {
+  for (const sid of HEAP_STAGES_ENV ?? Object.keys(firstChapter)) {
     const fc = firstChapter[sid];
     if (!fc) { problems.push(`${sid}: 힙 측정할 장을 찾지 못함`); continue; }
     await gotoChapter(page, fc[0], fc[1]);
