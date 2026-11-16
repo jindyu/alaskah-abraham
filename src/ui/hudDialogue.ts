@@ -128,7 +128,9 @@ export function drawDialogue(h: Hud, dt: number): void {
   if (panelY < 32 + e.top) panelY = 32 + e.top;
   // 안내는 화면 맨 아래 띠로 내려 장면을 덜 가리고, E 프롬프트 상자는 절대 덮지 않는다
   const minPanelY = 32 + e.top;
-  if (narration) panelY = Math.max(minPanelY, h.h - panelH - 14 - dockBottom(h));
+  // 세로 터치 화면은 화자가 있는 대사도 조작부 바로 위에 붙인다 (화면 중간에 떠서 장면을 가리지 않게)
+  const dockLow = narration || (h.touch && h.cssH > h.cssW * 1.15);
+  if (dockLow) panelY = Math.max(minPanelY, h.h - panelH - 14 - dockBottom(h));
   panelY = avoidPrompt(panelY, panelX, panelW, panelH, minPanelY, Math.max(minPanelY, h.h - panelH - 4 - dockBottom(h)), h.promptRect);
 
   // 5) 부드러운 페이드인 / 페이드아웃 및 팝업 애니메이션

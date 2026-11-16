@@ -154,15 +154,17 @@ export function goalPanel(hud: Hud, text: string, y0: number) {
   }
 
   // 헤더 카테고리 텍스트
-  hud.put(lab, x0 + 9, y0 + 5);
+  // 글자가 커진 화면(터치·큰 글자)에서는 머리글이 위로 잘리지 않게 아래로 맞추고, 구분선도 그만큼 내린다
+  const hg = hud.grow(10);
+  hud.put(lab, x0 + 9, y0 + 5 + Math.round(hg / 2));
 
   // 헤더 장식 구분선
   g.fillStyle = RULE;
-  g.fillRect(x0 + 8, y0 + 17, W - 16, 1);
+  g.fillRect(x0 + 8, y0 + 17 + hg, W - 16, 1);
   g.fillStyle = PAPER_LIGHT;
-  g.fillRect(x0 + 8, y0 + 18, W - 16, 1);
+  g.fillRect(x0 + 8, y0 + 18 + hg, W - 16, 1);
   g.fillStyle = '#e8a020';
-  g.fillRect(x0 + 8, y0 + 16, 3, 3);
+  g.fillRect(x0 + 8, y0 + 16 + hg, 3, 3);
 
   // 목표 텍스트 및 서브태스크 체크박스
   for (let i = 0; i < hud.goalLines.length; i++) {
