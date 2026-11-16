@@ -9,6 +9,7 @@ import { buildFarField, buildHorizonPlane, scatterGroundCover, tintColor } from 
 import { buildStageGroundPlane } from './scenery12';
 import { buildPerimeterRidges, buildMudbrickBuilding } from './scenery36';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { Dressing, distToPolyline } from './dressing';
 
 export interface HaranStage {
   root: THREE.Group;
@@ -17,6 +18,16 @@ export interface HaranStage {
 }
 
 const HARAN_HALF = 18;
+/** 장막 마당에서 우물·오아시스·양 우리·장터로 뻗는 밟힌 길 (x0,z0,x1,z1,...) */
+const HARAN_PATHS: number[][] = [
+  [0, 0, -4, -2, -10, -4.5],
+  [0, 0, 3, -2.5, 5.5, -3.2],
+  [0, 0, -5, 3, -9, 6.5],
+  [0, 0, 2, 5, 4.8, 8.5, 8, 8],
+  [0, 0, 5, 1.5, 11.5, 3.5],
+  [-2, 9.5, -3, 13],
+  [4.8, 8.5, 6, 12.5],
+];
 
 /** 하란 오아시스 지면: 마른 모래 + 다져진 장막 마당 + 물가 풀밭/젖은 흙 + 성문으로 이어지는 길 */
 function buildHaranGround(): THREE.Mesh {
@@ -42,6 +53,18 @@ function buildHaranGround(): THREE.Mesh {
       if (dCamp < 4.4 && valueNoise(i / 6, j / 6, 1221) > dCamp / 6) c = 0x8a6a42;
       const dT1 = Math.hypot(x + 4.5, z + 3.5), dT2 = Math.hypot(x - 4.0, z - 2.5);
       if ((dT1 < 3.4 || dT2 < 3.4) && hash2(i, j, 1223) < 0.8) c = 0x8e6e46;
+      // 장막 마을 곳곳으로 이어지는 밟힌 길 (가장자리가 들쭉날쭉)
+      let dWalk = 99;
+      for (let q = 0; q < HARAN_PATHS.length; q++) dWalk = Math.min(dWalk, distToPolyline(x, z, HARAN_PATHS[q]));
+      if (dWalk < 0.95 - valueNoise(i / 4, j / 4, 1251) * 0.45) c = hash2(i, j, 1253) < 0.06 ? 0xd8bc88 : 0xb48e5c;
+      else if (dWalk < 1.5 && hash2(i, j, 1255) < 0.25) c = 0x9a7646;
+      // 땅 무늬: 짙은 흙 얼룩 / 마른 풀 얼룩 / 밝은 모래 얼룩이 덩어리로
+      const gp = valueNoise(x / 3.2 + 40, z / 3.2, 1261), gq = valueNoise(x / 4.4, z / 4.4 + 80, 1263);
+      if (dWalk > 1.5 && dPond >= 6.2) {
+        if (gp > 0.7) c = hash2(i, j, 1265) < 0.6 ? 0x8a6a42 : 0x7a5c38;
+        else if (gq > 0.72) c = hash2(i, j, 1267) < 0.55 ? 0x8a8a4c : 0x74803f;
+        else if (gp < 0.2) c = hash2(i, j, 1269) < 0.5 ? 0xd8b880 : 0xcba46a;
+      }
       // 북문으로 이어지는 순례길 (x≈0, z -12 → 0): 밟혀 단단하고 밝은 흙
       const dPath = Math.abs(x - Math.sin(z * 0.35) * 1.2);
       if (z < -0.5 && z > -14 && dPath < 1.5 - valueNoise(i / 5, j / 5, 1231) * 0.5) c = hash2(i, j, 1233) < 0.05 ? 0xe0c490 : 0xcca878;
@@ -184,6 +207,29 @@ export function buildHaranStage(): HaranStage {
   vb.box(-3.0, 0.05, -8.6, 1.9, 0.02, 0.8, 0xe0b848, { tex: 'wool' });
   vb.box(3.2, 0.01, -9.6, 2.0, 0.04, 1.0, 0x2c5a88, { tex: 'wool' });
   vb.box(3.2, 0.05, -9.6, 1.5, 0.02, 0.6, 0xe0d0a0, { tex: 'wool' });
+
+  // 세트 드레싱: 활동 구역(화덕·건조대·보급품·우리)을 군락으로, 남는 6x6 칸은 바위·관목·작업 자리로
+  const dr = new Dressing(vb, col, 1400);
+  const pts: number[][] = [[0, 0], [6.5, -5], [-10, -4.5], [-4.5, -3.5], [4, 2.5], [-10.5, -9], [11.5, 7.5], [-2, 9.5], [10.5, -12], [-11.5, 7], [4.8, 8], [-7, 7.5], [8, 7.5], [1, 11.6], [8.8, 4.5], [6.5, 4.5], [-4.5, -8.6], [3.2, -9.6], [-9, -12], [9, -9]];
+  for (const p of pts) dr.mark(p[0], p[1]);
+  dr.fireRing(-7.5, 0.8, 3);
+  dr.fireRing(9.5, 11.5, 3);
+  dr.dryingRack(-1.5, 5.6, 2.6);
+  dr.dryingRack(12.0, -5.0, 2.2, 0xe0d0b0);
+  dr.dryingRack(-6.5, -6.5, 2.0, 0xc89a68);
+  dr.pen(5.0, 12.2, 5.4, 3.3);
+  dr.supplyPile(13.0, 1.0, 6);
+  dr.supplyPile(-5.0, 13.0, 5);
+  dr.supplyPile(-8.5, -1.8, 4);
+  dr.workSpot(5.5, 4.5);
+  dr.workSpot(-2.5, -6.5);
+  dr.rocks(-13.5, -1.5, 4, 0xa89070);
+  dr.rocks(14, -8, 4, 0xa89070);
+  dr.rocks(2, -4.5, 3, 0xa89070);
+  dr.shrubs(11.5, -1.5, 4, [0x7a8a48, 0x6a7a3c, 0x8a8a50]);
+  dr.shrubs(-13, 11.5, 4, [0x7a8a48, 0x6a7a3c, 0x8a8a50]);
+  dr.shrubs(-2, -10, 3, [0x7a8a48, 0x6a7a3c]);
+  dr.fillGaps(-15, 15, -11, 15, [0x7a8a48, 0x6a7a3c, 0x8a8a50, 0x9a8a52], 0xa89070, (x, z) => Math.hypot((x - 6.5) / 1.3, z + 5) < 6.5);
 
   scatterGroundCover(vb, col, { seed: 1337, half: 18, count: 150, flowers: [0xf0e0a0, 0xe8a8b8], tufts: [0x9a8a52, 0x8a7a46, 0x6a8a48], pebbles: [0x9a8460, 0xb89c70, 0x7a6448] });
   root.add(vb.build());

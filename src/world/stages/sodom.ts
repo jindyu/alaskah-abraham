@@ -13,6 +13,8 @@ import {
   buildStoragePropCluster,
 } from './scenery36';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { tintColor } from './common';
+import { Dressing } from './dressing';
 
 export interface SodomStage {
   root: THREE.Group;
@@ -102,7 +104,7 @@ export function buildSodomStage(): SodomStage {
   root.add(buildSodomGroundMesh());
 
 
-  buildFarField(root, SODOM_HALF, { seed: 4, pal: [0x2e2630, 0x3e3240, 0x56444e, 0x6a5058], tex: 'cliff', accents: [0x4a3c4c], haze: 0x7a4e5e, depth: 44, ground: 0x6a4a40, rim: { min: 3.0, max: 5.5, south: 0.45, openNorth: true } });
+  buildFarField(root, SODOM_HALF, { seed: 4, pal: [0x2e3040, 0x40465a, 0x5c6076, 0x7a7e92], tex: 'cliff', accents: [0x4a3c4c], haze: 0x7a4e5e, depth: 44, ground: 0x6a4a40, rim: { min: 3.0, max: 5.5, south: 0.45, openNorth: true } });
   // 2. 외곽 공허 차단: 붉은 협곡 절벽 및 도시 경계벽 (남/동/서 절벽)
   buildPerimeterRidges(vb, col, SODOM_HALF, [0x4e3c50, 0x645064, 0x7a5a5c, 0x3c3042], {
     seed: 401,
@@ -159,6 +161,76 @@ export function buildSodomStage(): SodomStage {
   vb.box(0, 1.2, wallZ + 0.25, 3.8, 0.15, 0.12, 0x9a7a40, { tex: 'metal' });
   col.addBox(-1.3, wallZ, 1.8, 1.0);
   col.addBox(1.3, wallZ, 1.8, 1.0);
+
+  // 3-1. 성벽·망루 앞면 디테일: 돌켜 줄무늬(어두운 현무암 ↔ 밝은 사암), 창, 문, 발코니, 균열, 그을음, 따뜻한 불빛
+  const faceZ = wallZ + 1.6 + 0.03; // 성벽 앞면
+  const towerFaceZ = wallZ + 2.1 + 0.03; // 망루 앞면
+  const darkB = 0x3c3a46, lightB = 0xd8c4a0;
+  // 어두운 현무암 기단 + 밝은 사암 줄 (가로로 읽히는 층)
+  for (const sx of [-1, 1]) {
+    vb.box(sx * 11, 0, faceZ, 14, 1.0, 0.1, darkB, { tex: 'stone' });
+    for (let r = 0; r < 4; r++) vb.box(sx * 11, 1.0 + r * 1.35, faceZ, 14, 0.28, 0.1, r % 2 ? lightB : 0xc0a888, { tex: 'stone' });
+    vb.box(sx * 11, wallH - 0.4, faceZ + 0.1, 14, 0.4, 0.3, 0xe0cca8, { tex: 'stone' }); // 처마 돌림띠
+  }
+  for (const tx of [-3.5, 3.5]) {
+    vb.box(tx, 0, towerFaceZ, 3.2, 1.2, 0.1, darkB, { tex: 'stone' });
+    for (let r = 0; r < 6; r++) vb.box(tx, 1.2 + r * 1.3, towerFaceZ, 3.2, 0.26, 0.1, r % 2 ? lightB : 0xc0a888, { tex: 'stone' });
+    vb.box(tx, towerH - 0.5, towerFaceZ + 0.1, 3.6, 0.5, 0.35, 0xe0cca8, { tex: 'stone' });
+  }
+  // 창: 어두운 틀 + 상인방 + 창턱, 일부는 불이 켜져 있다 (붉은 거리와 대비되는 따뜻한 노랑)
+  const windowAt = (wx: number, wy: number, fz: number, lit: boolean): void => {
+    vb.box(wx, wy, fz, 0.9, 1.3, 0.12, 0x24202a);
+    vb.box(wx, wy + 1.3, fz + 0.04, 1.2, 0.22, 0.2, 0xe4d2ae, { tex: 'stone' });
+    vb.box(wx, wy - 0.18, fz + 0.08, 1.2, 0.18, 0.3, 0xd8c4a0, { tex: 'stone' });
+    if (lit) {
+      vb.box(wx, wy + 0.1, fz + 0.07, 0.66, 1.0, 0.05, 0xffb040, { tex: 'glow' });
+      vb.box(wx, wy + 1.55, fz + 0.04, 0.5, 1.4, 0.06, 0x1c1814); // 그을음 줄기
+    } else {
+      vb.box(wx, wy + 0.2, fz + 0.06, 0.6, 0.9, 0.04, 0x15121a);
+    }
+  };
+  for (let k = 0; k < 6; k++) {
+    const wxL = -16.6 + k * 2.3, wxR = 5.6 + k * 2.3;
+    if (wxL < -5.6) { windowAt(wxL, 2.5, faceZ, hash2(k, 1, 915) < 0.4); windowAt(wxL + 1.1, 4.4, faceZ, hash2(k, 2, 915) < 0.5); }
+    if (wxR > 5.4 && wxR < 17) { windowAt(wxR, 2.5, faceZ, hash2(k, 3, 915) < 0.4); windowAt(wxR + 1.1, 4.4, faceZ, hash2(k, 4, 915) < 0.5); }
+  }
+  for (const tx of [-3.5, 3.5]) { windowAt(tx - 0.8, 7.2, towerFaceZ, true); windowAt(tx + 0.8, 7.2, towerFaceZ, false); }
+  // 성벽의 작은 출입문 (좌우 하나씩): 어두운 문 + 아치 + 계단 + 횃불
+  for (const dx of [-9.2, 9.2]) {
+    vb.box(dx, 0, faceZ, 1.5, 2.5, 0.14, 0x1e1a1c);
+    vb.box(dx, 2.5, faceZ, 1.9, 0.3, 0.24, 0xe4d2ae, { tex: 'stone' });
+    vb.box(dx, 0, faceZ + 0.2, 2.2, 0.14, 0.7, 0xb8a484, { tex: 'stone' });
+    vb.box(dx - 1.2, 0, faceZ + 0.1, 0.18, 2.5, 0.2, 0xd8c4a0, { tex: 'stone' });
+    vb.box(dx + 1.2, 0, faceZ + 0.1, 0.18, 2.5, 0.2, 0xd8c4a0, { tex: 'stone' });
+    vb.box(dx + 1.45, 1.5, faceZ + 0.15, 0.1, 0.5, 0.1, PAL.wood[1], { tex: 'wood' }); // 횃불 자루
+    vb.box(dx + 1.45, 2.0, faceZ + 0.15, 0.24, 0.3, 0.24, 0xffa020, { tex: 'flame' });
+  }
+  // 망루 발코니: 돌 난간 + 화로 불 (망루 중단)
+  for (const tx of [-3.5, 3.5]) {
+    vb.box(tx, 4.7, towerFaceZ + 0.45, 3.4, 0.22, 0.9, 0xcdb894, { tex: 'stone' });
+    for (let k = 0; k < 5; k++) vb.box(tx - 1.5 + k * 0.75, 4.92, towerFaceZ + 0.82, 0.18, 0.7, 0.18, 0xe0cca8, { tex: 'stone' });
+    vb.box(tx, 5.6, towerFaceZ + 0.82, 3.4, 0.14, 0.24, 0xe0cca8, { tex: 'stone' });
+    vb.box(tx - 1.0, 4.92, towerFaceZ + 0.4, 0.55, 0.35, 0.55, 0x2a2428, { tex: 'stone' });
+    vb.box(tx - 1.0, 5.27, towerFaceZ + 0.4, 0.4, 0.25, 0.4, 0xff7a1c, { tex: 'flame' });
+    // 걸린 천 (적갈색 + 황토)
+    vb.box(tx + 1.0, 2.6, towerFaceZ + 0.08, 0.5, 1.8, 0.05, tx < 0 ? 0xa83a2c : 0xd09a30, { tex: 'wool' });
+  }
+  // 균열과 그을음 줄기: 밋밋한 면을 깨뜨린다
+  for (let k = 0; k < 14; k++) {
+    const cx = -17 + hash2(k, 5, 917) * 34;
+    if (Math.abs(cx) < 5.6) continue;
+    const ch = 0.9 + hash2(k, 6, 917) * 1.8, cy = 0.6 + hash2(k, 7, 917) * 3.6;
+    vb.box(cx, cy, faceZ + 0.02, 0.07, ch, 0.06, 0x1a1618);
+    vb.box(cx + 0.14, cy + ch * 0.5, faceZ + 0.02, 0.07, ch * 0.5, 0.06, 0x1a1618);
+    if (k % 3 === 0) vb.box(cx, cy + ch, faceZ + 0.015, 0.7, 2.2, 0.05, 0x2a2224); // 그을음
+  }
+  // 성벽 앞 화로 네 개 (바닥에서 올라오는 따뜻한 빛)
+  for (const bx of [-12.5, -6.5, 6.5, 12.5]) {
+    vb.box(bx, 0, faceZ + 0.9, 0.6, 0.7, 0.6, 0x3a343c, { tex: 'stone' });
+    vb.box(bx, 0.7, faceZ + 0.9, 0.8, 0.18, 0.8, 0x1c181c, { tex: 'metal' });
+    vb.box(bx, 0.88, faceZ + 0.9, 0.5, 0.3, 0.5, 0xff6a14, { tex: 'flame' });
+    vb.box(bx, 1.15, faceZ + 0.9, 0.26, 0.28, 0.26, 0xffcf50, { tex: 'flame' });
+  }
 
   // 4. 롯의 2층 흙벽돌 가옥 (남서쪽 x: -7, z: 2)
   // 폭 6.8m, 높이 5.2m, 깊이 5.8m. 문은 x: -3.4, z: 2 에 위치
@@ -272,6 +344,13 @@ export function buildSodomStage(): SodomStage {
   P.bush(vb, col, -8.0, -8.0, 0.9, PAL.shrub);
   P.bush(vb, col, 7.5, -8.5, 0.9, PAL.shrub);
   P.bush(vb, col, -9.5, 3.5, 0.8, PAL.shrub);
+
+  // 거리 드레싱: 피난 짐·부서진 수레·돌무더기 군락 (붉은 거리가 한 색 면으로 보이지 않게)
+  const dr = new Dressing(vb, col, 1700);
+  dr.supplyPile(-9.0, -7.5, 4); dr.supplyPile(8.5, 11.0, 4); dr.supplyPile(-2.0, 10.0, 4);
+  dr.rocks(0.5, 5.5, 3, 0xb09a88); dr.rocks(-14.0, 0.5, 3, 0xb09a88); dr.rocks(14.0, 8.0, 3, 0xb09a88);
+  dr.rocks(4.0, 12.5, 4, 0xb09a88); dr.rocks(-8.0, 12.0, 3, 0xb09a88);
+  dr.shrubs(-5.5, -6.5, 2, [0x6a5a3c, 0x7a6a44]); dr.shrubs(7.0, 10.0, 2, [0x6a5a3c, 0x7a6a44]);
 
   scatterGroundCover(vb, col, { seed: 601, half: 18, count: 110, tufts: [0x7a5a38, 0x8a6a40, 0x5a4028], pebbles: [0x5e4a40, 0x7a5a48, 0x3a2a24] });
   const stageMesh = vb.build();

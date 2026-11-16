@@ -1740,5 +1740,9 @@
   "이어서 하기": "Resume",
   "배경음악": "Music",
   "음성 안내": "Voice narration",
-  "이 장 건너뛰기": "Skip chapter"
+  "이 장 건너뛰기": "Skip chapter",
+  "닫기": "Close",
+  "▼ [✕] 또는 도감 단추로 닫기  |  항목을 탭해 선택": "▼ Close with [✕] or the Codex button  |  Tap an entry to select",
+  "왼쪽 스틱으로 움직이고, 행동 단추나 화면 탭으로 대화해보자": "Move with the left stick, tap the action button or the screen to talk",
+  "성경·미드라시 도감이 기록되었습니다: [{0}] (도감 단추로 열람)": "Biblical/Midrash lore recorded: [{0}] (Tap the Codex button to view)"
 }

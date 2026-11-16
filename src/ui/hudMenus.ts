@@ -49,6 +49,9 @@ function cachedRecommended(done: ReadonlySet<string>): { book: number; chapter: 
 const BOOK_TAB_FULL: readonly string[] = ['인트로', '1권: 불·팥죽', '2권: 약속의 땅', '3권: 별·언약', '4권: 소돔의 불', '5권: 모리아', '6권: 막벨라', '아우트로'];
 const BOOK_TAB_SHORT: readonly string[] = ['인트로', '1권', '2권', '3권', '4권', '5권', '6권', '아우트로'];
 
+/** 세로 화면 장 선택: 짧은 권에서 줄 높이와, 상세를 아래로 쌓기 위해 남아야 하는 최소 높이 */
+const STACK_ROW = 46, STACK_ROW_MAX = 62, STACK_INFO_MIN = 210, STACK_INFO_WANT = 250;
+
 export function drawChapterSelect(h: Hud): void {
   const g = h.ctx;
   g.fillStyle = 'rgba(0, 0, 0, 0.7)';
@@ -129,8 +132,10 @@ export function drawChapterSelect(h: Hud): void {
 
   // 스크롤 가시 범위: 패널 높이에 맞춰 4~10 줄 (작은 화면에서 목록이 아래 안내를 덮지 않게)
   // 세로 화면: 남는 높이를 줄 간격에 나눠 쓴다 (40~54, 내용은 줄 안에서 세로 가운데)
-  const ROW = tall ? Math.max(40, Math.min(54, Math.floor((footTop - 4 - listY) / Math.max(8, chList.length)))) : 24;
-  const padY = tall ? Math.floor((ROW - 40) / 2) : 0;
+  // 짧은 권(세로 화면): 목록이 다 보이고도 아래가 크게 남으면, 줄을 넓게 쓰고 상세 설명을 목록 아래 한 칸으로 크게 쌓는다
+  const stacked = tall && footTop - 4 - listY - chList.length * STACK_ROW >= STACK_INFO_MIN;
+  const ROW = stacked ? Math.max(STACK_ROW, Math.min(STACK_ROW_MAX, Math.floor((footTop - 4 - listY - STACK_INFO_WANT) / Math.max(1, chList.length)))) : tall ? Math.max(40, Math.min(54, Math.floor((footTop - 4 - listY) / Math.max(8, chList.length)))) : 24;
+  const padY = tall ? Math.floor((ROW - (stacked ? 46 : 40)) / 2) : 0;
   const visibleCount = visibleRows(footTop - 4 - listY, ROW, tall ? 20 : 10);
   const scrollOffset = scrollStart(h.chapterSelect.chapterIndex, chList.length, visibleCount);
   const sliceLen = Math.max(0, Math.min(visibleCount, chList.length - scrollOffset)); // 보이는 개수 (새 배열을 만들지 않는다)
@@ -140,7 +145,7 @@ export function drawChapterSelect(h: Hud): void {
   const recBook = rec ? rec.book : -1, recCh = rec ? rec.chapter : -1;
   const resume = h.resumeAt;
   const tagRec = h.txt(tr('추천'), 10, '#ffffff', '#4a2418'), tagRes = h.txt(tr('이어하기'), 10, '#ffffff', '#1f3a52');
-  const itemW = tall ? Math.min(260, Math.max(170, Math.round(mw * 0.46))) : Math.min(280, Math.max(200, Math.round(mw * 0.46)));
+  const itemW = stacked ? mw - 40 - 8 : tall ? Math.min(260, Math.max(170, Math.round(mw * 0.46))) : Math.min(280, Math.max(200, Math.round(mw * 0.46)));
 
   for (let sIdx = 0; sIdx < sliceLen; sIdx++) {
     const ch = chList[scrollOffset + sIdx];
@@ -157,6 +162,7 @@ export function drawChapterSelect(h: Hud): void {
     }
 
     const col = isSel ? ACCENT : INK;
+    const lfs = stacked ? 13 : 11;
     if (isSel) {
       g.fillStyle = '#eddcc2';
       g.fillRect(mx + 20, itemY - 2, itemW, itemH);
@@ -171,10 +177,10 @@ export function drawChapterSelect(h: Hud): void {
       // 세로 화면: 긴 제목은 잘라내지 않고 두 줄로 줄바꿈 (꼬리표 자리는 뺀 폭)
       // 꼬리표가 있는 줄은 꼬리표를 윗줄 오른쪽에, 제목은 아랫줄 한 줄에 둔다 (제목 위에 올라타지 않고 제목도 줄이지 않는다)
       const lines = tag ? null : h.wrapMemo(label, labelMaxW, 11, 2, col);
-      if (tag) h.put(h.fitTxt(label, 11, col, labelMaxW), mx + 24, itemY + padY + 19);
+      if (tag) h.put(h.fitTxt(label, lfs, col, labelMaxW), mx + 24, itemY + padY + 19 + (stacked ? Math.floor((ROW - 46) / 2) : 0));
       else if (lines && lines.length > 1) {
-        for (let li = 0; li < lines.length; li++) h.put(h.txt(li === 0 ? lines[li] : '    ' + lines[li].trim(), 11, col), mx + 24, itemY + padY + li * 17);
-      } else h.put(h.txt(label, 11, col), mx + 24, itemY + Math.round((itemH - 18) / 2));
+        for (let li = 0; li < lines.length; li++) h.put(h.txt(li === 0 ? lines[li] : '    ' + lines[li].trim(), lfs, col), mx + 24, itemY + padY + li * 17);
+      } else h.put(h.txt(label, lfs, col), mx + 24, itemY + Math.round((itemH - 18) / 2));
     } else {
       let t = h.txt(label, 11, col);
       // 좁은 화면에서 제목이 꼬리표 밑으로 들어가 겹치지 않게, 꼬리표 자리를 뺀 폭에 맞춰 줄인다 (끝은 …)
@@ -209,36 +215,40 @@ export function drawChapterSelect(h: Hud): void {
   // 우측 챕터 상세 정보 및 요약
   const selChapter = chList[h.chapterSelect.chapterIndex];
   if (selChapter) {
-    const infoX = mx + 20 + itemW + 22;
+    const infoX = stacked ? mx + 20 : mx + 20 + itemW + 22;
     const infoW = mx + mw - 20 - infoX;
-    const chTitle = tall ? h.fitTxt(selChapter.title, 13, INK, infoW - 4) : h.txt(selChapter.title, 13, INK);
-    h.put(chTitle, infoX, listY);
+    // 쌓은 배치: 상세는 목록 아래에서 시작 (구분선 한 줄)
+    const infoTop = stacked ? listY + chList.length * ROW + 12 : listY;
+    if (stacked) { g.fillStyle = RULE; g.fillRect(mx + 20, infoTop - 8, mw - 40, 1); }
+    const chTitle = tall ? h.fitTxt(selChapter.title, stacked ? 15 : 13, INK, infoW - 4) : h.txt(selChapter.title, 13, INK);
+    h.put(chTitle, infoX, infoTop);
 
     // 배경·등장 줄: 세로 화면(좁은 칸)에서는 패널 밖으로 나가지 않게 줄바꿈 (가로는 기존대로 한 줄)
-    let infoY = listY + 22;
+    let infoY = infoTop + (stacked ? 26 : 22);
     if (selChapter.location) {
       const locKey = tr('배경: ') + selChapter.location;
       const ll = tall ? h.wrapMemo(locKey, infoW - 6, 10, 2, INK_WARM) : null;
       if (ll) { for (let i = 0; i < ll.length; i++) { h.put(h.txt(ll[i], 10, INK_WARM), infoX, infoY); infoY += 18; } }
-      else { h.put(h.txt(locKey, 10, INK_WARM), infoX, listY + 22); infoY = listY + 40; }
+      else { h.put(h.txt(locKey, 10, INK_WARM), infoX, infoTop + 22); infoY = infoTop + 40; }
     }
     if (selChapter.characters && selChapter.characters.length > 0) {
       const chKey = tr('등장: ') + selChapter.characters.join(', ');
       const cl = tall ? h.wrapMemo(chKey, infoW - 6, 10, 3, INK_SOFT) : null;
       if (cl) { for (let i = 0; i < cl.length; i++) { h.put(h.txt(cl[i], 10, INK_SOFT), infoX, infoY); infoY += 18; } }
-      else { h.put(h.txt(chKey, 10, INK_SOFT), infoX, listY + 40); infoY = listY + 58; }
+      else { h.put(h.txt(chKey, 10, INK_SOFT), infoX, infoTop + 40); infoY = infoTop + 58; }
     }
-    const sumTop = tall ? infoY + 6 : listY + 68;
+    const sumTop = tall ? infoY + 6 : infoTop + 68;
 
     // 요약 줄바꿈
     if (selChapter.summary) {
-      const sumLH = 16 + h.grow(12);
+      const sumFs = stacked ? 15 : 12;
+      const sumLH = (stacked ? 23 : 16) + h.grow(sumFs);
       const sumBottom = footTop - 4 - (pickTotal0 > 0 ? 14 * (Math.min(pickTotal0, 5) + 1) + 6 : 0);
-      const sumMax = Math.max(2, Math.min(8, Math.floor((sumBottom - sumTop) / sumLH)));
-      const sumLines = h.wrapMemo(selChapter.summary, infoW - 6, 12, sumMax);
+      const sumMax = Math.max(2, Math.min(stacked ? 12 : 8, Math.floor((sumBottom - sumTop) / sumLH)));
+      const sumLines = h.wrapMemo(selChapter.summary, infoW - 6, sumFs, sumMax);
       for (let lIdx = 0; lIdx < sumLines.length; lIdx++) {
         const l = sumLines[lIdx];
-        const st = h.txt(l, 12, INK);
+        const st = h.txt(l, sumFs, INK);
         h.put(st, infoX, sumTop + lIdx * sumLH);
       }
     }
@@ -248,7 +258,7 @@ export function drawChapterSelect(h: Hud): void {
   const pickTotal = pickTotal0;
   if (pickTotal > 0) {
     const shown = Math.min(pickTotal, 5), skip = pickTotal - shown;
-    const pickX = mx + 20 + itemW + 22, pickBase = footTop - 4;
+    const pickX = stacked ? mx + 20 : mx + 20 + itemW + 22, pickBase = footTop - 4;
     const head = h.txt(tr('지금까지 한 선택') + (skip > 0 ? ` (+${skip})` : ''), 10, INK_WARM);
     h.put(head, pickX, pickBase - 14 * (shown + 1));
     pickHud = h; pickSkip = skip; pickShown = shown; pickDrawX = pickX; pickDrawBase = pickBase; pickSeen = 0; pickRow = 0;
@@ -292,7 +302,7 @@ export function drawPauseMenu(h: Hud): void {
     `${tr('언어')}: ${LANG_LABEL[lang()]}`,
     tr('이 장 건너뛰기'),
     tr('새로 시작'),
-    tr('닫기 [Esc]'),
+    tr(h.touch ? '닫기' : '닫기 [Esc]'),
   ];
 
   for (let idx = 0; idx < items.length; idx++) {
@@ -526,6 +536,6 @@ export function drawCodex(h: Hud): void {
   }
 
   // 하단 닫기 안내
-  const footerHint = h.txt('▼ [C / Esc] 닫기  |  [↑ / ↓] 항목 이동  |  [클릭] 선택', 10, INK_SOFT);
+  const footerHint = h.txt(tr(h.touch ? '▼ [✕] 또는 도감 단추로 닫기  |  항목을 탭해 선택' : '▼ [C / Esc] 닫기  |  [↑ / ↓] 항목 이동  |  [클릭] 선택'), 10, INK_SOFT);
   h.put(footerHint, mx + 24, my + mh - 24);
 }

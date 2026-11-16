@@ -4,6 +4,7 @@ import { PAL_REGION } from '../palette';
 import { VoxelBuilder } from '../voxel';
 import { Px, TD, ditherPick } from '../textures';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { buildFarField, buildHorizonPlane } from './common';
 
 export interface UrPalaceStage {
   root: THREE.Group;
@@ -89,6 +90,9 @@ export function buildUrPalaceStage(): UrPalaceStage {
   const col = new Collision();
   col.bounds = { minX: -PALACE_HALF + 4, maxX: PALACE_HALF - 4, minZ: -PALACE_HALF + 4, maxZ: PALACE_HALF - 4 };
 
+  // 궁정 테라스 바깥: 하늘색 빈 띠가 보이지 않게 사암 평원과 낮은 구릉을 이어 붙인다 (지평선 평면 + 능선)
+  root.add(buildHorizonPlane(0xc4ad84, 360, -0.05, 1.0));
+  buildFarField(root, PALACE_HALF, { seed: 31, pal: [0xa88e62, 0xb89c6e, 0xc8ae7e, 0xd8c294], tex: 'dune', accents: [0x9a8460, 0x7a8a50], depth: 44, haze: 0xcfba90, ground: 0xc8b490, rim: { min: 0.8, max: 1.8, south: 0.7 }, maxH: 3 });
   // 지면 추가
   root.add(buildPalaceGround());
 

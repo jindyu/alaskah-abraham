@@ -2,6 +2,10 @@ import * as THREE from 'three';
 import { VoxelBuilder } from '../world/voxel';
 import { PAL } from '../world/palette';
 import { getCast, type CastMember } from './cast';
+import { npcLook, type NpcLook } from './variation';
+
+/** 화면에서 인물이 작다는 감사 지적 반영: 모든 인물 공통 확대 (픽셀 격자는 그대로, 모델 단위만 키움) */
+export const ACTOR_PRESENCE = 1.12;
 
 export type ActorPose =
   | 'stand'
@@ -25,6 +29,7 @@ export type EmoteType = '!' | '?' | '...' | 'heart' | 'anger' | 'sweat' | 'panic
 export class Actor {
   readonly id: string;
   readonly cast: CastMember;
+  readonly look: NpcLook;
   readonly root = new THREE.Group();
 
   private head = new THREE.Group();
@@ -52,12 +57,15 @@ export class Actor {
   constructor(id: string, castId?: string) {
     this.id = id;
     this.cast = getCast(castId || id);
+    this.look = npcLook(id, this.cast);
     this.buildMesh();
   }
 
   private buildMesh(): void {
-    const c = this.cast;
-    const s = c.scale;
+    const k = this.look;
+    // 색·머리 모양은 look(결정적 변주) 우선. 아래 코드는 c 를 look 값으로 덮어 쓴 사본으로 읽는다
+    const c = { ...this.cast, skinColor: k.skinColor, tunicColor: k.tunicColor, accentColor: k.accentColor, hairColor: k.hairColor, beardColor: k.beardColor, headpiece: k.headpiece, defaultProp: k.prop };
+    const s = k.scale * ACTOR_PRESENCE;
     this.root.scale.set(s, s, s);
 
     // ── 다리 ──
@@ -77,6 +85,34 @@ export class Actor {
     bodyBuilder.box(0, 0.35, 0, 0.52, 0.7, 0.32, c.tunicColor, { tex: 'fabricCream' });
     // 허리띠
     bodyBuilder.box(0, 0.25, 0, 0.54, 0.12, 0.34, c.accentColor, { tex: 'stripeSaffron' });
+    // 긴 겉옷 밑단 (다리 위를 덮음)
+    if (k.robe) {
+      bodyBuilder.box(0, -0.42, 0, 0.6, 0.5, 0.38, c.tunicColor, { tex: 'fabricCream' });
+      bodyBuilder.box(0, -0.42, 0, 0.62, 0.07, 0.4, c.accentColor, { tex: 'stripeSaffron' });
+    }
+    // 무늬
+    if (k.pattern === 1) bodyBuilder.box(0, 0.0, 0, 0.56, 0.07, 0.35, c.accentColor, { tex: 'stripeSaffron' });
+    else if (k.pattern === 2) bodyBuilder.box(0, 0.5, 0.165, 0.1, 0.5, 0.02, c.accentColor);
+    else if (k.pattern === 3) bodyBuilder.box(0, 0.62, 0, 0.56, 0.08, 0.34, c.accentColor, { tex: 'stripeSaffron' });
+    // 비스듬한 띠
+    if (k.sash) {
+      bodyBuilder.box(-0.1, 0.45, 0.17, 0.12, 0.32, 0.02, c.accentColor);
+      bodyBuilder.box(0.06, 0.28, 0.17, 0.12, 0.2, 0.02, c.accentColor);
+    }
+    // 어깨 망토 (왕·제사장)
+    if (c.id === 'nimrod' || c.id === 'melchizedek' || c.id === 'abimelech' || c.id === 'pharaoh') {
+      bodyBuilder.box(0, 0.4, -0.2, 0.6, 0.72, 0.08, c.id === 'melchizedek' ? 0x3a5699 : c.id === 'nimrod' ? 0x8a1c1c : c.accentColor, { tex: 'fabricCream' });
+      bodyBuilder.box(0, 0.68, 0, 0.66, 0.1, 0.38, c.id === 'nimrod' ? 0x8a1c1c : c.accentColor, { tex: 'stripeSaffron' });
+    }
+    // 가죽 갑옷 (근위병·가신)
+    if (c.id === 'guard' || c.id === 'soldier') {
+      bodyBuilder.box(0, 0.45, 0, 0.56, 0.4, 0.36, 0x6e6e76, { tex: 'metal' });
+    }
+    // 화살통 (이스마엘)
+    if (c.id === 'ishmael' || c.id === 'ishmael_young') {
+      bodyBuilder.box(0.12, 0.5, -0.24, 0.14, 0.55, 0.12, 0x5a3a22);
+      bodyBuilder.box(0.12, 1.02, -0.24, 0.08, 0.12, 0.08, 0xdddddd);
+    }
     this.body.add(bodyBuilder.build());
     this.body.position.set(0, 0.6, 0);
 
@@ -106,19 +142,33 @@ export class Actor {
     headBuilder.box(0.09, 0.23, 0.2, 0.05, 0.05, 0.02, 0x111111);
     // 머리카락
     headBuilder.box(0, 0.36, -0.04, 0.42, 0.18, 0.42, c.hairColor);
+    if (k.hairStyle === 1) headBuilder.box(0, 0.4, -0.02, 0.48, 0.2, 0.48, c.hairColor);
+    else if (k.hairStyle === 2) headBuilder.box(0, 0.0, -0.17, 0.4, 0.5, 0.1, c.hairColor);
 
     // 수염
     if (c.beardColor) {
-      headBuilder.box(0, 0.08, 0.12, 0.36, 0.22, 0.22, c.beardColor);
+      const long = c.id === 'abraham' || c.id === 'melchizedek' || c.id === 'noah' || c.id === 'terah';
+      headBuilder.box(0, long ? 0.0 : 0.08, 0.12, 0.36, long ? 0.4 : 0.22, 0.22, c.beardColor);
     }
 
     // 모자/장식
     if (c.headpiece === 'crown') {
       headBuilder.box(0, 0.46, 0, 0.44, 0.12, 0.44, 0xf5c022);
+      // 왕관 뾰족 장식 + 보석
+      headBuilder.box(-0.15, 0.58, 0, 0.07, 0.12, 0.07, 0xf5c022);
+      headBuilder.box(0, 0.6, 0, 0.07, 0.16, 0.07, 0xf5c022);
+      headBuilder.box(0.15, 0.58, 0, 0.07, 0.12, 0.07, 0xf5c022);
+      headBuilder.box(0, 0.5, 0.23, 0.07, 0.07, 0.02, c.id === 'melchizedek' ? 0x3a5699 : 0xd32f2f);
+    } else if (c.headpiece === 'helmet') {
+      headBuilder.box(0, 0.44, 0, 0.46, 0.2, 0.46, 0x8a8a92, { tex: 'metal' });
+      headBuilder.box(0, 0.58, 0, 0.1, 0.14, 0.3, c.accentColor); // 투구 볏
+      headBuilder.box(0, 0.3, 0.22, 0.06, 0.18, 0.03, 0x8a8a92); // 코 가리개
     } else if (c.headpiece === 'turban') {
-      headBuilder.box(0, 0.44, 0, 0.44, 0.16, 0.44, c.accentColor, { tex: 'fabricCream' });
+      headBuilder.box(0, 0.44, 0, 0.46, 0.18, 0.46, c.accentColor, { tex: 'fabricCream' });
+      headBuilder.box(0.2, 0.28, -0.06, 0.1, 0.34, 0.2, c.accentColor, { tex: 'fabricCream' }); // 늘어진 끝자락
     } else if (c.headpiece === 'veil') {
       headBuilder.box(0, 0.38, -0.08, 0.46, 0.5, 0.42, c.accentColor, { tex: 'fabricCream' });
+      headBuilder.box(0, -0.12, -0.15, 0.5, 0.5, 0.14, c.accentColor, { tex: 'fabricCream' }); // 어깨까지 내려온 베일
     } else if (c.headpiece === 'band') {
       headBuilder.box(0, 0.38, 0, 0.42, 0.06, 0.42, c.accentColor);
     }
@@ -141,7 +191,9 @@ export class Actor {
       lb.box(-0.42, 0.82, -0.24, 0.06, 0.22, 0.14, 0xffdf78); // 황금 깃털 테두리
       leftWingGroup.add(lb.build());
       leftWingGroup.position.set(-0.18, 0.45, -0.18);
-      leftWingGroup.rotation.y = -0.25;
+      leftWingGroup.rotation.y = -0.6;
+      leftWingGroup.rotation.z = -0.18;
+      leftWingGroup.scale.set(1.4, 1.3, 1.4);
       this.wingsLeft = leftWingGroup;
       this.body.add(leftWingGroup);
 
@@ -154,17 +206,19 @@ export class Actor {
       rb.box(0.42, 0.82, -0.24, 0.06, 0.22, 0.14, 0xffdf78); // 황금 깃털 테두리
       rightWingGroup.add(rb.build());
       rightWingGroup.position.set(0.18, 0.45, -0.18);
-      rightWingGroup.rotation.y = 0.25;
+      rightWingGroup.rotation.y = 0.6;
+      rightWingGroup.rotation.z = 0.18;
+      rightWingGroup.scale.set(1.4, 1.3, 1.4);
       this.wingsRight = rightWingGroup;
       this.body.add(rightWingGroup);
 
       // 황금 후광 (Halo)
       const haloGroup = new THREE.Group();
       const hb = new VoxelBuilder(9, false);
-      hb.box(0, 0.56, 0.18, 0.38, 0.05, 0.05, 0xffdf78);
-      hb.box(0, 0.56, -0.18, 0.38, 0.05, 0.05, 0xffdf78);
-      hb.box(-0.19, 0.56, 0, 0.05, 0.05, 0.38, 0xffdf78);
-      hb.box(0.19, 0.56, 0, 0.05, 0.05, 0.38, 0xffdf78);
+      hb.box(0, 0.58, 0.2, 0.46, 0.07, 0.07, 0xffe98a);
+      hb.box(0, 0.58, -0.2, 0.46, 0.07, 0.07, 0xffe98a);
+      hb.box(-0.23, 0.58, 0, 0.07, 0.07, 0.46, 0xffe98a);
+      hb.box(0.23, 0.58, 0, 0.07, 0.07, 0.46, 0xffe98a);
       haloGroup.add(hb.build());
       this.halo = haloGroup;
       this.head.add(haloGroup);
@@ -356,8 +410,8 @@ export class Actor {
 
     if (this.wingsLeft && this.wingsRight) {
       const flap = Math.sin(this.walkTime * 2.8) * 0.16;
-      this.wingsLeft.rotation.y = -0.25 + flap;
-      this.wingsRight.rotation.y = 0.25 - flap;
+      this.wingsLeft.rotation.y = -0.6 + flap;
+      this.wingsRight.rotation.y = 0.6 - flap;
     }
     if (this.halo) {
       this.halo.position.y = 0.05 + Math.sin(this.walkTime * 1.8) * 0.03;
@@ -465,12 +519,18 @@ export class Actor {
         break;
 
       case 'staff':
-        pb.box(0, 0.1, 0, 0.06, 1.2, 0.06, 0x7c5335);
+        pb.box(0, 0.1, 0, 0.07, 1.3, 0.07, 0x7c5335);
+        pb.box(0.05, 0.78, 0, 0.14, 0.07, 0.07, 0x7c5335); // 굽은 손잡이
         break;
 
       case 'knife':
         pb.box(0, -0.05, 0, 0.05, 0.15, 0.05, 0x4a3220);
         pb.box(0, 0.12, 0, 0.04, 0.25, 0.08, 0xb0b8c0);
+        break;
+
+      case 'jar': // 어깨 높이의 항아리
+        pb.box(0, 0.1, 0, 0.3, 0.34, 0.3, 0xba6a44, { tex: 'soil' });
+        pb.box(0, 0.32, 0, 0.18, 0.1, 0.18, 0x8a4a2c);
         break;
 
       case 'pitcher': // 물동이

@@ -6,6 +6,8 @@ import { VoxelBuilder } from '../voxel';
 import { buildNomadTent } from '../props/biblicalProps';
 import { Px, TD, ditherPick } from '../textures';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { Dressing, distToPolyline } from './dressing';
+import * as P from '../props';
 
 export interface EsauCampStage {
   root: THREE.Group;
@@ -20,6 +22,16 @@ export interface EsauCampStage {
 }
 
 const CAMP_HALF = 24; // 48x48m
+/** 장막·모닥불·가축 우리·사냥터로 이어지는 밟힌 길 */
+const CAMP_PATHS: number[][] = [
+  [0, 0.5, -3, -1, -5.5, -3.5],
+  [0, 0.5, 2.5, -1, 5, -2.5],
+  [0, 0.5, 0, 6, 0, 14],
+  [0, 6, -9, 9, -14, 11],
+  [0, 6, 9, 9, 15, 8],
+  [5, -2.5, 10, -9, 14, -13],
+  [-5.5, -3.5, -10, -9, -13, -14],
+];
 
 /** 가나안 헤브론 구릉지 대지: 메마른 사막 황토와 드문드문 돋아난 에셀나무 풀밭 (TD=16) */
 function buildCampGround(): THREE.Mesh {
@@ -47,11 +59,20 @@ function buildCampGround(): THREE.Mesh {
         }
       } else {
         // 외곽 야생 풀밭
-        const nWildGrass = fbm(x * 1.5, z * 1.5, 731, 2);
-        if (nWildGrass > 0.52) {
-          c = ditherPick([PAL.grass[2], PAL.dryGrass[1], PAL.grass[3]], nWildGrass, i, j, 0.4);
+        // 풀밭은 큰 덩어리(약 5m)로 — 잔 점 노이즈가 아니라 목초지/맨땅 구획으로 읽히게
+        const nWildGrass = fbm(x / 4.5 + 9, z / 4.5, 731, 2);
+        if (nWildGrass > 0.54) {
+          c = ditherPick([PAL.grass[2], PAL.dryGrass[1], PAL.grass[3]], nWildGrass, i, j, 0.25);
+        } else if (nWildGrass < 0.3) {
+          c = ditherPick([0xc09a68, 0xa87a48, 0xb88c58], nWildGrass * 3, i, j, 0.3);
         }
+        if (valueNoise(x / 3 + 70, z / 3, 733) > 0.78) c = ditherPick([0x8e5a3a, 0x7e4e32, 0x9a6a44], hash2(i, j, 735), i, j); // 붉은 흙 얼룩
       }
+      // 밟힌 길
+      let dWalk = 99;
+      for (let q = 0; q < CAMP_PATHS.length; q++) dWalk = Math.min(dWalk, distToPolyline(x, z, CAMP_PATHS[q]));
+      if (dWalk < 0.95 - valueNoise(i / 5, j / 5, 737) * 0.45) c = hash2(i, j, 739) < 0.06 ? 0xd8c090 : 0xc4a474;
+      else if (dWalk < 1.5 && hash2(i, j, 743) < 0.22) c = 0xa88858;
 
       // 모닥불 자리 잿더미 그을음 (|x| <= 1.2, |z - 0.5| <= 1.2)
       const dFire = Math.hypot(x, z - 0.5);
@@ -84,8 +105,8 @@ export function buildEsauCampStage(): EsauCampStage {
   col.bounds = { minX: -CAMP_HALF + 4, maxX: CAMP_HALF - 4, minZ: -CAMP_HALF + 4, maxZ: CAMP_HALF - 4 };
 
   // 원경: 헤브론 구릉 (지평선 평면 + 계단식 능선 + 지면에서 이어지는 가장자리)
-  root.add(buildHorizonPlane(0xcdbf98, 360, -0.05, 0.2));
-  buildFarField(root, CAMP_HALF, { seed: 17, pal: [0x7a7c48, 0x948a56, 0xb09a68, 0xc4b080], tex: 'soil', accents: [0x8a7a58, 0x56683a], depth: 44, haze: 0xcdbf98, ground: 0xb88856, rim: { min: 1.6, max: 3.2, south: 0.35 }, maxH: 3.5 });
+  root.add(buildHorizonPlane(0xc8b68a, 360, -0.05, 1.2));
+  buildFarField(root, CAMP_HALF, { seed: 17, pal: [0x6a7440, 0x84804c, 0xa08c5c, 0xb89c68], tex: 'soil', accents: [0x8a7a58, 0x56683a, 0x6a7a3c], depth: 44, haze: 0xc8b68a, ground: 0xb88856, rim: { min: 2.0, max: 3.8, south: 0.75 }, maxH: 3.5 });
   // 지면 추가
   root.add(buildCampGround());
 
@@ -181,6 +202,35 @@ export function buildEsauCampStage(): EsauCampStage {
   b.box(9.0, 0, 7.5, 2.2, 1.2, 1.6, 0x8e8276, { tex: 'stone' });
   col.addBox(-8.0, 6.0, 2.0, 2.0);
   col.addBox(9.0, 7.5, 2.4, 2.0);
+
+  // 세트 드레싱: 사냥꾼 야영·건조대·가축 우리·보급품·바위/관목 군락, 남는 6x6 칸은 자동으로 채운다
+  const dr = new Dressing(b, col, 1500);
+  const pts: number[][] = [[0, 0.5], [-5.5, -3.5], [5, -2.5], [-1.4, 0.5], [2.2, 1.2], [2, 2.2], [-8, 6], [9, 7.5]];
+  for (const p of pts) dr.mark(p[0], p[1]);
+  dr.fireRing(10.5, 0.5, 3, false);
+  dr.fireRing(-12.5, 3.5, 3);
+  dr.dryingRack(-9.5, -1.5, 2.8, 0x9a5a38);
+  dr.dryingRack(8.5, -6.5, 2.4, 0xc89a68);
+  dr.dryingRack(2.5, 4.5, 2.4);
+  dr.pen(-16, 9, 6, 4.5);
+  dr.pen(12, 11, 5.5, 4);
+  dr.supplyPile(-3.0, 4.0, 5);
+  dr.supplyPile(8.0, 3.2, 5);
+  dr.supplyPile(-8.5, -7.0, 5);
+  dr.supplyPile(14.0, -3.0, 4);
+  dr.workSpot(-3.5, 8.5);
+  dr.workSpot(6.0, -9.5);
+  dr.rocks(-4.0, -10.0, 5, 0x9a8a78);
+  dr.rocks(14.5, 4.5, 4, 0x9a8a78);
+  dr.rocks(-14.0, -6.0, 5, 0x9a8a78);
+  dr.rocks(3.0, 12.5, 4, 0x9a8a78);
+  dr.shrubs(-11.5, 0.5, 5, [0x6a7a3c, 0x56683a, 0x7a8a48]);
+  dr.shrubs(12.5, -10.5, 5, [0x6a7a3c, 0x56683a, 0x7a8a48]);
+  dr.shrubs(-6.0, 12.5, 4, [0x6a7a3c, 0x56683a, 0x7a8a48]);
+  dr.shrubs(16.0, 5.0, 4, [0x6a7a3c, 0x56683a]);
+  dr.fillGaps(-18, 18, -18, 18, [0x6a7a3c, 0x56683a, 0x7a8a48, 0x8a8a50], 0x9a8a78);
+  P.bush(b, col, -14.5, 14.5, 1.0, PAL.shrub);
+  P.bush(b, col, 15.5, 14.0, 1.0, PAL.shrub);
 
   scatterGroundCover(b, col, { seed: 888, half: 24, count: 200, tufts: [0x6a7a3c, 0x7a8a48, 0x56683a], pebbles: [0x8a6a48, 0x705038, 0xa08058] });
   root.add(b.build());

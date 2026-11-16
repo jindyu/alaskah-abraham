@@ -11,6 +11,7 @@ import { layoutCaption, type CaptionLayout } from './hudLayout';
 import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
 import { touchSideClearCss } from './touchControls';
 import { narrationLife } from './dialogueLayout';
+import { touchWording } from './touchWording';
 import { newOnboard, onboardSeen, type OnboardState } from './onboarding';
 import type { ActiveDialogue, CodexEntry, DialogueChoice, DialogueOption, GoalProgress, Heart, Prompt, Speech, Toast } from './hudTypes';
 
@@ -86,6 +87,8 @@ export class Hud {
   choiceOptionRects: { x: number; y: number; w: number; h: number }[] = [];
   /** 캐릭터 아래 활성 대사창 (크고 또렷하게 표시) */
   activeDialogue: ActiveDialogue | null = null;
+  /** 마지막으로 그린 대사창 사각형(UI 좌표, 높이 0 = 안 그림) — QA 가 세로 화면 높이 상한을 확인한다 */
+  readonly dialogueRect = { x: 0, y: 0, w: 0, h: 0 };
   /** 시네마틱 챕터 타이틀 */
   cinematicTitle: string | null = null;
   /** 권/장 선택 오버레이 [Tab] */
@@ -328,7 +331,7 @@ export class Hud {
     const isSystemToast = key === 'audio' || key.startsWith('save-') || key.startsWith('act-') || count > 0 || iconId !== null;
     if (!isSystemToast) {
       let speaker: string | null = null;
-      let text = name.trim();
+      let text = touchWording(name.trim(), this.touch);
       const colonIdx = text.indexOf(':');
       if (colonIdx > 0 && colonIdx < 12) {
         speaker = text.slice(0, colonIdx).trim();

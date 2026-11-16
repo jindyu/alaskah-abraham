@@ -15,8 +15,10 @@ export const TARGET_H = urlNum('h', DEFAULT_TARGET_H, 180, 2160);
 const RESIZE_SETTLE_MS = 100;
 /** 화면 세로에 보이는 월드 범위(유닛). ?view= 로 비교 가능. PPU 는 이것과 내부 세로에서 정해짐 (renderer/viewport.ts) */
 export const VIEW_UNITS = urlNum('view', DESIGN_VIEW_UNITS, 4, 40);
-/** 세로 화면에서 가로로 최소 담을 월드 유닛 수 */
-const PORTRAIT_FIT_UNITS = 7.5;
+/** 세로 화면에서 가로로 최소 담을 월드 유닛 수 (폰 세로에서 주변 NPC·소품이 잘리지 않게 약 15유닛) */
+const PORTRAIT_FIT_UNITS = 15;
+/** 세로 화면에서 플레이어를 화면 위에서 이 비율 높이에 둔다 (아래 약 40% 는 조작·대화창 몫) */
+const PORTRAIT_FOCUS_FROM_TOP = 0.36;
 /** 평소 카메라 기울기 (도). 컷신에서만 setTilt로 낮춰 하늘·원경을 보여줌 */
 export const BASE_TILT = 50;
 /** 카메라 가까운·먼 면. 윤곽선 깊이 문턱이 이 범위를 쓴다 */
@@ -289,7 +291,10 @@ export class PixelRenderer {
 
   private applyFrustum() {
     const { halfW, halfH } = viewHalfExtent(this.size, this.framing);
-    Object.assign(this.camera, { left: -halfW, right: halfW, top: halfH, bottom: -halfH });
+    // 세로 화면: 절두체를 아래로 옮겨 플레이어가 위쪽-가운데에 오게 한다. 이동량은 정수 텍셀로 맞춰 픽셀 격자를 유지한다.
+    const shift = this.portraitFloor > 0
+      ? Math.round((0.5 - PORTRAIT_FOCUS_FROM_TOP) * this.size.h) * this.framing / this.size.ppu : 0;
+    Object.assign(this.camera, { left: -halfW, right: halfW, top: halfH - shift, bottom: -halfH - shift });
     this.camera.updateProjectionMatrix();
   }
 
@@ -334,7 +339,7 @@ export class PixelRenderer {
       .addScaledVector(this.forward, z);
     // 넓은 세로 전경에서는 화면 아래의 광선도 수면 위에서 시작해야 한다.
     // 직교 투영의 구도는 유지하면서 가까운 절단면이 전경을 잘라내지 않게 물러난다.
-    const halfH = (this.camera.top - this.camera.bottom) / (2 * this.camera.zoom);
+    const halfH = Math.max(this.camera.top, -this.camera.bottom) / this.camera.zoom;
     const dist = Math.max(this.dist, halfH * Math.max(0, this.up.y) / Math.max(.1, -this.forward.y) + 10);
     const far = Math.max(260, dist + 100);
     if (this.camera.far !== far) { this.camera.far = far; this.camera.updateProjectionMatrix(); }

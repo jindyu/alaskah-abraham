@@ -17,6 +17,7 @@
     "qa:visual": "node tools/qa/qa-visual.mjs",
     "qa:stages": "node tools/qa/qa-stages.mjs",
     "qa:perf": "node tools/qa/qa-perf.mjs",
+    "qa:report": "node tools/qa/gen-report-numbers.mjs --write",
     "qa:all": "node tools/qa/run-all.mjs"
   },
   "dependencies": {

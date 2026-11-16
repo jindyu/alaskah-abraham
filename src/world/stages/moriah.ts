@@ -13,6 +13,7 @@ import {
   buildSmokeColumn,
 } from './scenery36';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { Dressing } from './dressing';
 
 export interface MoriahStage {
   root: THREE.Group;
@@ -34,7 +35,12 @@ function buildMoriahGroundMesh(): THREE.Mesh {
   return createStageGroundMesh(MORIAH_HALF, resolution, (x, z, _u, _v, i, j) => {
     // 1. 산악 암반 및 거친 돌조각 기본 지면
     const nRock = fbm(x / 6, z / 6, 701, 2) * 0.5 + valueNoise(i / 12, j / 12, 702) * 0.3 + hash2(i, j, 703) * 0.2;
-    let c = nRock > 0.65 ? 0x9e988e : nRock > 0.4 ? PAL.stone[1] : 0x6e6860;
+    let c = nRock > 0.65 ? 0xb4a88e : nRock > 0.4 ? 0x9a8c74 : 0x84765e;
+    // 완만한 자갈 비탈 띠(등고선처럼 가로로 길게) — 한 덩어리 갈색으로 뭉개지지 않게
+    const band = Math.sin(z * 1.1 + fbm(x / 5, z / 5, 707, 2) * 4);
+    if (band > 0.8) c = 0xc8baa0; else if (band < -0.85) c = 0x6e604c;
+    // 마른 풀 얼룩
+    if (valueNoise(x / 3.5 + 20, z / 3.5, 709) > 0.72) c = hash2(i, j, 710) < 0.5 ? 0x8c8a58 : 0x7a7a4c;
 
     // 뾰족한 화산암/석회암 쇄석 스펙클
     const hGrit = hash2(i, j, 705);
@@ -87,7 +93,20 @@ export function buildMoriahStage(): MoriahStage {
   root.add(buildMoriahGroundMesh());
 
 
-  buildFarField(root, MORIAH_HALF, { seed: 5, pal: [0x4c4a50, 0x5e5a5c, 0x74706c, 0x8a847a], tex: 'cliff', accents: [0x7e7870], haze: 0xa8a29e, depth: 44, ground: 0x6a6460, rim: { min: 2.6, max: 5.2, south: 0.4 } });
+  // 둘레 능선: 가파른 암벽 대신 부드러운 구릉(남쪽 기슭이 각진 갈색 면으로 보이던 것 제거) + 밝은 지평선
+  buildFarField(root, MORIAH_HALF, { seed: 5, pal: [0x6a5a46, 0x8a7a60, 0xb09e80, 0xd4c4a4], tex: 'soil', accents: [0x9a8c74, 0x6a7a48, 0x7e7060], haze: 0xd2c8b4, depth: 44, ground: 0x9a8c74, rim: { min: 2.4, max: 4.6, south: 0.5 } });
+  // 정상 뒤편의 밝은 하늘빛 후광 (산 실루엣이 어두운 배경에 묻히지 않게)
+  {
+    const geo = new THREE.PlaneGeometry(90, 40, 1, 8);
+    const pos = geo.getAttribute('position');
+    const cs = new Float32Array(pos.count * 3);
+    const lo = new THREE.Color(0xe8d8b0), hi = new THREE.Color(0xf6ecd0), tmp = new THREE.Color();
+    for (let k = 0; k < pos.count; k++) { tmp.copy(lo).lerp(hi, (pos.getY(k) + 20) / 40); cs[k * 3] = tmp.r; cs[k * 3 + 1] = tmp.g; cs[k * 3 + 2] = tmp.b; }
+    geo.setAttribute('color', new THREE.BufferAttribute(cs, 3));
+    const glow = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, fog: false }));
+    glow.position.set(0, 16, -34);
+    root.add(glow);
+  }
   // 2. 외곽 공허 차단: 깎아지른 모리아 산맥의 거대한 연봉과 바위 협곡 (높이 4.5m ~ 9.0m)
   buildPerimeterRidges(vb, col, MORIAH_HALF, [0x5a5a62, 0x6a645e, 0x7c746a, 0x4c4a52], {
     seed: 701,
@@ -105,6 +124,17 @@ export function buildMoriahStage(): MoriahStage {
       const c = k % 2 === 0 ? tintColor(low, 0.85 + t * 0.4) : tintColor(top, 0.78 + t * 0.4);
       const inset = (1 - t) * 0.0;
       vb.box(cx, (h / bands) * k, cz, w - inset, h / bands + 0.01, d - inset, c, { tex: 'cliff', jitter: 0.06 });
+    }
+    // 앞면 마른돌 쌓기 옹벽: 어긋난 돌 켜가 보여 '계단밭' 단이 한눈에 읽힌다
+    const courses = Math.max(2, Math.round(h / 0.34));
+    for (let r = 0; r < courses; r++) {
+      const cnt = Math.round(w / 0.9);
+      for (let k = 0; k < cnt; k++) {
+        const bx = cx - w / 2 + ((k + (r % 2) * 0.5 + 0.5) / cnt) * w;
+        if (bx > cx + w / 2 - 0.3) continue;
+        const hv = hash2(k, r * 7 + Math.round(cz * 3), 765);
+        vb.box(bx, (h / courses) * r, cz + d / 2 + 0.05, w / cnt - 0.06, h / courses - 0.03, 0.2, tintColor(top, 0.95 + hv * 0.55), { tex: 'stone', jitter: 0.04 });
+      }
     }
     // 윗면 밝은 캡 (바위 선반)
     vb.box(cx, h, cz, w - 0.2, 0.12, d - 0.2, tintColor(top, 1.18), { tex: 'stone', jitter: 0.05 });
@@ -159,6 +189,44 @@ export function buildMoriahStage(): MoriahStage {
   vb.box(-4.1, 5.6, -9.3, 1.3, 0.9, 1.1, 0xcabc9c, { tex: 'cliff' });
   vb.box(4.6, 4.0, -9.4, 1.8, 1.3, 1.5, 0xb8a888, { tex: 'cliff' });
   vb.box(4.5, 5.3, -9.3, 1.1, 0.8, 1.0, 0xcabc9c, { tex: 'cliff' });
+
+  // 단 위를 굽이쳐 오르는 밝은 흙길 + 길가 돌 (남 → 북으로 한 줄기로 이어져 읽힌다)
+  const trail: number[][] = [[0.0, 6.5, 2.6], [0.0, 5.0, 2.6], [-1.0, 4.0, 1.6], [1.4, 3.0, 1.8], [2.6, 2.0, 1.6], [3.0, 0.6, 1.8], [1.0, 0.4, 1.6], [-1.8, -0.8, 1.8], [-3.0, -2.2, 1.6], [-2.4, -3.8, 1.6], [0.0, -4.6, 2.2]];
+  const trailY = [0.35, 0.9, 0.9, 0.95, 1.8, 1.8, 1.8, 1.8, 2.7, 2.7, 3.2];
+  for (let k = 0; k < trail.length; k++) {
+    const t = trail[k], ty = trailY[k] + (k < 3 ? 0 : 0.1);
+    vb.box(t[0], ty, t[1], t[2], 0.05, 1.6, k % 2 ? 0xe4d6b6 : 0xd8c8a4, { tex: 'soil', jitter: 0.04 });
+    if (k % 2 === 0) {
+      vb.box(t[0] + t[2] / 2 + 0.3, ty, t[1], 0.28, 0.2, 0.3, 0xa89a80, { tex: 'stone' });
+      vb.box(t[0] - t[2] / 2 - 0.3, ty, t[1] + 0.4, 0.3, 0.26, 0.3, 0x9a8c74, { tex: 'stone' });
+    }
+  }
+  // 산자락 나무는 높이 오를수록 성기고 작아지다 정상에는 없다: 기슭 올리브 → 중턱 마른 관목 → 정상 바위뿐
+  P.oliveTree(vb, col, -9.0, 12.0); P.oliveTree(vb, col, 9.5, 11.0); P.oliveTree(vb, col, -11.5, 6.5); P.oliveTree(vb, col, 11.0, 5.0);
+  P.oliveTree(vb, col, -9.5, 1.5);
+  P.bush(vb, col, 8.8, 0.0, 0.8, PAL.shrub); P.bush(vb, col, -9.0, -2.5, 0.7, PAL.shrub);
+  for (const q of [[-6.4, -4.8, 0.45], [6.6, -5.2, 0.4], [-7.6, -9.0, 0.35]]) {
+    vb.box(q[0], 0, q[1], q[2], q[2] * 1.6, q[2], 0x5a4a34, { tex: 'bark' });
+    vb.box(q[0], q[2] * 1.6, q[1], q[2] * 1.7, q[2] * 0.5, q[2] * 1.7, 0x7a7448, { tex: 'leafVine' });
+  }
+  // 산자락 돌무더기와 바위 군락 (옆구리가 비어 보이지 않게)
+  const dr = new Dressing(vb, col, 1600);
+  dr.rocks(-9.5, 9.5, 4, 0xb8a88c); dr.rocks(10.0, 8.5, 4, 0xb8a88c); dr.rocks(-11.0, 2.5, 4, 0xb8a88c); dr.rocks(11.5, 0.5, 3, 0xb8a88c);
+  dr.shrubs(-8.0, 5.0, 3, [0x7a8a58, 0x6a7a48]); dr.shrubs(8.0, 4.5, 3, [0x7a8a58, 0x6a7a48]);
+  dr.rocks(-10.5, -4.0, 3, 0xc4b498); dr.rocks(10.5, -3.0, 3, 0xc4b498);
+  dr.shrubs(-12.0, -9.0, 2, [0x7a7448, 0x6a6a40]); dr.shrubs(12.0, -9.0, 2, [0x7a7448, 0x6a6a40]);
+  // 정상 번제단 둘레 선 돌(기념 돌기둥)과 돌무더기: 정상 윤곽이 또렷하게
+  for (let k = 0; k < 7; k++) {
+    const a = Math.PI * (0.15 + k * 0.1) + Math.PI, sx = Math.cos(a) * 4.2, sz = -7.0 + Math.sin(a) * 3.2 - 1.4;
+    const sh = 1.0 + hash2(k, 3, 781) * 0.9;
+    vb.box(sx, 4.0, sz, 0.55, sh, 0.5, tintColor(0xd8ccb0, 0.9 + hash2(k, 4, 781) * 0.2), { tex: 'stone', jitter: 0.04 });
+    vb.box(sx, 4.0 + sh, sz, 0.4, 0.16, 0.38, 0xf0e6cc, { tex: 'stone' });
+  }
+  vb.box(-3.0, 4.0, -4.9, 0.9, 0.4, 0.8, 0xc8bca0, { tex: 'stone' }); vb.box(-3.0, 4.4, -4.9, 0.55, 0.3, 0.5, 0xd8ccb0, { tex: 'stone' });
+  vb.box(3.0, 4.0, -4.9, 0.9, 0.4, 0.8, 0xc8bca0, { tex: 'stone' }); vb.box(3.0, 4.4, -4.9, 0.55, 0.3, 0.5, 0xd8ccb0, { tex: 'stone' });
+  // 뒤쪽 솟은 바위 첨탑 (하늘에 걸린 정상 실루엣)
+  vb.box(-1.8, 4.0, -10.6, 1.2, 3.0, 1.0, 0xc4b498, { tex: 'cliff' }); vb.box(-1.8, 7.0, -10.6, 0.8, 1.0, 0.7, 0xdccfb2, { tex: 'cliff' });
+  vb.box(1.6, 4.0, -10.8, 1.4, 2.4, 1.1, 0xbcae92, { tex: 'cliff' }); vb.box(1.6, 6.4, -10.8, 0.9, 0.9, 0.8, 0xd8ccb0, { tex: 'cliff' });
 
   // 등산로 벼랑길 안전 난간석/디딤돌 (Cairns & Kerbs)
   vb.box(4.2, 0.9, 4.0, 0.5, 0.6, 3.5, PAL.stone[3], { tex: 'stone' });

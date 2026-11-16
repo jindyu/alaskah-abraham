@@ -16,6 +16,16 @@ function dockBottom(h: Hud): number {
   return h.edge.bottom + (h.touch && portrait ? Math.ceil((touchClusterTopCss(h.cssH, true) + 8) / h.cssScale) : 0);
 }
 
+/** 세로 화면에서 대사창이 차지할 수 있는 화면 높이 비율 */
+const PORTRAIT_DIALOGUE_MAX = 0.28;
+
+/** 자막(컷신 이야기꾼·초상화 자막) 글자의 화면상 최소 크기 (CSS px) */
+const CAPTION_MIN_CSS_PX = 16;
+/** 자막 기본 글자 크기: UI 칸이 작은 화면(폰 세로 등)에서는 화면 기준 최소 크기가 되도록 키운다 */
+function captionBase(h: Hud, base: number): number {
+  return Math.max(base, Math.min(24, Math.ceil(CAPTION_MIN_CSS_PX / Math.max(0.3, h.cssScale))));
+}
+
 /** 프레임마다 쓰는 임시 버퍼 — 그리기 함수 안에서 배열을 새로 만들지 않기 위해 (CLAUDE.md: 프레임당 할당 금지) */
 const scratchEls: HTMLCanvasElement[] = [];
 /** 시네마틱 제목의 줄 나누기는 글이 바뀔 때만 다시 한다 */
@@ -52,11 +62,11 @@ export function drawCinematicTitle(h: Hud, titleText: string): void {
 
 /** 주인공 캐릭터 아래 대사 패널 렌더링 ("대사가 주인공 캐릭터 아래쪽으로 좀 아래에 좀크게 나오게") */
 export function drawDialogue(h: Hud, dt: number): void {
-  if (!h.activeDialogue) return;
+  if (!h.activeDialogue) { h.dialogueRect.h = 0; return; }
   const d = h.activeDialogue;
   d.age += dt;
   if (d.age >= d.life) {
-    h.activeDialogue = null;
+    h.activeDialogue = null; h.dialogueRect.h = 0;
     return;
   }
 
@@ -72,7 +82,13 @@ export function drawDialogue(h: Hud, dt: number): void {
   const baseFontSize = narration ? NARRATION_PX : SPEECH_PX;
   const cleanText = d.text.trim();
   const maxInnerW = narration ? Math.min(560, Math.round(h.w * 0.8) - 40) : Math.min(520, Math.round(h.w * 0.82) - 40);
-  const lines = h.wrapMemo(cleanText, maxInnerW, baseFontSize, 3);
+  // 세로 화면(폰): 대사창은 화면 높이의 약 28% 이하, 2~3줄, 안쪽 여백도 작게 — 월드와 조작부를 덜 가린다
+  const portrait = h.cssH > h.cssW * 1.15;
+  const lineH = (narration ? NARRATION_LINE_H : SPEECH_LINE_H) + h.grow(baseFontSize);
+  const padTop = d.speaker ? (portrait ? 14 : 18) : (portrait ? 6 : 8);
+  const padBottom = portrait ? 6 : narration ? 8 : 12;
+  const maxLines = portrait ? Math.max(2, Math.min(3, Math.floor((h.h * PORTRAIT_DIALOGUE_MAX - padTop - padBottom) / lineH))) : 3;
+  const lines = h.wrapMemo(cleanText, maxInnerW, baseFontSize, maxLines);
 
   const lineElements = scratchEls;
   lineElements.length = 0;
@@ -91,10 +107,7 @@ export function drawDialogue(h: Hud, dt: number): void {
   }
 
   const panelW = Math.max(Math.max(speakerW + 36, 240), Math.min(maxInnerW + 36, Math.ceil(maxTextW) + 36));
-  const lineH = (narration ? NARRATION_LINE_H : SPEECH_LINE_H) + h.grow(baseFontSize);
   const textH = lines.length * lineH;
-  const padTop = d.speaker ? 18 : 8;
-  const padBottom = narration ? 8 : 12;
   const panelH = padTop + textH + padBottom;
 
   // 3) X 좌표: 캐릭터 수평 중심에 배치, 화면 가장자리 벗어나지 않게 클램핑
@@ -131,6 +144,7 @@ export function drawDialogue(h: Hud, dt: number): void {
   const slideOffset = Math.round((1 - fadeIn) * 4);
   const curY = panelY + slideOffset;
 
+  { const r = h.dialogueRect; r.x = panelX; r.y = curY; r.w = panelW; r.h = panelH; }
   // 6) 대화 패널 본체 (우아한 양피지/원목 패널)
   h.panel(panelX, curY, panelW, panelH);
 
@@ -315,8 +329,14 @@ export function drawCaption(h: Hud, c: CaptionState) {
   const portraitKey = c.speaker ? resolvePortraitKey(c.speaker) : null;
 
   if (portraitKey) {
+    // 글자는 어느 화면에서든 화면 기준 CAPTION_MIN_CSS_PX 이상으로 (UI 1칸이 작은 폰·저해상도에서도 읽히게)
+    const base = captionBase(h, 13), size = h.fs(base);
+    const lh = size + 6;
+    const textLeft0 = Math.max(16, h.edge.left + 20) + 64 + 14;
+    const maxTextW0 = h.w - textLeft0 - Math.max(16, h.edge.right + 20);
+    const lines = h.wrapMemo(c.text, maxTextW0, base, 3, '#000000');
     const bh = Math.round(h.h * 0.12 * h.letterbox);
-    const barH = Math.max(bh, 76);
+    const barH = Math.max(bh, 76, 15 + 4 + lines.length * lh + 8);
     const textH = Math.max(76, barH - h.edge.bottom);
     const barTop = h.h - h.edge.bottom - textH;
 
@@ -342,14 +362,8 @@ export function drawCaption(h: Hud, c: CaptionState) {
     drawPortrait(h.ctx, boxX + 4, boxY + 4, portraitKey, 40);
 
     const textLeft = boxX + boxSize + 14;
-    const maxTextW = h.w - textLeft - Math.max(16, h.edge.right + 20);
-
     const displayName = tr(c.speaker!);
     const speakerTxt = h.txt(displayName, 12, ACCENT, OUTLINE);
-
-    const base = 13, size = h.fs(base);
-    const lh = size + 6;
-    const lines = h.wrapMemo(c.text, maxTextW, base, 2, '#000000');
 
     const totalH = 15 + 4 + lines.length * lh - 6;
     const textY0 = Math.max(barTop + 4, boxY + Math.round((boxSize - totalH) / 2));
@@ -384,7 +398,7 @@ export function drawCaption(h: Hud, c: CaptionState) {
   const title = c.style === 'title';
   const voice = c.style === 'voice' || title;
   // 제목: 크게, 화면 한가운데. base = 보통 단계 크기 (음성 16 · 이야기꾼 13 — 글자 크기 단계는 정책이 키움), size = 실제 UI 크기
-  const base = title ? 30 : voice ? 16 : 13, size = h.fs(base);
+  const base = title ? 30 : voice ? Math.max(16, captionBase(h, 16)) : captionBase(h, 13), size = h.fs(base);
   let lay = h.captionLayout.get(c);
   if (!lay || lay.w !== h.w) {
     lay = h.layoutCaption(c, base, voice, title);
