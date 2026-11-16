@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { VoxelBuilder } from './voxel';
+import { VoxelBuilder, isSharedMaterial } from './voxel';
 import { PAL, PAL_REGION } from './palette';
 import {
   buildIdols,
@@ -26,7 +26,10 @@ import { buildBeershebaStage, type BeershebaStage } from './stages/beersheba';
 import { buildMoriahStage, type MoriahStage } from './stages/moriah';
 import { buildHebronMachpelahStage, type HebronMachpelahStage } from './stages/hebronMachpelah';
 import { buildNahorWellStage, type NahorWellStage } from './stages/nahorWell';
+import { buildHorizonPlane } from './stages/common';
+import { buildHaranStage } from './stages/haran';
 import { Collision } from './collision';
+import { StaticMerger } from './staticMerge';
 import * as P from './props';
 import { Camel, Sheep } from '../entities/animals';
 
@@ -73,10 +76,15 @@ export interface StageInfo {
 
 export class StageManager {
   private currentStage: StageInfo | null = null;
+  /** 정적 메시 병합기 (staticMerge.ts) — 무대가 안정되면 같은 재질 메시를 합쳐 드로우콜을 줄인다. 끄려면 mergeStatic=false */
+  mergeStatic = true;
+  private merger: StaticMerger | null = null;
   readonly scene: THREE.Scene;
 
   constructor(scene: THREE.Scene) {
     this.scene = scene;
+    // 뼈 배치 병합 메시의 행렬은 월드 행렬 갱신 뒤·그림자 패스 앞에 채운다 (three 는 scene.onBeforeRender 를 그 사이에 부른다)
+    scene.onBeforeRender = () => { this.merger?.updateBones(); };
   }
 
   get stage(): StageInfo | null {
@@ -91,21 +99,50 @@ export class StageManager {
     const stage = this.buildStage(id);
     this.currentStage = stage;
     this.scene.add(stage.root);
+    this.merger = this.mergeStatic ? new StaticMerger(stage.root) : null;
     return stage;
   }
 
   private disposeCurrentStage(): void {
     if (!this.currentStage) return;
     this.scene.remove(this.currentStage.root);
+    this.merger?.dispose();
+    this.merger = null;
+    const disposedMats = new Set<THREE.Material>();
     this.currentStage.root.traverse((obj) => {
       if (obj instanceof THREE.Mesh) {
         obj.geometry?.dispose();
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        for (const mat of mats) {
+          if (mat && !isSharedMaterial(mat) && !mat.userData.boneBatch && !disposedMats.has(mat)) {
+            disposedMats.add(mat);
+            if ('map' in mat) {
+              const tex = (mat as THREE.Material & { map?: THREE.Texture | null }).map;
+              tex?.dispose();
+            }
+            mat.dispose();
+          }
+        }
       }
     });
     this.currentStage = null;
   }
 
+  /** QA: 병합 관찰이 끝났나 (병합 안 쓰면 true) */
+  get mergeReady(): boolean { return this.merger ? this.merger.ready : true; }
+  /** QA: 그림자 컷 켜기/끄기 (같은 상태 전후 비교용) */
+  setShadowCull(on: boolean): void { this.merger?.setShadowCull(on); }
+  /** QA: 병합 켜기/끄기 (같은 상태 전후 비교용) */
+  setMergeActive(on: boolean): void { this.merger?.setActive(on); }
+
+  /** 병합 통계 (QA) */
+  get mergeStats(): { meshes: number; sources: number; unmerged: number; bones: number; shadowCulled: number; repaired: number; rejects: { hidden: number; notMergeable: number; dynamic: number; singleton: number } } {
+    const m = this.merger;
+    return { meshes: m?.mergedMeshes ?? 0, sources: m?.mergedSources ?? 0, unmerged: m?.unmerged ?? 0, bones: m?.boneMeshes ?? 0, shadowCulled: m?.shadowCulled ?? 0, repaired: m?.repaired ?? 0, rejects: m?.rejects ?? { hidden: 0, notMergeable: 0, dynamic: 0, singleton: 0 } };
+  }
+
   update(dt: number, time: number): void {
+    this.merger?.update();
     if (this.currentStage?.palaceDetails) {
       this.currentStage.palaceDetails.updateAnimations(dt, time);
     }
@@ -174,7 +211,7 @@ export class StageManager {
       col: ur.col,
       urDetails: ur,
       bgm: 'bgm_nimrod_empire',
-      ambience: 'amb_palace',
+      ambience: 'amb_workshop',
     };
   }
 
@@ -208,7 +245,7 @@ export class StageManager {
       col: c.col,
       esauCampDetails: c,
       bgm: 'bgm_covenant_stars',
-      ambience: 'amb_field',
+      ambience: 'amb_field_day',
     };
   }
 
@@ -225,45 +262,13 @@ export class StageManager {
       col: f.col,
       furnaceDetails: f,
       bgm: 'bgm_judgment_fire',
-      ambience: 'amb_cave',
+      ambience: 'amb_furnace',
     };
   }
 
   // ── 4. 하란 정착 캠프 ──
   private buildHaran(): StageInfo {
-    const root = new THREE.Group();
-    const col = new Collision();
-    col.bounds = { minX: -16, maxX: 16, minZ: -16, maxZ: 16 };
-    const hb = new VoxelBuilder(9, false);
-
-    // 하란 오아시스 지면
-    hb.box(0, -0.25, 0, 36, 0.5, 36, PAL_REGION.MESOPOTAMIA.ground, { tex: 'soil' });
-    // 작은 오아시스 초목과 물가
-    hb.box(6, 0.02, -5, 6, 0.05, 5, PAL.grass[2], { tex: 'grassTop' });
-    hb.box(6, 0.03, -5, 4, 0.06, 3, PAL.water[1], { tex: 'water' });
-
-    // 야외 모닥불
-    P.campfire(hb, col, 0, 0);
-
-    // 오아시스 종려나무와 덤불
-    P.palmTree(hb, col, 7.5, -3.0);
-    P.palmTree(hb, col, 5.0, -7.0);
-    P.bush(hb, col, -6.0, 4.0, 0.9);
-
-    root.add(hb.build());
-
-    // 장막 2채 (아브람/사래 장막 및 데라의 장막)
-    const tent1 = buildNomadTent(PAL.fabric.redDark);
-    tent1.position.set(-4.5, 0, -3.5);
-    const tent2 = buildNomadTent(PAL_REGION.CANAAN.tentBlack);
-    tent2.position.set(4.0, 0, 2.5);
-    root.add(tent1, tent2);
-
-    // 쉬고 있는 낙타와 양
-    const camel = new Camel(6.5, 4.5, true);
-    camel.root.rotation.y = -Math.PI * 0.3;
-    const sheep = new Sheep(-5.0, 3.0);
-    root.add(camel.root, sheep.root);
+    const { root, col } = buildHaranStage();
 
     return {
       id: 'haran',
@@ -274,7 +279,7 @@ export class StageManager {
       root,
       col,
       bgm: 'bgm_lament',
-      ambience: 'amb_night',
+      ambience: 'amb_field_night',
     };
   }
 

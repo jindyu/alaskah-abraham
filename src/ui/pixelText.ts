@@ -5,7 +5,10 @@ import { dev, inset, textBox, textDevicePx } from './uiScale';
  * 같은 (문자열, 크기, 색, 배율) 조합은 캐시해서 매 프레임 다시 그리지 않음.
  */
 const FONT = '"Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif';
-const cache = new Map<string, HTMLCanvasElement>();
+/** 글자별 변형 목록 (크기·색·그림자·배율). 키 문자열을 매번 이어 붙이지 않으려고 문자열 → 변형 목록의 2단계로 둔다 */
+interface TextEntry { fs: number; color: string; shadow: string | null; density: number; canvas: HTMLCanvasElement }
+const cache = new Map<string, TextEntry[]>();
+let lookups = 1;
 /** 캐시 상한: "밀 3개를 21에 팔았다"처럼 값이 바뀌는 문장이 끝없이 쌓이지 않게, 오래 안 쓴 것부터 버림 */
 const CACHE_MAX = 600;
 const scratch = document.createElement('canvas');
@@ -34,9 +37,20 @@ function lruSet<V>(m: Map<string, V>, key: string, v: V, max: number) {
  */
 export function pixelText(s: string, size: number, color: string, shadow: string | null = null, density = 1): HTMLCanvasElement {
   const fs = textDevicePx(size, density);
-  const key = `${s}|${fs}|${color}|${shadow}|${density}`;
-  const hit = lruGet(cache, key);
-  if (hit) return hit;
+  // 조회는 프레임마다 글자마다 일어나므로 문자열을 새로 만들지 않고 필드를 비교한다 (할당 0)
+  let variants = cache.get(s);
+  if (variants !== undefined) {
+    for (let i = 0; i < variants.length; i++) {
+      const e = variants[i];
+      if (e.fs === fs && e.color === color && e.shadow === shadow && e.density === density) {
+        // 최근에 쓴 것으로 옮김 — Map 삭제·재삽입은 내부 표를 다시 만들며 할당하므로, 한참 안 옮긴 것만 옮긴다 (대략적 LRU)
+        const tv = variants as TextEntry[] & { stamp?: number };
+        if (lookups - (tv.stamp ?? 0) > 1500) { tv.stamp = lookups; cache.delete(s); cache.set(s, variants); }
+        lookups++;
+        return e.canvas;
+      }
+    }
+  }
   sctx.font = `bold ${fs}px ${FONT}`;
   const { w, h, pad } = textBox(sctx.measureText(s).width, fs, density);
   scratch.width = w; scratch.height = h;
@@ -60,7 +74,13 @@ export function pixelText(s: string, size: number, color: string, shadow: string
     }
   g.putImageData(img, 0, 0);
   (out as HTMLCanvasElement & { density?: number }).density = density;
-  lruSet(cache, key, out, CACHE_MAX);
+  if (variants === undefined) {
+    if (cache.size >= CACHE_MAX) cache.delete(cache.keys().next().value!);
+    variants = [];
+    cache.set(s, variants);
+  }
+  if (variants.length >= 12) variants.shift();
+  variants.push({ fs, color, shadow, density, canvas: out });
   return out;
 }
 

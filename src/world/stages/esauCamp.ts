@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { buildFarField, buildHorizonPlane, scatterGroundCover } from './common';
 import { Collision } from '../collision';
 import { PAL, PAL_REGION } from '../palette';
 import { VoxelBuilder } from '../voxel';
@@ -58,6 +59,9 @@ function buildCampGround(): THREE.Mesh {
         c = ditherPick([0x2a221c, 0x3d322a, 0x1f1814], hash2(i, j, 741), i, j);
       }
 
+      // 가장자리 3m: 원경 능선 색(0xb88856)으로 수렴 → 지면과 원경 사이 이음새 없음
+      const eEdge = CAMP_HALF - Math.max(Math.abs(x), Math.abs(z));
+      if (eEdge < 3 && hash2(i, j, 751) > eEdge / 3) c = 0xb88856;
       px.set(i, j, c);
     }
   }
@@ -79,6 +83,9 @@ export function buildEsauCampStage(): EsauCampStage {
   const col = new Collision();
   col.bounds = { minX: -CAMP_HALF + 4, maxX: CAMP_HALF - 4, minZ: -CAMP_HALF + 4, maxZ: CAMP_HALF - 4 };
 
+  // 원경: 헤브론 구릉 (지평선 평면 + 계단식 능선 + 지면에서 이어지는 가장자리)
+  root.add(buildHorizonPlane(0xcdbf98, 360, -0.05, 0.2));
+  buildFarField(root, CAMP_HALF, { seed: 17, pal: [0x7a7c48, 0x948a56, 0xb09a68, 0xc4b080], tex: 'soil', accents: [0x8a7a58, 0x56683a], depth: 44, haze: 0xcdbf98, ground: 0xb88856, rim: { min: 1.6, max: 3.2, south: 0.35 }, maxH: 3.5 });
   // 지면 추가
   root.add(buildCampGround());
 
@@ -110,19 +117,19 @@ export function buildEsauCampStage(): EsauCampStage {
   for (const ang of stoneAngles) {
     const sx = PX + Math.cos(ang) * 0.85;
     const sz = PZ + Math.sin(ang) * 0.85;
-    b.box(sx, 0.18, sz, 0.35, 0.35, 0.35, 0x7a6e64, { tex: 'stone' });
+    b.box(sx, 0, sz, 0.35, 0.35, 0.35, 0x7a6e64, { tex: 'stone' });
   }
 
   // 타오르는 장작과 붉은 숯불
-  b.box(PX, 0.12, PZ, 0.8, 0.2, 0.8, 0x422618, { tex: 'wood' });
-  b.box(PX, 0.22, PZ, 0.5, 0.15, 0.5, 0xff5511);
+  b.box(PX, 0, PZ, 0.8, 0.2, 0.8, 0x422618, { tex: 'wood' });
+  b.box(PX, 0.1, PZ, 0.5, 0.15, 0.5, 0xff5511);
 
   // 청동 삼각대 3다리
   for (let a = 0; a < 3; a++) {
     const legAng = a * (Math.PI * 2 / 3);
     const lx = PX + Math.cos(legAng) * 0.7;
     const lz = PZ + Math.sin(legAng) * 0.7;
-    b.box(lx * 0.5, 0.9, lz * 0.5, 0.1, 1.4, 0.1, 0x3d3024);
+    b.box(lx * 0.5, 0, lz * 0.5, 0.1, 1.6, 0.1, 0x3d3024);
   }
   // 삼각대 상단 고리
   b.box(PX, 1.6, PZ, 0.2, 0.15, 0.2, 0x221a14);
@@ -156,25 +163,26 @@ export function buildEsauCampStage(): EsauCampStage {
   // 3. 야곱의 나무 의자와 국자 소품
   // ─────────────────────────────────────────────────────────────
   // 야곱 의자
-  b.box(-1.4, 0.25, 0.5, 0.5, 0.5, 0.5, 0x5a3e2a, { tex: 'wood' });
+  b.box(-1.4, 0, 0.5, 0.5, 0.5, 0.5, 0x5a3e2a, { tex: 'wood' });
   // 나무 숟가락과 식기 그릇
-  b.box(-0.8, 0.35, 0.3, 0.35, 0.15, 0.35, 0x9a7248);
+  b.box(-0.8, 0, 0.3, 0.35, 0.15, 0.35, 0x9a7248);
 
   // ─────────────────────────────────────────────────────────────
   // 4. 에서의 사냥 도구 소품 (들판 사냥꾼의 흔적)
   // ─────────────────────────────────────────────────────────────
   // 활과 화살통 (바닥에 놓임)
-  b.box(2.2, 0.1, 1.2, 0.15, 0.1, 1.1, 0x4a301e, { tex: 'wood' });
-  b.box(2.4, 0.15, 1.0, 0.25, 0.25, 0.7, 0x824424);
+  b.box(2.2, 0, 1.2, 0.15, 0.1, 1.1, 0x4a301e, { tex: 'wood' });
+  b.box(2.4, 0, 1.0, 0.25, 0.25, 0.7, 0x824424);
   // 노루 뿔과 동물 모피
-  b.box(2.0, 0.08, 2.2, 1.2, 0.08, 1.4, 0x76543a);
+  b.box(2.0, 0, 2.2, 1.2, 0.08, 1.4, 0x76543a);
 
   // 야생 들판의 바위와 에셀나무
-  b.box(-8.0, 0.8, 6.0, 1.8, 1.6, 1.8, 0x9a8e80, { tex: 'stone' });
-  b.box(9.0, 0.6, 7.5, 2.2, 1.2, 1.6, 0x8e8276, { tex: 'stone' });
+  b.box(-8.0, 0, 6.0, 1.8, 1.6, 1.8, 0x9a8e80, { tex: 'stone' });
+  b.box(9.0, 0, 7.5, 2.2, 1.2, 1.6, 0x8e8276, { tex: 'stone' });
   col.addBox(-8.0, 6.0, 2.0, 2.0);
   col.addBox(9.0, 7.5, 2.4, 2.0);
 
+  scatterGroundCover(b, col, { seed: 888, half: 24, count: 200, tufts: [0x6a7a3c, 0x7a8a48, 0x56683a], pebbles: [0x8a6a48, 0x705038, 0xa08058] });
   root.add(b.build());
 
   return {

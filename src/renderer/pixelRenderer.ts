@@ -1,6 +1,7 @@
+import { noteError } from '../core/diagnostics';
 import * as THREE from 'three';
 import { GlContextWatch, GraphicsInitError } from '../game/fatal';
-import { FX_PARAMS, type FxLevel } from './fx';
+import { FX_PARAMS, defaultFxFor, loadFx, type FxLevel } from './fx';
 import { DEFAULT_TARGET_H, DESIGN_VIEW_UNITS, framingForWidth, pickViewport, viewHalfExtent } from './viewport';
 
 /** URL 값을 범위 안으로 (잘못된 ?h=·?view= 로 렌더 크기가 0·무한이 되지 않게) */
@@ -14,6 +15,8 @@ export const TARGET_H = urlNum('h', DEFAULT_TARGET_H, 180, 2160);
 const RESIZE_SETTLE_MS = 100;
 /** 화면 세로에 보이는 월드 범위(유닛). ?view= 로 비교 가능. PPU 는 이것과 내부 세로에서 정해짐 (renderer/viewport.ts) */
 export const VIEW_UNITS = urlNum('view', DESIGN_VIEW_UNITS, 4, 40);
+/** 세로 화면에서 가로로 최소 담을 월드 유닛 수 */
+const PORTRAIT_FIT_UNITS = 7.5;
 /** 평소 카메라 기울기 (도). 컷신에서만 setTilt로 낮춰 하늘·원경을 보여줌 */
 export const BASE_TILT = 50;
 /** 카메라 가까운·먼 면. 윤곽선 깊이 문턱이 이 범위를 쓴다 */
@@ -125,6 +128,9 @@ void main() {
 const FULLSCREEN_VERT = 'varying vec2 vUv; void main() { vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }';
 
 /** 저해상도 렌더 + 픽셀 스냅 카메라 + 색 보정 (+ 선택: 블룸·틸트 시프트) */
+/** 화면 색조 프리셋 */
+export type TintPreset = 'none' | 'night' | 'fire' | 'sulfur' | 'dusk' | 'water';
+
 export class PixelRenderer {
   readonly renderer: THREE.WebGLRenderer;
   readonly scene = new THREE.Scene();
@@ -175,6 +181,8 @@ export class PixelRenderer {
       // 한 프레임에 render 를 여러 번 부르므로(장면 + 후처리) 통계는 프레임 시작에 직접 비움
       this.renderer.info.autoReset = false;
       this.renderer.shadowMap.enabled = true;
+      // 그림자 맵은 shadowRate 프레임에 한 번만 다시 그린다 (render() 가 needsUpdate 를 직접 켬). 그림자 패스는 본 패스만큼의 드로우콜·유니폼 할당이 또 드는데, 움직이는 그림자도 한 프레임 늦는 것은 눈에 안 띈다
+      this.renderer.shadowMap.autoUpdate = false;
       this.renderer.shadowMap.type = THREE.PCFShadowMap;
       this.renderer.outputColorSpace = THREE.SRGBColorSpace;
       parent.appendChild(this.renderer.domElement);
@@ -221,8 +229,21 @@ export class PixelRenderer {
       });
       this.fit();
       this.gl = new GlContextWatch(this.renderer.domElement, () => this.restoreTargets(), (e) => this.onRestoreFailed?.(e));
+      let coarse = false;
+      let memGB: number | undefined;
+      try {
+        if (typeof matchMedia === 'function') {
+          coarse = matchMedia('(pointer: coarse)').matches;
+        }
+      } catch (e) { noteError('renderer:pointerQuery', e); }
+      try {
+        if (typeof navigator !== 'undefined') {
+          memGB = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
+        }
+      } catch (e) { noteError('renderer:deviceMemory', e); }
+      this.setFx(loadFx(defaultFxFor({ coarse, memGB })));
     } catch (err) {
-      try { created?.domElement.remove(); created?.dispose(); } catch { /* 치우다 실패해도 원인을 그대로 알림 */ }
+      try { created?.domElement.remove(); created?.dispose(); } catch (e) { noteError('pixelRenderer:1', e); /* 치우다 실패해도 원인을 그대로 알림 */ }
       throw new GraphicsInitError(err);
     }
   }
@@ -258,6 +279,10 @@ export class PixelRenderer {
     c.style.width = `${w * scale}px`;
     c.style.height = `${h * scale}px`;
     // 항해 전경의 최소 가로 폭(fitWidth)은 CameraRig 가 매 프레임 setFraming 으로 새 폭에 다시 맞춘다
+    // 세로 화면(폰): 가로로 PORTRAIT_FIT_UNITS 유닛은 담기도록 구도의 하한을 둔다 (안 그러면 가로 약 5유닛만 보여 주변이 잘린다)
+    this.portraitFloor = innerHeight > innerWidth * 1.15 ? framingForWidth(vp, PORTRAIT_FIT_UNITS) : 0;
+    if (this.framing < this.portraitFloor) this.framing = this.portraitFloor;
+    else if (this.portraitFloor === 0 && this.framing > this.wantFraming) this.framing = this.wantFraming;
     this.applyFrustum();
     for (const fn of this.onResize) fn();
   }
@@ -274,13 +299,17 @@ export class PixelRenderer {
     this.camera.updateProjectionMatrix();
   }
 
+  private portraitFloor = 0;
+  private wantFraming = 1;
   /** 지금 카메라가 평소보다 얼마나 넓게 보는가 (1 = 평소) */
   get viewFraming() { return this.framing; }
 
   /** 컷신의 넓은 구도. 렌더 타깃 재할당 없이 절두체와 픽셀 스냅만 함께 바꾼다. */
   setFraming(value: number, fitWidth = 0) {
     // 세로 화면에서도 항해 전경의 방주 전체를 보여 준다. 평소 배율은 기존 범위를 유지한다.
-    const next = Math.max(THREE.MathUtils.clamp(value, 1, fitWidth > 0 ? 8 : 4), framingForWidth(this.size, fitWidth));
+    const want = Math.max(THREE.MathUtils.clamp(value, 1, fitWidth > 0 ? 8 : 4), framingForWidth(this.size, fitWidth));
+    this.wantFraming = want;
+    const next = Math.max(want, this.portraitFloor);
     if (next === this.framing) return;
     this.framing = next;
     this.applyFrustum();
@@ -311,6 +340,16 @@ export class PixelRenderer {
     if (this.camera.far !== far) { this.camera.far = far; this.camera.updateProjectionMatrix(); }
     this.camera.position.copy(focus).addScaledVector(this.forward, -dist);
     this.camera.lookAt(focus);
+    if (this.shakeIntensity > 0) {
+      const t = (performance.now() - this.shakeStart) / this.shakeDuration;
+      if (t >= 1) {
+        this.shakeIntensity = 0;
+      } else {
+        const k = this.shakeIntensity * (1 - t);
+        this.camera.position.x += (Math.random() - 0.5) * k;
+        this.camera.position.z += (Math.random() - 0.5) * k;
+      }
+    }
     // 틸트 시프트의 초점 띠가 화면에서 따라가는 지점의 세로 위치(0~1)
     this.camera.updateMatrixWorld();
     this.postMat.uniforms.uFocus.value = this.focusTmp.copy(target).project(this.camera).y * 0.5 + 0.5;
@@ -329,7 +368,7 @@ export class PixelRenderer {
     this.grade.tint.setRGB(r, g, b);
   }
 
-  applyTintPreset(preset: 'none' | 'night' | 'fire' | 'sulfur' | 'dusk' | 'water') {
+  applyTintPreset(preset: TintPreset) {
     switch (preset) {
       case 'night':
         this.grade.tint.setRGB(0.35, 0.45, 0.75);
@@ -369,21 +408,14 @@ export class PixelRenderer {
     this.setFraming(1.0);
   }
 
+  // 카메라 흔들림: 타이머 없이 시계로 계산해 follow() 가 매 프레임 적용한다 (겹쳐 불러도 마지막 것으로 교체됨)
+  private shakeStart = 0;
+  private shakeDuration = 0;
+  private shakeIntensity = 0;
   shake(intensity = 0.3, duration = 0.4) {
-    const origX = this.camera.position.x;
-    const origZ = this.camera.position.z;
-    let t = 0;
-    const shakeTimer = setInterval(() => {
-      t += 0.03;
-      const decay = Math.max(0, 1 - t / duration);
-      this.camera.position.x = origX + (Math.random() - 0.5) * intensity * decay;
-      this.camera.position.z = origZ + (Math.random() - 0.5) * intensity * decay;
-      if (t >= duration) {
-        clearInterval(shakeTimer);
-        this.camera.position.x = origX;
-        this.camera.position.z = origZ;
-      }
-    }, 30);
+    this.shakeStart = performance.now();
+    this.shakeDuration = Math.max(0.001, duration) * 1000;
+    this.shakeIntensity = intensity;
   }
 
   /** 실내는 우리와 바닥까지 선명하게, 비 오는 화면은 후광을 줄여 윤곽을 유지한다. */
@@ -398,8 +430,26 @@ export class PixelRenderer {
     return { calls: i.render.calls, triangles: i.render.triangles, geometries: i.memory.geometries, textures: i.memory.textures };
   }
 
+  /** 씬 자식 수가 바뀔 때만 한 번 훑어, 투명+양면 재질을 단일 패스로 고정한다 (three 는 이런 재질을 그릴 때마다 side 를 바꾸고 needsUpdate 를 켜서 프로그램 키를 매 프레임 다시 계산·할당한다). */
+  /** 그림자 맵을 몇 프레임마다 다시 그리나 (1 = 매 프레임). 개발 훅으로 바꿔 비교할 수 있다 */
+  shadowRate = 2;
+  private shadowTick = 0;
+  private sweptChildren = -1;
+  private readonly fixMaterial = (o: THREE.Object3D) => {
+    const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+    if (!m) return;
+    if (Array.isArray(m)) { for (let i = 0; i < m.length; i++) this.fixOne(m[i]); } else this.fixOne(m);
+  };
+  private fixOne(m: THREE.Material) {
+    if (m.transparent && m.side === THREE.DoubleSide) m.forceSinglePass = true;
+  }
+
   render() {
     if (this.gl.lost || this.gl.failed) return;
+    if (this.scene.children.length !== this.sweptChildren) {
+      this.sweptChildren = this.scene.children.length;
+      this.scene.traverse(this.fixMaterial);
+    }
     const u = this.postMat.uniforms, g = this.grade;
     this.renderer.info.reset();
     u.uSat.value = g.saturation;
@@ -412,6 +462,7 @@ export class PixelRenderer {
     u.uBloom.value = this.fxBloom * (this.interiorPresentation ? .72 : 1 - this.presentationRain * .22);
     // 실내 연출·컷신(카메라를 눕힘)에서는 윤곽을 줄임
     u.uOutline.value = this.fxOutline * (this.interiorPresentation ? 0.7 : 1) * Math.min(1, Math.max(0, (this.tilt - 30) / (BASE_TILT - 30)));
+    this.renderer.shadowMap.needsUpdate = this.shadowRate <= 1 || (this.shadowTick++ % this.shadowRate) === 0;
     this.renderer.setRenderTarget(this.rt);
     this.renderer.render(this.scene, this.camera);
     if (this.fxBloom > 0) this.renderBloom();

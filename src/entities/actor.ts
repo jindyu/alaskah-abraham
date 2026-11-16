@@ -437,8 +437,8 @@ export class Actor {
     this.root.rotation.z = rad;
   }
 
-  swingEquippedAction(face?: string): void {
-    if (face) this.face(face as any);
+  swingEquippedAction(face?: 'up' | 'down' | 'left' | 'right'): void {
+    if (face) this.face(face);
     this.setPose('swing_axe');
     this.swingTimer = 0.35;
   }

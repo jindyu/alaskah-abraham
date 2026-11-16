@@ -18,8 +18,10 @@ describe('전권 서사 및 진행 무결성 (Story & Chapter Progression)', () 
       book.chapters.forEach((ch, cIdx) => {
         expect(ch.slug.length).toBeGreaterThan(0);
         expect(ch.title.length).toBeGreaterThan(0);
-        expect(ch.steps.length).toBeGreaterThan(0);
-        totalSteps += ch.steps.length;
+        // JSON 스텝은 인트로(0)·아우트로(7)만 번들에 포함 — 1~6권은 장면 코드가 연출하고 카탈로그 메타데이터만 쓴다
+        if (bIdx === 0 || bIdx === 7) expect(ch.steps.length).toBeGreaterThan(0);
+        expect(ch.stepCount).toBeGreaterThan(0);
+        totalSteps += ch.stepCount;
 
         // 컨텍스트 매핑 검증
         const ctx = getChapterContext(bIdx, cIdx);

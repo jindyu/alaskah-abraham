@@ -8,7 +8,13 @@ import { LANG_LABEL, isKo, lang, notifyLangChange, type Lang } from './lang';
 type Table = Record<string, string>;
 /** 번역표(언어마다 약 300KB)는 그 언어를 처음 쓸 때 따로 내려받음 — 한국어만 하는 사람은 받지 않음 */
 const LOADERS: Record<Exclude<Lang, 'ko'>, () => Promise<{ default: unknown }>> = {
-  en: () => import('./en.json'),
+  en: () =>
+    Promise.all([
+      import('./en.json'),
+      import('./en_extra.json'),
+    ]).then(([m1, m2]) => ({
+      default: { ...(m2.default as Table), ...(m1.default as Table) },
+    })),
 };
 const tables = new Map<Lang, Table>();
 const loading = new Map<Lang, Promise<void>>();

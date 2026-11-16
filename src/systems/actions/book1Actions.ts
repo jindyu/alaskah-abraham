@@ -1,4 +1,6 @@
 import type { Interactions, Interactable } from '../interaction';
+import { Player } from '../../entities/player';
+import { after } from '../../game/timers';
 import type { Hud } from '../../ui/hud';
 import type { AudioManager } from '../../audio/audioManager';
 import type { ParticleManager } from '../../renderer/particles';
@@ -25,6 +27,11 @@ export interface Book1ActionContext {
   sceneCtx: SceneContext;
   urStage: UrStage;
   onBook1Complete: () => void;
+}
+
+/** 장면 컨텍스트의 player 는 Player 또는 Actor — 도구 동작은 Player 에만 있다 */
+function asPlayer(p: unknown): Player | null {
+  return p instanceof Player ? p : null;
 }
 
 export function setupBook1Actions(ctx: Book1ActionContext): void {
@@ -171,12 +178,12 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
             if (index === 0) {
               // Midrash Satire route
               hud.toast('abram', null, '아브람: "어떤 여인이 고운 밀가루 한 그릇을 바쳤는데, 저들이 서로 먼저 먹겠다고 다투더니 가장 큰 우상이 도끼를 들어 작은 것들을 쳐부수었습니다!"');
-              setTimeout(() => {
+              after(() => {
                 faceEachOther('terah', 'anger');
                 hud.toast('terah', null, '데라: "네 놈이 아비를 조롱하느냐! 저것들이 어찌 스스로 움직이며 먹고 싸운단 말이냐!"');
-                setTimeout(() => {
+                after(() => {
                   hud.toast('abram', null, '아브람: "아버지께서 스스로 말씀하셨습니다. 보지도, 걷지도, 먹지도 못하는 것을 어찌 신이라 부르며 절하십니까?"');
-                  setTimeout(() => {
+                  after(() => {
                     faceEachOther('terah', 'sweat');
                     hud.toast('terah', null, '데라: "고약한 놈! 바벨의 군주 니므롯 왕과 온 도성이 섬기는 주신을 능멸하다니, 어서 성문 밖으로 피해 왕의 재판에 서거라!"');
                     updateGoal();
@@ -187,12 +194,12 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
             } else {
               // Direct Faith Witness route
               hud.toast('abram', null, '아브람: "아버지, 사람이 손으로 빚은 돌과 나무는 결코 신이 아닙니다. 눈이 있어도 보지 못하고 귀가 있어도 듣지 못하는 헛된 우상을 버리십시오!"');
-              setTimeout(() => {
+              after(() => {
                 faceEachOther('terah', 'anger');
                 hud.toast('terah', null, '데라: "닥쳐라, 아브람! 온 나라가 숭배하는 신들을 거역하다니, 니므롯 왕이 알면 우리 집안 전체가 살아남지 못한다!"');
-                setTimeout(() => {
+                after(() => {
                   hud.toast('abram', null, '아브람: "하늘과 땅을 지으신 살아계신 하나님 한 분만이 참신이십니다. 사람을 두려워하지 마십시오!"');
-                  setTimeout(() => {
+                  after(() => {
                     faceEachOther('terah', 'sweat');
                     hud.toast('terah', null, '데라: "더는 감싸줄 수 없다. 네 발칙한 행동은 니므롯 왕의 불같은 심판을 면치 못할 것이다!"');
                     updateGoal();
@@ -239,9 +246,9 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
           },
         ],
         () => {
-          setTimeout(() => {
+          after(() => {
             hud.toast('customer', null, '노인 손님: "내 올해로 꼭 쉰 살이 되었소만, 그건 왜 묻는가?"');
-            setTimeout(() => {
+            after(() => {
               hud.showChoice(
                 '노인 손님에게 건넬 아브람의 일침',
                 [
@@ -254,7 +261,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
                 () => {
                   metOldCustomer = true;
                   hud.unlockCodex('old_customer');
-                  setTimeout(() => {
+                  after(() => {
                     hud.toast('customer', null, '노인 손님: "내 쉰 평생 살면서 이토록 부끄러운 일은 처음이로다... 스스로 서지도 못하는 것을 복의 근원이라 섬기려 했다니!"');
                     hud.celebrate('미드라시 전승 완수', '우상의 헛됨을 깨달은 손님이 빈손으로 돌아갔다!', true);
                     talkedPeople.add('old_customer');
@@ -388,11 +395,11 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       if (hasAxe && smashedIdols < 3) {
         smashedIdols++;
         if ('playAction' in sceneCtx.player) {
-          (sceneCtx.player as any).playAction();
+          asPlayer(sceneCtx.player)?.playAction();
         }
         audio.playSfx('axe_swing');
 
-        setTimeout(() => {
+        after(() => {
           const smashSounds = ['idol_break_01', 'idol_break_02', 'idol_break_03'];
           audio.playSfx(smashSounds[(smashedIdols - 1) % smashSounds.length]);
 
@@ -464,7 +471,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
       hasAxe = true;
       audio.playSfx('axe_pickup');
       if ('setHeld' in sceneCtx.player) {
-        (sceneCtx.player as any).setHeld('axe');
+        asPlayer(sceneCtx.player)?.setHeld('axe');
       }
       particles.emit('glory_sparkles', WX + 2.2, 1.0, WZ - 1.2, 16);
       hud.toast('axe', null, '작업대에서 묵직한 청동 도끼를 쥐었다!');
@@ -507,7 +514,7 @@ export function setupBook1Actions(ctx: Book1ActionContext): void {
         audio.playSfx('ui_confirm');
         hud.unlockCodex('the_axe');
         if ('setHeld' in sceneCtx.player) {
-          (sceneCtx.player as any).setHeld(null);
+          asPlayer(sceneCtx.player)?.setHeld(null);
         }
         particles.emit('glory_sparkles', WX, 1.8, WZ - 2.2, 24);
 

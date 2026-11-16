@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 import type { Hud } from '../ui/hud';
 import type { Interactable } from '../systems/interaction';
 import type { PanelStack } from './panels';
@@ -63,12 +64,12 @@ export function bindInput(target: Window, c: InputContext) {
   target.addEventListener('keydown', (e) => {
     // 브라우저 단축키(새로고침·전체화면·개발자 도구, Ctrl/⌘ 조합)는 열린 창이 삼키지 않게 그대로 통과
     if (isBrowserShortcut(e)) return;
-    if (e.repeat && ['Tab', 'Escape', 'F1'].includes(e.code)) { e.preventDefault(); return; }
+    if (e.repeat && ['Tab', 'Escape', 'F1', 'KeyH'].includes(e.code)) { e.preventDefault(); return; }
     // 열린 창에 keyRank 순으로 키를 줌. 처리되면 여기서 끝
     if (c.panels.routeKey(e)) return;
     if (c.transitioning()) return; // 장면 전환 중에는 창을 열지 않음
     if (e.code === 'Tab') { e.preventDefault(); c.openChapterSelect(); return; }
-    if (e.code === 'F1') { e.preventDefault(); c.openHelp?.(); return; }
+    if (e.code === 'F1' || e.code === 'KeyH') { e.preventDefault(); c.openHelp?.(); return; }
     if (e.code === 'Escape') { c.openPause(); return; }
     keys.add(e.code);
     // 상호작용 (누른 순간만)
@@ -90,7 +91,7 @@ export function bindInput(target: Window, c: InputContext) {
   const setCursor = (v: string) => {
     if (v === lastCursor) return;
     lastCursor = v;
-    try { document.body.style.cursor = v; } catch { /* DOM 이 없는 환경 */ }
+    try { document.body.style.cursor = v; } catch (e) { noteError('input:1', e); /* DOM 이 없는 환경 */ }
   };
   // 우클릭 메뉴 막기 (입력칸·안내 단추 위에서는 그대로)
   target.addEventListener('contextmenu', (e) => { if (!onFormControl(e.target)) e.preventDefault(); });

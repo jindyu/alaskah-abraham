@@ -1,7 +1,8 @@
+import { noteError } from '../core/diagnostics';
 import { isForeignWrite, savedAtOf } from '../systems/save';
 
 export interface SaveGate {
-  disabled: boolean; leaving: boolean; started: boolean; locked: boolean; cutscene: boolean;
+  disabled: boolean; leaving: boolean; started: boolean; locked: boolean; cutscene: boolean; menu?: boolean;
 }
 
 /** 저장 실패 까닭: quota 저장 공간 부족 · unavailable 저장소를 못 씀(시크릿 창·차단 등) */
@@ -17,7 +18,7 @@ export function saveFailText(reason: FailReason | null): string {
   return '저장하지 못했다. 시크릿 창이 아닌지, 브라우저 저장 공간이 찼는지 확인하자';
 }
 /** 다른 탭과 충돌해 읽기 전용이 됐을 때의 토스트 문구 (복구 길 안내 포함) */
-export const SAVE_CONFLICT_TEXT = '다른 탭에서 이 저장 칸을 저장했다. 덮어쓰지 않도록 이 탭은 저장을 멈췄다. Esc 메뉴의 ‘이 탭에서 계속하기’나 ‘다른 탭의 저장 불러오기’를 고르자';
+export const SAVE_CONFLICT_TEXT = '다른 탭에서 이 저장 칸을 저장했다. 덮어쓰지 않도록 이 탭은 저장을 멈췄다. 이 탭을 새로고침하면 다른 탭의 저장에서 이어서 한다';
 
 /**
  * 'storage' 이벤트가 "다른 탭이 이 탭의 저장 칸을 새로 썼다"는 뜻인가 (순수).
@@ -32,7 +33,7 @@ export function shouldFlagForeign(eventKey: string | null, slotKey: string, newV
 }
 
 /**
- * 저장 가능 시점과 연속 실패 알림(3회마다)을 관리한다. 스냅샷과 저장소는 호출자가 제공한다.
+ * 저장 가능 시점과 연속 실패 알림(첫 실패 즉시, 이후 3회마다)을 관리한다. 스냅샷과 저장소는 호출자가 제공한다.
  * 쓰기가 'conflict' 면 그 탭은 읽기 전용으로 잠그고(이후 저장 안 함) conflict 알림을 한 번만 부른다.
  */
 export class SaveLifecycle {
@@ -69,7 +70,7 @@ export class SaveLifecycle {
     const g = this.gate();
     if (this.readOnly || g.disabled || g.leaving || g.locked) return false;
     this.readOnly = true;
-    try { this.conflict(); } catch { /* 알림 실패는 무시 */ }
+    try { this.conflict(); } catch (e) { noteError('saveLifecycle:conflictNotice', e); }
     return true;
   }
   /** 가장 최근 저장 시도가 실패한 까닭 (성공했거나 저장하지 않았으면 null) */
@@ -88,19 +89,19 @@ export class SaveLifecycle {
   save(force = false): boolean {
     this.reason = null;
     const g = this.gate();
-    if (this.readOnly || this.suspendedBy !== null || g.disabled || g.leaving || !g.started || g.locked || (g.cutscene && !force)) return false;
+    if (this.readOnly || this.suspendedBy !== null || g.disabled || g.leaving || !g.started || g.locked || ((g.cutscene || !!g.menu) && !force)) return false;
     let out: WriteOutcome = false;
-    try { out = this.write(); } catch { /* 저장소 예외도 실패 알림으로 처리 */ }
+    try { out = this.write(); } catch (e) { noteError('saveLifecycle:write', e); /* 저장소 예외도 실패 알림으로 처리 */ }
     if (out === 'conflict') {
       this.readOnly = true;
-      try { this.conflict(); } catch { /* 알림 실패는 무시 */ }
+      try { this.conflict(); } catch (e) { noteError('saveLifecycle:conflictNotice', e); }
       return false;
     }
     const ok = out === true;
     if (!ok) this.reason = out === 'quota' ? 'quota' : 'unavailable';
     this.failures = ok ? 0 : this.failures + 1;
-    // 연속 실패 3번째부터 3회마다 다시 알림 (한 번 놓쳐도 계속 안 써지는 걸 알 수 있게)
-    if (this.failures > 0 && this.failures % 3 === 0) { try { this.failed(this.reason); } catch { /* 알림 실패는 무시 */ } }
+    // 첫 실패에 바로 알리고, 계속 실패하면 3회마다 다시 알림 (한 번 놓쳐도 계속 안 써지는 걸 알 수 있게)
+    if (this.failures === 1 || (this.failures > 1 && this.failures % 3 === 1)) { try { this.failed(this.reason); } catch (e) { noteError('saveLifecycle:failNotice', e); } }
     return ok;
   }
   /**

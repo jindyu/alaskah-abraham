@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import * as THREE from 'three';
-import { CHUNK_MIN_VERTS, CHUNK_TILE, VoxelBuilder } from '../src/world/voxel';
+import { CHUNK_MIN_VERTS, CHUNK_TILE, VoxelBuilder, voxelConfig } from '../src/world/voxel';
 
 /** 땅에 붙은 정적 박스(ao 기본값)는 바닥면을 빼서 박스당 5면 = 20정점·30인덱스 */
 const V_PER_BOX = 20, I_PER_BOX = 30;
@@ -20,6 +20,11 @@ function grid(nx: number, nz: number, step: number, tex: 'plain' | 'wood' | 'mix
 }
 
 describe('VoxelBuilder.build 타일 청크', () => {
+  // 이 파일은 타일 분할만 본다: 박스 수 × 면 수로 총량을 세므로 마주 붙은 안쪽 면 제거(tests/static-merge.test.ts 에서 따로 검증)는 끈다
+  const prev = voxelConfig.cullInterior;
+  beforeAll(() => { voxelConfig.cullInterior = false; });
+  afterAll(() => { voxelConfig.cullInterior = prev; });
+
   it('넓게 깔린 큰 배치는 XZ 타일 여러 개로 갈라지고 정점·인덱스 총량이 같다', () => {
     const n = 20 * 10;
     expect(n * V_PER_BOX).toBeGreaterThanOrEqual(CHUNK_MIN_VERTS);

@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { ridgeMound } from './scenery36';
+import { scatterGroundCover, groundVariation } from './common';
 import { Collision } from '../collision';
 import { PAL, PAL_REGION } from '../palette';
 import { VoxelBuilder } from '../voxel';
@@ -135,7 +137,7 @@ function buildUrGround(): THREE.Mesh {
         }
       }
 
-      px.set(i, j, c);
+      px.set(i, j, groundVariation(c, x, z, 3, 0.8));
     }
   }
 
@@ -173,28 +175,29 @@ export function buildUrStage(): UrStage {
   // 2. 외곽을 감싸는 메소포타미아 계단식 점토 언덕과 사구 (바깥이 뚝 끊기지 않게 둘러쌈!)
   // ─────────────────────────────────────────────────────────────
   // 북쪽 외곽 고원 (z: -26 ~ -44)
-  for (let x = -44; x <= 44; x += 3.2) {
-    const h1 = 2.0 + Math.sin(x * 0.2) * 0.8;
-    b.box(x, h1 * 0.5, -28, 3.4, h1, 8.0, reg.ground, { tex: 'soil', jitter: 0.05 });
+  for (let x = -44; x <= 44; x += 1.6) {
+    const h1 = 2.0 + Math.sin(x * 0.2) * 0.8 + Math.sin(x * 0.9) * 0.15; // 잔물결로 계단 느낌을 줄인다
+    ridgeMound(b, x, -28, 1.8, 8.0, h1, reg.ground, 0xb89258, 'dune');
     const h2 = 4.2 + Math.cos(x * 0.15) * 1.2;
-    b.box(x, h2 * 0.5, -36, 3.4, h2, 9.0, 0x8a5e38, { tex: 'brick', jitter: 0.05 });
+    b.box(x, 0, -36, 3.4, h2, 9.0, 0x8a5e38, { tex: 'brick', jitter: 0.05 });
   }
 
   // 남쪽 외곽 모래 언덕 (z: 24 ~ 40)
-  for (let x = -44; x <= 44; x += 3.4) {
-    const h = 2.2 + Math.cos(x * 0.22) * 0.9;
-    b.box(x, h * 0.5, 26, 3.6, h, 8.0, reg.ground, { tex: 'soil', jitter: 0.04 });
+  for (let x = -44; x <= 44; x += 1.7) {
+    // 남쪽은 카메라에 가장 가까워 화면 아래를 크게 가리므로 낮게 (다른 무대의 남쪽 능선과 같은 이유)
+    const h = (2.2 + Math.cos(x * 0.22) * 0.9 + Math.sin(x * 0.8) * 0.15) * 0.55;
+    ridgeMound(b, x, 26, 1.9, 8.0, h, reg.ground, 0xb89258, 'dune');
   }
 
   // 서쪽 외곽 고지대 (x: -28 ~ -44)
   for (let z = -24; z <= 24; z += 3.2) {
     const h = 2.6 + Math.sin(z * 0.18) * 0.7;
-    b.box(-30, h * 0.5, z, 7.0, h, 3.4, reg.ground, { tex: 'soil', jitter: 0.04 });
+    ridgeMound(b, -30, z, 7.0, 3.4, h, reg.ground, 0xb89258, 'dune');
   }
 
   // 동쪽 고대 도시 성벽 라인 (x: 28 ~ 38)
   for (let z = -24; z <= 24; z += 3.6) {
-    b.box(32, 2.5, z, 5.0, 5.0, 3.8, reg.brick, { tex: 'brick', jitter: 0.03 });
+    b.box(32, 0, z, 5.0, 5.0, 3.8, reg.brick, { tex: 'brick', jitter: 0.03 });
   }
 
   // ─────────────────────────────────────────────────────────────
@@ -202,42 +205,42 @@ export function buildUrStage(): UrStage {
   // ─────────────────────────────────────────────────────────────
   const WX = 0, WZ = -7;
   // 본채 외벽 (가로 12, 세로 7, 높이 3.4)
-  b.box(WX, 1.7, WZ - 3.4, 12.4, 3.4, 0.8, reg.brick, { tex: 'brick' });
+  b.box(WX, 0, WZ - 3.4, 12.4, 3.4, 0.8, reg.brick, { tex: 'brick' });
   col.addBox(WX, WZ - 3.4, 12.5, 0.9);
-  b.box(WX - 5.8, 1.7, WZ, 0.8, 3.4, 7.0, reg.brick, { tex: 'brick' });
+  b.box(WX - 5.8, 0, WZ, 0.8, 3.4, 7.0, reg.brick, { tex: 'brick' });
   col.addBox(WX - 5.8, WZ, 0.9, 7.1);
-  b.box(WX + 5.8, 1.7, WZ, 0.8, 3.4, 7.0, reg.brick, { tex: 'brick' });
+  b.box(WX + 5.8, 0, WZ, 0.8, 3.4, 7.0, reg.brick, { tex: 'brick' });
   col.addBox(WX + 5.8, WZ, 0.9, 7.1);
   // 전면 기둥 2개와 아치 개방 입구
-  b.box(WX - 4.2, 1.7, WZ + 3.4, 3.2, 3.4, 0.8, reg.brick, { tex: 'brick' });
+  b.box(WX - 4.2, 0, WZ + 3.4, 3.2, 3.4, 0.8, reg.brick, { tex: 'brick' });
   col.addBox(WX - 4.2, WZ + 3.4, 3.3, 0.9);
-  b.box(WX + 4.2, 1.7, WZ + 3.4, 3.2, 3.4, 0.8, reg.brick, { tex: 'brick' });
+  b.box(WX + 4.2, 0, WZ + 3.4, 3.2, 3.4, 0.8, reg.brick, { tex: 'brick' });
   col.addBox(WX + 4.2, WZ + 3.4, 3.3, 0.9);
-  b.box(WX, 3.1, WZ + 3.4, 5.4, 0.6, 0.85, 0x4a3222, { tex: 'brick' });
+  b.box(WX, 2.8, WZ + 3.4, 5.4, 0.6, 0.85, 0x4a3222, { tex: 'brick' });
 
   // 공방 전면 직물 차양막 (줄무늬 샤프란)
   b.box(WX, 3.0, WZ + 4.8, 5.8, 0.1, 2.0, 0xd4a040, { tex: 'stripeSaffron' });
-  b.box(WX - 2.8, 1.5, WZ + 5.7, 0.15, 3.0, 0.15, PAL.wood[3], { tex: 'wood' });
-  b.box(WX + 2.8, 1.5, WZ + 5.7, 0.15, 3.0, 0.15, PAL.wood[3], { tex: 'wood' });
+  b.box(WX - 2.8, 0, WZ + 5.7, 0.15, 3.0, 0.15, PAL.wood[3], { tex: 'wood' });
+  b.box(WX + 2.8, 0, WZ + 5.7, 0.15, 3.0, 0.15, PAL.wood[3], { tex: 'wood' });
   col.addBox(WX - 2.8, WZ + 5.7, 0.3, 0.3);
   col.addBox(WX + 2.8, WZ + 5.7, 0.3, 0.3);
 
   // 공방 평지붕 (옥상 테라스 y: 3.4)
-  b.box(WX, 3.45, WZ, 12.0, 0.3, 7.2, 0xd6b894, { tex: 'mudRoof' });
-  b.box(WX, 3.75, WZ - 3.4, 12.4, 0.35, 0.3, reg.brick, { tex: 'brick' });
-  b.box(WX - 5.8, 3.75, WZ, 0.3, 0.35, 7.0, reg.brick, { tex: 'brick' });
-  b.box(WX + 5.8, 3.75, WZ, 0.3, 0.35, 7.0, reg.brick, { tex: 'brick' });
-  b.box(WX, 3.75, WZ + 3.4, 12.4, 0.35, 0.3, reg.brick, { tex: 'brick' });
+  b.box(WX, 3.4, WZ, 12.0, 0.3, 7.2, 0xd6b894, { tex: 'mudRoof' });
+  b.box(WX, 3.7, WZ - 3.4, 12.4, 0.35, 0.3, reg.brick, { tex: 'brick' });
+  b.box(WX - 5.8, 3.7, WZ, 0.3, 0.35, 7.0, reg.brick, { tex: 'brick' });
+  b.box(WX + 5.8, 3.7, WZ, 0.3, 0.35, 7.0, reg.brick, { tex: 'brick' });
+  b.box(WX, 3.7, WZ + 3.4, 12.4, 0.35, 0.3, reg.brick, { tex: 'brick' });
 
   // 옥상 테라스 계단
   for (let s = 0; s < 10; s++) {
-    const sy = s * 0.34 + 0.17;
+    const sy = s * 0.34;
     const sz = WZ + 3.0 - s * 0.65;
     b.box(WX - 6.8, sy, sz, 1.2, 0.34, 0.68, 0x6e4830, { tex: 'stone' });
     col.addBox(WX - 6.8, sz, 1.3, 0.7);
   }
 
-  buildRooftopTerrace(b, WX, 3.6, WZ);
+  buildRooftopTerrace(b, WX, 3.7, WZ);
   buildWorkshopDetails(b, col, WX, WZ);
 
   LAMPS.push({ x: WX, y: 2.2, z: WZ, kind: 'torch' });
@@ -344,12 +347,12 @@ export function buildUrStage(): UrStage {
   // ─────────────────────────────────────────────────────────────
   // 8. 남동쪽 우르 성문 회랑 (x: 22, z: 3.5)
   // ─────────────────────────────────────────────────────────────
-  b.box(23.5, 2.5, -4.0, 1.8, 5.0, 12.0, reg.brick, { tex: 'brick' });
+  b.box(23.5, 0, -4.0, 1.8, 5.0, 12.0, reg.brick, { tex: 'brick' });
   col.addBox(23.5, -4.0, 1.9, 12.1);
-  b.box(23.5, 2.5, 12.0, 1.8, 5.0, 12.0, reg.brick, { tex: 'brick' });
+  b.box(23.5, 0, 12.0, 1.8, 5.0, 12.0, reg.brick, { tex: 'brick' });
   col.addBox(23.5, 12.0, 1.9, 12.1);
-  b.box(23.5, 4.4, 3.5, 2.2, 1.4, 5.0, reg.brick, { tex: 'brick' });
-  b.box(23.5, 5.2, 3.5, 2.4, 0.4, 5.4, 0x4a3222, { tex: 'brick' });
+  b.box(23.5, 3.6, 3.5, 2.2, 1.4, 5.0, reg.brick, { tex: 'brick' });
+  b.box(23.5, 5.0, 3.5, 2.4, 0.4, 5.4, 0x4a3222, { tex: 'brick' });
 
   P.torchPost(b, col, 22.2, 1.5);
   P.torchPost(b, col, 22.2, 5.5);
@@ -428,6 +431,7 @@ export function buildUrStage(): UrStage {
   root.add(yardGoat.root);
   col.addCircle(9.8, -4.8, 0.45);
 
+  scatterGroundCover(b, col, { seed: 777, half: 40, count: 520, flowers: [0xe8d070, 0xd8d0c0], tufts: [0x7a8a48, 0x8a9250, 0x6a7a3c], pebbles: [0xb09068, 0xc8a878, 0x8a6a48] });
   root.add(b.build());
 
   return {
@@ -436,7 +440,7 @@ export function buildUrStage(): UrStage {
     spawn: { x: WX, z: 3.2 },
     bounds: col.bounds,
     idols,
-    rooftopSpot: { x: WX, y: 3.6, z: WZ },
+    rooftopSpot: { x: WX, y: 3.7, z: WZ },
     actors,
     animals,
   };

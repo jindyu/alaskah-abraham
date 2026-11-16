@@ -99,21 +99,36 @@ function plaster(): Px {
 }
 
 function brick(): Px {
-  const p = new Px(32, 32);
+  // 64x64 타일(되풀이가 눈에 덜 띄게): 벽돌마다 색조·밝기가 다르고, 군데군데 그을린 벽돌·깨진 모서리·줄눈 때·세로 빗물 자국
+  const p = new Px(64, 64);
   const pal = PAL.brick;
   const r = new Rng(7);
+  const ROWS = 16, COLS = 8; // 벽돌 높이 4px, 너비 8px
   const brickCol: number[] = [];
-  for (let i = 0; i < 64; i++) brickCol.push(r.pick([pal[1], pal[2], pal[2], pal[3]]));
+  const tint: number[] = [];
+  for (let i = 0; i < ROWS * COLS; i++) {
+    brickCol.push(r.pick([pal[1], pal[2], pal[2], pal[3], pal[1], pal[2]]));
+    const t = hash2(i, 5, 11);
+    tint.push(t < 0.1 ? 0.7 : t < 0.2 ? 1.12 : 0.94 + hash2(i, 9, 13) * 0.12); // 그을림 / 새 벽돌 / 보통
+  }
   p.fill((x, y) => {
     const row = Math.floor(y / 4);
     const off = row % 2 ? 4 : 0;
-    const col = Math.floor((x + off) / 8) % 4;
+    const col = Math.floor((x + off) / 8) % COLS;
     const ly = y % 4, lx = (x + off) % 8;
-    if (ly === 3 || lx === 7) return pal[0];
-    const base = brickCol[row * 4 + col];
-    if (ly === 0) return shade(base, 1.08);
-    if (hash2(x, y, 3) < 0.07) return shade(base, 0.86);
-    return base;
+    // 줄눈 (군데군데 더 어둡게 — 오래된 때)
+    if (ly === 3 || lx === 7) return hash2(x, y, 17) < 0.25 ? shade(pal[0], 0.82) : pal[0];
+    const idx = row * COLS + col;
+    let c = shade(brickCol[idx], tint[idx]);
+    const mul = (v: RGB, k: number): RGB => [Math.min(255, Math.round(v[0] * k)), Math.min(255, Math.round(v[1] * k)), Math.min(255, Math.round(v[2] * k))];
+    if (ly === 0) c = mul(c, 1.1);
+    // 깨진 모서리
+    if (lx === 0 && ly === 2 && hash2(idx, 3, 19) < 0.18) return pal[0];
+    // 세로 빗물 자국: 특정 x 열에서 아래로 갈수록 어두워짐
+    const streak = hash2(Math.floor(x / 3), 0, 23);
+    if (streak < 0.14) c = mul(c, 0.9 - 0.12 * (y / 64));
+    if (hash2(x, y, 3) < 0.07) c = mul(c, 0.86);
+    return c;
   });
   return p;
 }
@@ -235,13 +250,12 @@ function leaf(pal: readonly number[], seed: number): Px {
 }
 
 function bark(): Px {
+  // 면 색(barkColor)에 곱해지는 밝은 결 무늬 — 어두운 팔레트색을 또 곱하면 검은 덩어리가 되므로 거의 흰색 기준으로 명암만 준다
   const p = new Px(32, 32);
-  const pal = PAL.bark;
   p.fill((x, y) => {
     const n = valueNoise(x * 1.3, y / 7, 61);
-    if (n > 0.78) return pal[0];
-    if (n < 0.2) return pal[3];
-    return n > 0.5 ? pal[1] : pal[2];
+    const k = n > 0.78 ? 0.78 : n < 0.2 ? 1.12 : n > 0.5 ? 0.97 : 1.04;
+    return shade(0xffffff, Math.min(k, 1));
   });
   return p;
 }
@@ -279,15 +293,57 @@ function weave(a: number): Px {
 }
 
 function cliff(): Px {
-  const p = new Px(32, 32);
-  const pal = PAL.dirt;
+  // 64x64 석회암 지층: 줄 높이·이음매가 시드 난수로 제각각, 줄마다 색조가 다르고 균열·풍화 얼룩이 있어 되풀이가 덜 보임
+  const p = new Px(64, 64);
+  const st = PAL.stone;
+  const r = new Rng(1337);
+  const rowTop: number[] = [];
+  for (let y = 0; y < 64; y += 5 + r.int(0, 6)) rowTop.push(y);
+  const joints: number[][] = rowTop.map(() => {
+    const j: number[] = [];
+    for (let x = r.int(0, 9); x < 64; x += 8 + r.int(0, 14)) j.push(x);
+    return j;
+  });
+  const rowTone = rowTop.map(() => 0.88 + r.next() * 0.24);
   p.fill((x, y) => {
-    // 가로 지층 + 박힌 돌
-    const layer = valueNoise(x / 10, y / 3, 71);
-    let c = ditherPick([pal[0], pal[1], pal[1], pal[2]], layer, x, y);
-    const [, edge] = voronoi(x, y, 7, 73, 28);
-    if (hash2(Math.floor(x / 7), Math.floor(y / 7), 74) < 0.35 && edge > 1.2) c = edge > 2.2 ? PAL.stone[2] : PAL.stone[1];
-    return c;
+    let row = 0;
+    for (let i = 0; i < rowTop.length; i++) if (y >= rowTop[i]) row = i;
+    const top = rowTop[row], bot = row + 1 < rowTop.length ? rowTop[row + 1] : 64;
+    const js = joints[row];
+    let jIdx = 0;
+    for (let i = 0; i < js.length; i++) if (x >= js[i]) jIdx = i + 1;
+    const blockTone = hash2(jIdx, row, 61);
+    const n = fbm(x / 7, y / 5, 71, 2);
+    let c = ditherPick([st[1], st[2], st[2], st[3]], n * 0.55 + blockTone * 0.45, x, y);
+    let k = rowTone[row];
+    if (y === top) k *= 1.16;
+    else if (y === bot - 1) k *= 0.64;
+    else if (y === bot - 2) k *= 0.87;
+    for (const j of js) if (x === j) k = Math.min(k, 0.7);
+    // 풍화 얼룩(위에서 아래로 번진 어두운 줄) / 이끼빛 / 잔 흠집 / 결정
+    if (hash2(Math.floor(x / 2), 0, 87) < 0.1) k *= 0.9 - 0.1 * (y / 64);
+    if (valueNoise(x / 9, y / 12, 89) > 0.78) k *= 0.88;
+    if (hash2(x, y, 83) < 0.05) k *= 0.82;
+    else if (hash2(x, y, 85) < 0.04) k *= 1.12;
+    return shade(c, Math.min(1.3, k));
+  });
+  // 가는 균열 몇 줄
+  for (let q = 0; q < 4; q++) {
+    let x = r.int(0, 63), y = r.int(0, 63);
+    for (let s2 = 0; s2 < 9; s2++) { p.set(x, y, shade(st[0], 0.85)); y += 1; x += r.int(-1, 1); }
+  }
+  return p;
+}
+
+/** 모래 언덕: 낮은 대비의 완만한 물결 + 잔 모래알 (돌담처럼 보이는 줄무늬 없이) */
+function dune(): Px {
+  const p = new Px(64, 64);
+  p.fill((x, y) => {
+    const n = fbm(x / 14, y / 10, 91, 2) * 0.7 + valueNoise(x / 3, y / 3, 93) * 0.3;
+    const ripple = Math.sin((x + valueNoise(y / 5, 0, 95) * 6) * 0.55) * 0.03;
+    let k = 0.9 + n * 0.2 + ripple;
+    if (hash2(x, y, 97) < 0.05) k *= 0.93;
+    return shade(0xffffff, k);
   });
   return p;
 }
@@ -301,6 +357,59 @@ function soil(): Px {
     if (furrow === 3) return pal[0];
     if (furrow === 0) return n < 0.5 ? pal[2] : pal[1];
     return n < 0.12 ? pal[0] : pal[1];
+  });
+  return p;
+}
+
+/**
+ * 원경 지형 디테일 (128x128, 색을 곱하는 흰 바탕). 0 윗면 알갱이(얼룩+돌멩이 점+풀결), 1 암벽 지층(줄 높이 제각각+균열),
+ * 2 흙 단구(가는 줄+뿌리 얼룩), 3 모래 옆면(물결). 평균 밝기 ~1 이라 정점 색을 크게 바꾸지 않고 칸 크기의 뭉개짐만 깨 준다.
+ */
+function farTex(kindId: number): Px {
+  const W = 128;
+  const p = new Px(W, W);
+  const r = new Rng(4400 + kindId);
+  const rows: number[] = [];
+  for (let y = 0; y < W; y += 3 + r.int(0, 6)) rows.push(y);
+  const tone = rows.map(() => 0.84 + r.next() * 0.32);
+  const jx = rows.map(() => { const j: number[] = []; for (let x = r.int(0, 12); x < W; x += 10 + r.int(0, 22)) j.push(x); return j; });
+  p.fill((x, y) => {
+    // 가장자리에서 이어지도록 노이즈 좌표를 W 로 감지 않고 낮은 주파수만 쓴다 (이음새는 잔 알갱이에 묻힘)
+    let k = 1;
+    const wrapN = (a: number, b: number, sc: number, seed: number): number => {
+      // 4점 보간으로 타일 이음새 제거
+      const fx = a / W, fy = b / W;
+      const n00 = fbm(a / sc, b / sc, seed, 2), n10 = fbm((a - W) / sc, b / sc, seed, 2);
+      const n01 = fbm(a / sc, (b - W) / sc, seed, 2), n11 = fbm((a - W) / sc, (b - W) / sc, seed, 2);
+      return (n00 * (1 - fx) + n10 * fx) * (1 - fy) + (n01 * (1 - fx) + n11 * fx) * fy;
+    };
+    if (kindId === 0) {
+      k = 0.9 + wrapN(x, y, 9, 101) * 0.24;
+      const h = hash2(x, y, 103);
+      if (h < 0.07) k *= 0.8; else if (h > 0.95) k *= 1.16;
+      if (hash2(x >> 1, y >> 1, 105) < 0.04) k *= 0.72; // 잔돌 그림자
+      if (hash2(x, y >> 2, 107) < 0.05 && (y & 3) !== 0) k *= 1.08; // 마른 풀결
+    } else if (kindId === 1) {
+      let row = 0;
+      for (let i = 0; i < rows.length; i++) if (y >= rows[i]) row = i;
+      const top = rows[row], bot = row + 1 < rows.length ? rows[row + 1] : W;
+      k = tone[row] * (0.93 + wrapN(x, y, 7, 111) * 0.14);
+      if (y === top) k *= 1.14; else if (y === bot - 1) k *= 0.7; else if (y === bot - 2) k *= 0.88;
+      for (const j of jx[row]) if (x === j && y > top && y < bot - 1) k *= 0.76;
+      if (hash2(x, y, 113) < 0.06) k *= 0.82;
+      if (hash2(Math.floor(x / 3), 0, 115) < 0.12) k *= 0.92 - 0.12 * (y / W); // 흘러내린 풍화 얼룩
+    } else if (kindId === 2) {
+      k = 0.94 + wrapN(x, y, 8, 121) * 0.16;
+      const f = y % 5;
+      if (f === 0) k *= 1.08; else if (f === 4) k *= 0.82;
+      if (hash2(x, y, 123) < 0.07) k *= 0.8;
+      if (hash2(Math.floor(x / 2), y, 125) < 0.05) k *= 1.1;
+    } else {
+      k = 0.95 + wrapN(x, y, 10, 131) * 0.14 + Math.sin((y + valueNoise(x / 6, 0, 133) * 7) * 0.55) * 0.045;
+      if (hash2(x, y, 135) < 0.05) k *= 0.9;
+    }
+    k = Math.round(Math.min(1.25, Math.max(0.55, k)) * 24) / 24;
+    return shade(0xffffff, k);
   });
   return p;
 }
@@ -321,6 +430,10 @@ export function grassColor(x: number, y: number): number {
   const n = fbm(x / 160, y / 160, 131, 2) * 0.25 + fbm(x / 62, y / 62, 101, 2) * 0.6 + valueNoise(x / 14, y / 14, 103) * 0.15;
   const pal = PAL.grass;
   let c = ditherPick([pal[1], pal[2], pal[2], pal[3], pal[3], pal[4]], n, x, y, 0.22);
+  // 아주 큰 규모: 마른 풀 얼룩(황록)과 그늘진 청록 얼룩으로 색 계열 자체를 바꿔 같은 초록이 이어지지 않게
+  const dry = fbm(x / 90 + 7, y / 90 - 3, 141, 2);
+  if (dry > 0.62) c = ditherPick(PAL.dryGrass, (dry - 0.62) * 3 + 0.2, x, y, 0.3);
+  else if (dry < 0.3) c = ditherPick([pal[0], pal[1], pal[1], pal[2]], n, x, y, 0.22);
   // 풀잎: 밝은 점 + 바로 아래 어두운 점
   const h = hash2(x, y, 107);
   if (h < 0.008 && n > 0.44) c = pal[4];
@@ -340,7 +453,9 @@ export type TexKey =
   | 'plain' | 'plaster' | 'brick' | 'wood' | 'reed' | 'mudRoof' | 'stone' | 'wetStone'
   | 'leafVine' | 'bark' | 'wool' | 'metal' | 'canopy'
   | 'stripeRed' | 'stripeIndigo' | 'stripeSaffron' | 'fabricTeal' | 'fabricCream'
-  | 'cliff' | 'soil' | 'water' | 'grassTop'
+  | 'cliff' | 'dune' | 'soil' | 'water' | 'grassTop'
+  /** 원경(buildFarField) 월드 매핑 디테일: 윗면 알갱이 / 옆면 지층·단구 */
+  | 'farGrain' | 'farStrata' | 'farSoilSide' | 'farDuneSide'
   /** 밤에만 빛나는 면(창문) / 항상 빛나는 면(불꽃) — 재질은 lighting에서 오버라이드 */
   | 'glow' | 'flame' | 'skyWindow';
 
@@ -355,7 +470,8 @@ const GEN: Record<TexKey, () => Px> = {
   stripeSaffron: () => stripes(PAL.fabric.saffron, PAL.fabric.red, 5, PAL.fabric.redDark),
   fabricTeal: () => weave(PAL.fabric.teal),
   fabricCream: () => weave(PAL.fabric.cream),
-  cliff, soil, water, grassTop,
+  cliff, dune, soil, water, grassTop,
+  farGrain: () => farTex(0), farStrata: () => farTex(1), farSoilSide: () => farTex(2), farDuneSide: () => farTex(3),
   glow: plain, flame: plain, skyWindow: plain,
 };
 

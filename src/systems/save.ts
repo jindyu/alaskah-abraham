@@ -10,6 +10,7 @@
  * - 다른 탭이 이 칸을 먼저 썼으면(저장된 savedAt이 이 탭이 마지막으로 읽거나 쓴 값보다 새로우면) 덮어쓰지 않음
  * - QA용: URL ?nosave=1 이면 읽지도 쓰지도 않음, ?fresh=1 이면 저장을 지우고 새로 시작
  */
+import { diagnostics, noteError } from '../core/diagnostics';
 import { isFiniteNum, isRecord } from '../core/values';
 
 export const SAVE_KEY = 'abraham.save.v1';
@@ -23,10 +24,11 @@ export interface SaveData {
   version: number;
   savedAt: number;
   /** 지금 권·장 (0 = 인트로, 1~6 = 권, 7 = 아우트로) 과 장 번호 (권 안에서 0부터) */
-  story: { book: number; chapter: number; /** 현재 조작 인물 (abraham·lot·eliezer·esau …) */ hero?: string; /** 장 안의 단계 */ step?: number; /** 이야기 분기·퍼즐 진행 표시 */ flags?: Record<string, number | boolean | string>; /** 끝낸 장 ("book:chapter") */ done?: string[] };
-  player: { x: number; z: number } | null;
+  story: { book: number; chapter: number; /** 현재 조작 인물 (abraham·lot·eliezer·esau …) */ hero?: string; /** 장 안의 단계 */ step?: number; /** 이야기 분기·퍼즐 진행 표시 */ flags?: Record<string, number | boolean | string>; /** 끝낸 장 ("book:chapter") */ done?: string[]; stageId?: string };
+  player?: { x: number; z: number } | null;
   /** 이 슬롯에서 플레이한 시간(초) */
   playSeconds?: number;
+  stageId?: string;
 }
 
 /** 1~SLOTS 의 정수인가 (1.5·NaN 은 아님) */
@@ -39,11 +41,17 @@ export function activeSlot(): number {
     if (validSlotNo(q)) return q;
     const n = Number(localStorage.getItem(SLOT_KEY));
     if (validSlotNo(n)) return n;
-  } catch { /* 저장소 없음 */ }
+  } catch (e) { noteSaveError('activeSlot', e); /* 저장소 없음 */ }
   return latestSlot() ?? 1;
 }
 export function setActiveSlot(n: number) {
-  try { localStorage.setItem(SLOT_KEY, String(n)); } catch { /* 저장소 없음 */ }
+  try { localStorage.setItem(SLOT_KEY, String(n)); } catch (e) { noteSaveError('setActiveSlot', e); /* 저장소 없음 */ }
+}
+
+/** 저장·불러오기 중 삼킨 오류를 공용 진단 기록(core/diagnostics)에 'save:<곳>' 으로 남긴다 */
+export function noteSaveError(where: string, err: unknown): void { noteError(`save:${where}`, err); }
+export function saveDiagnostics(): ReadonlyArray<{ where: string; message: string; at: number }> {
+  return diagnostics().filter((d) => d.where.startsWith('save:')).map((d) => ({ ...d, where: d.where.slice(5) }));
 }
 
 export type SaveStatus = 'ok' | 'empty' | 'broken' | 'newer';
@@ -51,7 +59,7 @@ export type SaveStatus = 'ok' | 'empty' | 'broken' | 'newer';
 /** 칸을 읽기만 함 (저장소를 바꾸지 않음). 칸 목록·타이틀이 씀 */
 export function peekSave(slot: number): { status: SaveStatus; data: SaveData | null; raw: string | null } {
   let raw: string | null = null;
-  try { raw = localStorage.getItem(slotKey(slot)); } catch { return { status: 'empty', data: null, raw: null }; }
+  try { raw = localStorage.getItem(slotKey(slot)); } catch (e) { noteSaveError('read', e); return { status: 'empty', data: null, raw: null }; }
   if (!raw) return { status: 'empty', data: null, raw };
   const c = classifyRaw(raw);
   return { status: c.status, data: c.data, raw };
@@ -65,7 +73,7 @@ export function classifyRaw(raw: string): { status: 'ok' | 'broken' | 'newer'; d
     if (typeof d.version === 'number' && d.version > VERSION) return { status: 'newer', data: null };
     const m = migrateSave(d);
     return m && validSave(m) ? { status: 'ok', data: m } : { status: 'broken', data: null };
-  } catch { return { status: 'broken', data: null }; }
+  } catch (e) { noteSaveError('parse', e); return { status: 'broken', data: null }; }
 }
 
 /** 이 칸의 저장 글 그대로 (불러올 수 있을 때만, 아니면 null). 파일로 내보낼 때 씀. 읽기만 함 */
@@ -84,15 +92,16 @@ export function importIntoSlot(slot: number, raw: string): boolean {
     const k = slotKey(slot), cur = localStorage.getItem(k);
     if (cur === raw) { known.set(slot, savedAtOf(raw)); return true; }
     if (cur && !ensureBackup(slot, cur)) { backupFailed.add(slot); return false; }
-    try { localStorage.setItem(k, raw); } catch {
+    try { localStorage.setItem(k, raw); } catch (firstErr) {
+      noteSaveError('importFirstWrite', firstErr);
       // 공간이 모자라면 오래된 보관본부터 줄여 한 번 더 (.bak 은 방금 지금 칸의 원본이므로 건드리지 않음)
       localStorage.removeItem(`${k}.bak3`); localStorage.removeItem(`${k}.bak2`);
       localStorage.setItem(k, raw);
     }
-    try { localStorage.removeItem(`${k}.broken`); } catch { /* 알림 표시만 */ }
+    try { localStorage.removeItem(`${k}.broken`); } catch (e) { noteSaveError('clearBrokenMark', e); /* 알림 표시만 */ }
     known.set(slot, savedAtOf(raw));
     return true;
-  } catch { return false; }
+  } catch (e) { noteSaveError('write', e); return false; }
 }
 
 /**
@@ -149,7 +158,7 @@ function storedSavedAt(slot: number): number | null {
   try {
     const raw = localStorage.getItem(slotKey(slot));
     return raw === null ? null : savedAtOf(raw);
-  } catch { return null; }
+  } catch (e) { noteSaveError('storedSavedAt', e); return null; }
 }
 /**
  * 다른 탭이 쓴 저장인가 (순수 판정). stored = 저장소의 savedAt(칸이 비었으면 null), seen = 이 탭이 마지막으로 읽거나 쓴 값.
@@ -180,7 +189,7 @@ export function trimBackups(slot: number, limit = BACKUP_LIMIT) {
       if (v) entries.push({ key: k + suf, size: v.length, savedAt: savedAtOf(v) });
     }
     for (const key of pickBackupsToDrop(entries, limit)) localStorage.removeItem(key);
-  } catch { /* 저장소 없음 */ }
+  } catch (e) { noteSaveError('listBackups', e); /* 저장소 없음 */ }
 }
 
 /** 불러오기 전에 꼭 있어야 하는 모양만 확인 (나머지는 각 restore가 기본값으로 채움) */
@@ -194,7 +203,7 @@ function goodRaw(raw: string): boolean {
   try {
     const m = migrateSave(JSON.parse(raw));
     return !!m && validSave(m);
-  } catch { return false; }
+  } catch (e) { noteSaveError('import', e); return false; }
 }
 
 /** 이 세션에서 복사본(.bak)을 만들지 못한 칸 (quarantine 실패). main 이 타이틀·토스트로 알리려고 takeBackupFailedNotice 로 꺼냄 */
@@ -211,10 +220,10 @@ function ensureBackup(slot: number, raw: string): boolean {
     const k = slotKey(slot);
     const attempts: string[][] = [[], [`${k}.bak3`, `${k}.bak2`], [`${k}.bak3`, `${k}.bak2`, `${k}.prev`]];
     for (const drop of attempts) {
-      try { drop.forEach(key => localStorage.removeItem(key)); localStorage.setItem(bak, raw); break; } catch { /* 다음 단계 */ }
+      try { drop.forEach(key => localStorage.removeItem(key)); localStorage.setItem(bak, raw); break; } catch (e) { noteSaveError('backupStep', e); /* 다음 단계 */ }
     }
     return localStorage.getItem(bak) === raw;
-  } catch { return false; }
+  } catch (e) { noteSaveError('backup', e); return false; }
 }
 
 /**
@@ -227,9 +236,9 @@ export function quarantine(slot: number, raw?: string | null): boolean {
     // 백업이 실제로 남았을 때만 원본을 치움
     if (r && !ensureBackup(slot, r)) { backupFailed.add(slot); return false; }
     localStorage.removeItem(slotKey(slot));
-    try { localStorage.setItem(`${slotKey(slot)}.broken`, String(Date.now())); } catch { /* 알림 표시만 못 남김 */ }
+    try { localStorage.setItem(`${slotKey(slot)}.broken`, String(Date.now())); } catch (e) { noteSaveError('brokenMark', e); /* 알림 표시만 못 남김 */ }
     return true;
-  } catch { backupFailed.add(slot); return false; }
+  } catch (e) { noteSaveError('quarantine', e); backupFailed.add(slot); return false; }
 }
 /**
  * 원본은 그대로 두고 복사본만 남김 (.bak ← 가장 최근, .bak2, .bak3 순으로 밀려남).
@@ -246,7 +255,7 @@ function rotateBackups(slot: number): boolean {
     localStorage.setItem(`${k}.bak`, raw);
     trimBackups(slot);
     return true;
-  } catch { return false; /* 저장소 없음·공간 부족 */ }
+  } catch (e) { noteSaveError('writeDetail', e); return false; /* 저장소 없음·공간 부족 */ }
 }
 /**
  * 회전 중 예외는 삼키되 false 를 돌려주고, 칸을 backupFailed 에 올려 takeBackupFailedNotice 로도 알 수 있게 함 (성공·할 일 없음은 true).
@@ -274,13 +283,13 @@ export function listBackups(slot: number): BackupInfo[] {
       if (!raw || seen.has(raw)) continue;
       seen.add(raw);
       let d: SaveData | null = null;
-      try { d = migrateSave(JSON.parse(raw)); } catch { d = null; }
+      try { d = migrateSave(JSON.parse(raw)); } catch (e) { noteSaveError('migrate', e); d = null; }
       if (!d || !validSave(d)) continue;
       out.push({
         suffix: suf, label: BACKUP_LABELS[suf] ?? suf, savedAt: d.savedAt ?? 0, book: d.story.book, chapter: d.story.chapter, playSeconds: d.playSeconds ?? 0,
       });
     }
-  } catch { /* 저장소 없음 */ }
+  } catch (e) { noteSaveError('slotInfo', e); /* 저장소 없음 */ }
   return out.sort((a, b) => b.savedAt - a.savedAt);
 }
 
@@ -296,10 +305,10 @@ export function restoreBackup(slot: number, suffix: string): boolean {
     if (!raw || !goodRaw(raw)) return false;
     rotateBackups(slot);
     localStorage.setItem(k, raw);
-    try { localStorage.removeItem(`${k}.broken`); } catch { /* 알림 표시만 */ }
+    try { localStorage.removeItem(`${k}.broken`); } catch (e) { noteSaveError('clearBrokenMark2', e); /* 알림 표시만 */ }
     known.set(slot, savedAtOf(raw)); // 이 탭이 방금 쓴 것으로 침 (다른 탭 충돌 판정 기준)
     return true;
-  } catch { return false; }
+  } catch (e) { noteSaveError('discard', e); return false; }
 }
 
 /** 이 칸의 저장이 손상되어 보관된 적이 있나 (알림을 보여 준 뒤 지움) */
@@ -309,7 +318,7 @@ export function takeBrokenNotice(slot: number): boolean {
     if (!localStorage.getItem(k)) return false;
     localStorage.removeItem(k);
     return true;
-  } catch { return false; }
+  } catch (e) { noteSaveError('export', e); return false; }
 }
 
 /** .prev 를 갈아 끼우기까지 최소 간격 (저장 시각 savedAt 기준) */
@@ -360,11 +369,17 @@ export function writeSaveDetail(d: Omit<SaveData, 'version' | 'savedAt'>, slot =
     const savedAt = Date.now();
     const json = JSON.stringify({ ...d, version: VERSION, savedAt });
     let squeezed = false; // 공간이 모자라 .prev 를 버리고 쓴 경우: 이번엔 .prev 를 다시 만들지 않음
-    try { localStorage.setItem(k, json); } catch {
-      // 오래된 백업부터 줄여 보고, 그래도 안 되면 .prev 까지 버림
-      try { localStorage.removeItem(`${k}.bak3`); localStorage.removeItem(`${k}.bak2`); localStorage.setItem(k, json); squeezed = true; } catch {
-        try { localStorage.removeItem(`${k}.prev`); localStorage.removeItem(`${k}.prevAt`); localStorage.setItem(k, json); squeezed = true; } catch (err2) { return { result: 'fail', reason: failReason(err2) }; }
+    try { localStorage.setItem(k, json); } catch (firstErr) {
+      // 공간이 모자라면 가장 오래된 백업부터 한 단계씩만 버리고 매번 다시 써 본다 (필요 이상으로 백업을 버리지 않음).
+      // 본 저장은 setItem 이 실패해도 기존 값이 그대로 남으므로 이 과정에서 본 저장은 잃지 않는다.
+      let lastErr: unknown = firstErr;
+      let written = false;
+      for (const suffix of ['.bak3', '.bak2', '.prev'] as const) {
+        try { localStorage.removeItem(`${k}${suffix}`); if (suffix === '.prev') localStorage.removeItem(`${k}.prevAt`); } catch (e) { noteSaveError('squeezeRemove', e); /* 지우기 실패는 무시 */ }
+        squeezed = true;
+        try { localStorage.setItem(k, json); written = true; break; } catch (e) { lastErr = e; }
       }
+      if (!written) { noteSaveError('writeDetail', lastErr); return { result: 'fail', reason: failReason(lastErr) }; }
     }
     known.set(slot, savedAt);
     // 가벼운 경로: 먼저 savedAt 만 읽어 정책으로 거르고, 갈아 끼울 때만 전체를 파싱해 정상 저장인지 확인
@@ -372,7 +387,7 @@ export function writeSaveDetail(d: Omit<SaveData, 'version' | 'savedAt'>, slot =
     let lastReplaced: number | null = null;
     if (prevRaw !== null) { const m = Number(localStorage.getItem(`${k}.prevAt`)); lastReplaced = m > 0 ? m : savedAtOf(prevRaw); } // 표시가 없는 옛 .prev 는 그 저장 시각으로
     if (cur && !squeezed && shouldReplacePrev(lastReplaced, savedAt) && goodRaw(cur)) {
-      try { localStorage.setItem(`${k}.prev`, cur); try { localStorage.setItem(`${k}.prevAt`, String(savedAt)); } catch { /* 표시만 못 남김 */ } } catch { /* 공간이 모자라면 예전 .prev 를 그대로 둠 */ }
+      try { localStorage.setItem(`${k}.prev`, cur); try { localStorage.setItem(`${k}.prevAt`, String(savedAt)); } catch (e) { noteSaveError('prevAtMark', e); /* 표시만 못 남김 */ } } catch (e) { noteSaveError('prevWrite', e); /* 공간이 모자라면 예전 .prev 를 그대로 둠 */ }
       trimBackups(slot);
     }
     return { result: 'ok' };
@@ -386,7 +401,7 @@ export function writeSave(d: Omit<SaveData, 'version' | 'savedAt'>, slot = activ
 }
 
 export function clearSave(slot = activeSlot()) {
-  try { localStorage.removeItem(slotKey(slot)); } catch { /* 저장소 없음 */ }
+  try { localStorage.removeItem(slotKey(slot)); } catch (e) { noteSaveError('clearSave', e); /* 저장소 없음 */ }
 }
 
 /**
@@ -400,7 +415,7 @@ export function discardSave(slot = activeSlot()): boolean {
     if (raw) kept = ensureBackup(slot, raw);
     localStorage.removeItem(k);
     known.set(slot, 0); // 칸을 비웠으니 이 탭의 기준은 "빈 칸" (그 뒤 다른 탭이 먼저 쓰면 첫 저장이 덮어쓰지 않음)
-  } catch { kept = false; }
+  } catch (e) { noteSaveError('discardBackup', e); kept = false; }
   return kept;
 }
 
@@ -445,7 +460,7 @@ export function migrateSave(d: unknown, target: number = VERSION, steps: Record<
     const step = Object.prototype.hasOwnProperty.call(steps, v) ? steps[v] : undefined;
     if (typeof step !== 'function') return null;
     let next: unknown;
-    try { next = step(cur); } catch { return null; }
+    try { next = step(cur); } catch (e) { noteSaveError('mutate', e); return null; }
     if (!isRecord(next)) return null;
     v++;
     cur = { ...next, version: v };

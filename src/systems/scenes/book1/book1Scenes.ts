@@ -38,24 +38,14 @@ export function createBook1IntroSteps(c: SceneContext): Step[] {
       c.renderer.toVista();
       c.setCameraFocus(-45, 10.0, -32); // 아라랏 산 능선 조망
       c.audio.playBgm('bgm_ancient_memory');
-      c.audio.playVoice('물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.', 'narrator', '000_noahs_curse');
     } },
     { wait: 0.8 },
-    { caption: '물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.', hold: 4.2 },
-    { do: () => {
-      c.audio.playVoice('노아와 그 아내, 세 아들과 그 아내들 — 이렇게 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.', 'narrator', '000_noahs_curse');
-    } },
-    { caption: '노아와 그 아내, 세 아들과 그 아내들 — 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.', hold: 4.8 },
+    { caption: '물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.', hold: 4.2, voice: { chapter: '000_noahs_curse', role: 'narrator', text: '물이 땅에서 걷히고, 방주가 아라랏 산 위에 머물렀다.' } },
+    { caption: '노아와 그 아내, 세 아들과 그 아내들 — 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.', hold: 4.8, voice: { chapter: '000_noahs_curse', role: 'narrator', text: '노아와 그 아내, 세 아들과 그 아내들 — 이렇게 여덟 사람이 방주에서 나와 다시 땅 위에 섰다.' } },
     { caption: '노아가 여호와께 제단을 쌓았을 때, 하늘에는 다시는 물로 멸하지 않겠다는 무지개 언약이 섰다.', hold: 4.5 },
     { caption: '그러나 세월이 흘러 노아의 장막 안에서 축복과 저주가 갈리었으니...', hold: 3.8 },
-    { do: () => {
-      c.audio.playVoice('가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라.', 'noah', '000_noahs_curse');
-    } },
-    { caption: '"가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라."', hold: 4.5 },
-    { do: () => {
-      c.audio.playVoice('셈의 하나님 여호와를 찬송하리로다. 가나안은 셈의 종이 되고,', 'noah', '000_noahs_curse');
-    } },
-    { caption: '"셈의 하나님 여호와를 찬송하리로다! 가나안은 셈의 종이 되리로다."', hold: 4.5 },
+    { caption: '"가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라."', hold: 4.5, voice: { chapter: '000_noahs_curse', role: 'noah', text: '가나안은 저주를 받아 그 형제들의 종들의 종이 되기를 원하노라.' } },
+    { caption: '"셈의 하나님 여호와를 찬송하리로다! 가나안은 셈의 종이 되리로다."', hold: 4.5, voice: { chapter: '000_noahs_curse', role: 'noah', text: '셈의 하나님 여호와를 찬송하리로다. 가나안은 셈의 종이 되고,' } },
     { caption: '아브라함은 바로 그 거룩한 축복을 받은 맏아들 셈의 계보를 잇는 믿음의 자손이었다.', hold: 4.2 },
 
     // ── 2막: 시날 평지와 바벨탑의 오만 (창세기 10~11장) ──
@@ -64,14 +54,10 @@ export function createBook1IntroSteps(c: SceneContext): Step[] {
       c.hud.cinematicTitle = '프롤로그 II · 바벨탑과 니므롯\n시날 평지의 제국';
       c.setCameraFocus(-36, 6.0, -28); // 원경 거대 지구라트 조망
       c.audio.playBgm('bgm_nimrod_empire');
-      c.audio.playVoice('그의 마음속에서, 보이지 않는 손이 정해놓은 운명에 대한 반감이 조용히 자라났다.', 'narrator', '000_noahs_curse');
     } },
     { wait: 0.8 },
-    { caption: '함의 자손 구스가 사냥꾼 니므롯을 낳았고, 그의 마음속에 하나님이 정하신 운명에 대한 반감이 싹텄다.', hold: 4.5 },
-    { do: () => {
-      c.audio.playVoice('니므롯과 그를 따르는 무리가 시날 땅 평지에 이르러 정착하였으니,', 'narrator', '005_tower_of_babel');
-    } },
-    { caption: '사람들은 시날 평지에 모여 견고한 벽돌과 역청으로 하늘에 닿을 거대한 탑을 쌓기 시작했다.', hold: 4.5 },
+    { caption: '함의 자손 구스가 사냥꾼 니므롯을 낳았고, 그의 마음속에 하나님이 정하신 운명에 대한 반감이 싹텄다.', hold: 4.5, voice: { chapter: '000_noahs_curse', role: 'narrator', text: '그의 마음속에서, 보이지 않는 손이 정해놓은 운명에 대한 반감이 조용히 자라났다.' } },
+    { caption: '사람들은 시날 평지에 모여 견고한 벽돌과 역청으로 하늘에 닿을 거대한 탑을 쌓기 시작했다.', hold: 4.5, voice: { chapter: '005_tower_of_babel', role: 'narrator', text: '니므롯과 그를 따르는 무리가 시날 땅 평지에 이르러 정착하였으니,' } },
     { caption: '"우리의 이름을 내고 온 지면에 흩어짐을 면하자!" 오만한 제국 바벨의 시작이었다.', hold: 4.0 },
     { caption: '여호와께서 강림하사 사람들의 언어를 혼잡하게 하시고 온 지면에 흩으셨다.', hold: 4.2 },
     { do: () => {
@@ -94,11 +80,15 @@ export function createBook1IntroSteps(c: SceneContext): Step[] {
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
-      c.hud.goalCategory = '제1권 · 갈대아 우르';
-      c.hud.goal = '우르 거리와 공방 둘러보기\n▪ 식구들과 대화하기 (0/2)\n▪ 공방 작은 우상 살펴보기 (0/3)';
-      c.hud.goalProgress = { current: 0, total: 5, label: '0/5' };
-      c.hud.hint = '거리의 식구들과 대화하고 공방 안 우상을 조사하자';
-      c.hud.toast('start-walk', null, 'WASD나 화살표 키로 움직이고, E키나 클릭으로 대화해보자');
+      // 장 선택으로 다른 무대(왕궁·풀무불 등)에서 이 씬이 재생될 때는 우르 목표로 덮어쓰지 않는다
+      const stageId = c.stageManager?.stage?.id;
+      if (!stageId || stageId === 'ur_workshop') {
+        c.hud.goalCategory = '제1권 · 갈대아 우르';
+        c.hud.goal = '우르 거리와 공방 둘러보기\n▪ 식구들과 대화하기 (0/2)\n▪ 공방 작은 우상 살펴보기 (0/3)';
+        c.hud.goalProgress = { current: 0, total: 5, label: '0/5' };
+        c.hud.hint = '거리의 식구들과 대화하고 공방 안 우상을 조사하자';
+        c.hud.toast('start-walk', null, 'WASD나 화살표 키로 움직이고, E키나 클릭으로 대화해보자');
+      }
     } },
   ];
 }
@@ -173,9 +163,9 @@ export function createNightCallingSteps(c: SceneContext): Step[] {
     } },
     { wait: 1.4 },
     { caption: '그때, 영광의 하나님께서 메소포타미아의 아브람에게 나타나 말씀하셨다.', hold: 4.0 },
-    { caption: '너는 너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라.', style: 'voice', hold: 5.2 },
-    { caption: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니 너는 복이 될지라.', style: 'voice', hold: 5.2 },
-    { caption: '땅의 모든 족속이 너로 말미암아 복을 얻을 것이니라.', style: 'voice', hold: 5.2 },
+    { caption: '너는 너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라.', style: 'voice', speaker: '여호와', hold: 5.2 },
+    { caption: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니 너는 복이 될지라.', style: 'voice', speaker: '여호와', hold: 5.2 },
+    { caption: '땅의 모든 족속이 너로 말미암아 복을 얻을 것이니라.', style: 'voice', speaker: '여호와', hold: 5.2 },
     { wait: 1.2 },
 
     // 4막: 여명(새벽) 복귀 및 결단
@@ -312,10 +302,10 @@ export function createFurnaceMiracleSteps(c: SceneContext): Step[] {
       // 4) 카메라 & 오디오 초기화 (노아 정통 3D 비스타 투시각)
       c.renderer.setTilt(24);
       c.renderer.setFraming(1.1);
-      c.setCameraFocus(0, 4.4, -11.0); // 니므롯 왕실 테라스 조망
+      c.setCameraFocus(0, 2.4, -8.0); // 니므롯 왕실 테라스 조망
       c.audio.playBgm('bgm_nimrod_empire');
       c.audio.playSfx('war_drum_stinger');
-      c.hud.cinematicTitle = '풀무불의 기적\n바벨의 심판과 하나님의 영광';
+      c.hud.cinematicTitle = '풀무불의 기적 [전해오는 이야기 · 탈무드 페사힘 118a / 야셀의 책 12장]\n바벨의 심판과 하나님의 영광';
     } },
     { wait: 1.2 },
     { do: () => {
@@ -342,7 +332,7 @@ export function createFurnaceMiracleSteps(c: SceneContext): Step[] {
     // ── 3. 가마 속으로 투척 & 화염 분출 ──
     { do: () => {
       c.renderer.setTilt(24);
-      c.setCameraFocus(0, 4.4, -11.0);
+      c.setCameraFocus(0, 2.4, -8.0);
       nimrodActor?.showBubble('!');
       c.audio.playBgm('bgm_judgment_fire');
     } },
@@ -468,7 +458,7 @@ export function createFurnaceMiracleSteps(c: SceneContext): Step[] {
     // ── 6. 니므롯의 경악과 공포 ──
     { do: () => {
       c.renderer.setTilt(22);
-      c.setCameraFocus(0, 4.4, -11.0);
+      c.setCameraFocus(0, 2.4, -8.0);
       nimrodActor?.showBubble('!');
       nimrodActor?.detachProp(); // 홀을 떨어뜨림
       nimrodActor?.setPose('cower');
@@ -705,8 +695,8 @@ export function createHaranSteps(c: SceneContext): Step[] {
     } },
     { wait: 1.4 },
     { caption: '데라가 별세한 후, 여호와께서 하란의 아브람에게 다시금 임하여 말씀하셨다.', hold: 4.2 },
-    { caption: '너는 너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라! (창세기 12:1)', style: 'voice', hold: 5.4 },
-    { caption: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리라! (창세기 12:2)', style: 'voice', hold: 5.4 },
+    { caption: '너는 너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여 줄 땅으로 가라! (창세기 12:1)', style: 'voice', speaker: '여호와', hold: 5.4 },
+    { caption: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리라! (창세기 12:2)', style: 'voice', speaker: '여호와', hold: 5.4 },
     { do: () => {
       if (c.beam) c.beam.strength = 0;
       c.audio.playSfx('ending_resolve');

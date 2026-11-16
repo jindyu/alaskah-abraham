@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 import { PAL } from '../world/palette';
 
 /** 캐릭터 외형. 각 값은 아래 OPTIONS 목록의 인덱스 */
@@ -87,7 +88,7 @@ export function loadAppearance(): Appearance | null {
     const raw = localStorage.getItem(KEY);
     if (!raw) return null;
     return normalizeAppearance(JSON.parse(raw));
-  } catch {
+  } catch (e) { noteError('appearance:1', e);
     return null;
   }
 }
@@ -95,7 +96,7 @@ export function loadAppearance(): Appearance | null {
 export function saveAppearance(a: Appearance) {
   try {
     localStorage.setItem(KEY, JSON.stringify(a));
-  } catch {
+  } catch (e) { noteError('appearance:2', e);
     /* 저장소를 못 쓰는 환경(비공개 창 등)에서는 이번 세션만 유지 */
   }
 }

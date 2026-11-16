@@ -1,0 +1,34 @@
+{
+  "_note": "대단원 '여정의 기록': 플레이어가 권마다 한 선택을 한 줄씩 되짚는다 (storyFlags.journeyLedgerLines 가 읽는다). 줄은 모두 이 게임이 덧붙인 성찰이며 성경 본문이 아니다. pick 은 선택을 남기는 단계 id, lines 의 키는 갈래 이름.",
+  "header": { "ko": "여정의 기록 — 당신의 아브라함이 걸어온 길을 되짚습니다.", "en": "The Journey Ledger — looking back on the road your Abraham walked." },
+  "entries": [
+    { "book": 1, "pick": "palace_answer", "lines": {
+      "담대히 선포": { "ko": "제1권 · 불과 팥죽 — 왕 앞에서 우상에게 절하지 않겠다고 담대히 선포했습니다.", "en": "Book 1 · Fire and Lentils — Before the king, you boldly declared that you would not bow to idols." },
+      "침묵으로 맞섬": { "ko": "제1권 · 불과 팥죽 — 왕의 노여움 앞에서 거짓을 말하지 않고 침묵으로 맞섰습니다.", "en": "Book 1 · Fire and Lentils — Before the king's anger, you spoke no lie and stood against him in silence." } } },
+    { "book": 1, "pick": "haran_depart", "lines": {
+      "새벽에 서둘러": { "ko": "제1권 · 불과 팥죽 — 하란을 떠나던 날, 새벽에 서둘러 길을 나섰습니다.", "en": "Book 1 · Fire and Lentils — On the day you left Haran, you set out hurriedly at dawn." },
+      "아버지를 기리며": { "ko": "제1권 · 불과 팥죽 — 하란을 떠나기 전, 아버지 데라를 기리며 걸음을 멈추었습니다.", "en": "Book 1 · Fire and Lentils — Before leaving Haran, you paused to honor your father Terah." } } },
+    { "book": 1, "pick": "esau_eat", "lines": {
+      "아무렇지 않게 떠남": { "ko": "제1권 · 불과 팥죽 — 에서의 장막에서, 아무렇지 않게 자리를 떠났습니다.", "en": "Book 1 · Fire and Lentils — In Esau's tent, you simply walked away as if nothing mattered." },
+      "한 그릇 더": { "ko": "제1권 · 불과 팥죽 — 에서의 장막에서, 한 그릇 더 달라고 청했습니다.", "en": "Book 1 · Fire and Lentils — In Esau's tent, you asked for one more bowl." } } },
+    { "book": 2, "pick": "war_envoy", "lines": {
+      "롯을 염려함": { "ko": "제2권 · 약속의 땅 — 전쟁의 소식 앞에서 롯에게 경고를 전할 길부터 헤아렸습니다.", "en": "Book 2 · The Promised Land — At news of war, you first thought of a way to warn Lot." },
+      "하나님께 맡김": { "ko": "제2권 · 약속의 땅 — 전쟁의 소식 앞에서 모든 일을 하나님께 맡기고 기다렸습니다.", "en": "Book 2 · The Promised Land — At news of war, you entrusted everything to God and waited." } } },
+    { "book": 3, "pick": "archery_target", "lines": {
+      "활을 가르침": { "ko": "제3권 · 별과 언약 — 소년 이스마엘 곁에서 활 쏘는 법을 직접 가르쳐 주었습니다.", "en": "Book 3 · Stars and Covenant — Beside the boy Ishmael, you taught him the bow yourself." },
+      "지켜봐 줌": { "ko": "제3권 · 별과 언약 — 소년 이스마엘이 활 쏘는 모습을 멀리서 지켜봐 주었습니다.", "en": "Book 3 · Stars and Covenant — You watched the boy Ishmael shoot his bow from a distance." } } },
+    { "book": 3, "pick": "sarah_tent", "lines": {
+      "할례 언약": { "ko": "제3권 · 별과 언약 — 사라의 장막에서 할례 언약의 무게를 먼저 이야기했습니다.", "en": "Book 3 · Stars and Covenant — In Sarah's tent, you spoke first of the weight of the covenant of circumcision." },
+      "이삭의 웃음": { "ko": "제3권 · 별과 언약 — 사라의 장막에서 이삭이라는 이름에 담긴 웃음을 나누었습니다.", "en": "Book 3 · Stars and Covenant — In Sarah's tent, you shared the laughter held in the name Isaac." },
+      "이스마엘을 위한 간구": { "ko": "제3권 · 별과 언약 — 사라의 장막에서 이스마엘을 위한 간구를 먼저 꺼냈습니다.", "en": "Book 3 · Stars and Covenant — In Sarah's tent, you were the first to bring up a plea for Ishmael." } } },
+    { "book": 4, "pick": "war_envoy", "lines": {
+      "롯을 염려함": { "ko": "제4권 · 소돔의 불 — 소돔의 연기를 바라보는 새벽, 롯의 이름이 마음에서 떠나지 않았습니다.", "en": "Book 4 · The Fire of Sodom — At the dawn you watched Sodom's smoke, Lot's name would not leave your heart." },
+      "하나님께 맡김": { "ko": "제4권 · 소돔의 불 — 소돔의 연기를 바라보는 새벽, 모든 일을 하나님께 맡긴 채 서 있었습니다.", "en": "Book 4 · The Fire of Sodom — At the dawn you watched Sodom's smoke, you stood having entrusted everything to God." } } },
+    { "book": 5, "pick": "satan_elder", "lines": {
+      "믿음으로 답함": { "ko": "제5권 · 모리아 — 길가의 노인의 속삭임에 “말씀하신 분이 길을 보이시리라” 하고 믿음으로 답했습니다.", "en": "Book 5 · Moriah — To the old man's whisper by the road, you answered in faith: \"The One who spoke to me will show the way.\"" },
+      "돌려 드림": { "ko": "제5권 · 모리아 — 길가의 노인의 속삭임에 “이 아이는 하나님의 선물이니 돌려 드리겠소” 하고 답했습니다.", "en": "Book 5 · Moriah — To the old man's whisper by the road, you answered, \"This child is God's gift, and I will give him back.\"" } } },
+    { "book": 6, "pick": "isaac_field", "lines": {
+      "곁에 앉음": { "ko": "제6권 · 막벨라 — 어머니를 잃은 이삭의 저녁에, 말없이 곁에 앉아 주었습니다.", "en": "Book 6 · Machpelah — On the evening of Isaac's grief for his mother, you sat quietly beside him." },
+      "사라 이야기": { "ko": "제6권 · 막벨라 — 어머니를 잃은 이삭의 저녁에, 사라의 이야기를 함께 나누었습니다.", "en": "Book 6 · Machpelah — On the evening of Isaac's grief for his mother, you shared stories of Sarah with him." } } }
+  ]
+}

@@ -76,10 +76,26 @@ export function snapSpan(a: number, len: number, d: number): [number, number] {
 /** 장치 픽셀 사각형 (가장자리 좌표, x1·y1 은 끝 다음 칸) */
 export interface DevRect { x0: number; y0: number; x1: number; y1: number }
 
-/** fillRect(x, y, w, h) (UI 좌표) → 장치 픽셀 사각형 */
+/** snapRect 가 돌려 쓰는 풀 (HUD 가 프레임마다 fillRect 마다 부르므로 할당하지 않는다). 돌려받은 사각형은 바로 읽고 보관하지 말 것 (64번 뒤 덮어씀) */
+const RECT_POOL_SIZE = 64;
+const rectPool: DevRect[] = [];
+for (let i = 0; i < RECT_POOL_SIZE; i++) rectPool.push({ x0: 0, y0: 0, x1: 0, y1: 0 });
+let rectPoolIdx = 0;
+
+/** fillRect(x, y, w, h) (UI 좌표) → 장치 픽셀 사각형 (풀링: 다음 64번 호출까지만 유효) */
 export function snapRect(x: number, y: number, w: number, h: number, d: number): DevRect {
-  const [x0, x1] = snapSpan(x, w, d), [y0, y1] = snapSpan(y, h, d);
-  return { x0, y0, x1, y1 };
+  const r = rectPool[rectPoolIdx = (rectPoolIdx + 1) & (RECT_POOL_SIZE - 1)];
+  let a = x, len = w;
+  if (len < 0) { a += len; len = -len; }
+  let p0 = Math.round(a * d), p1 = Math.round((a + len) * d);
+  if (len > 0 && p1 <= p0) p1 = p0 + 1;
+  r.x0 = p0; r.x1 = p1;
+  a = y; len = h;
+  if (len < 0) { a += len; len = -len; }
+  p0 = Math.round(a * d); p1 = Math.round((a + len) * d);
+  if (len > 0 && p1 <= p0) p1 = p0 + 1;
+  r.y0 = p0; r.y1 = p1;
+  return r;
 }
 
 /**
@@ -102,6 +118,42 @@ export function frame(x: number, y: number, w: number, h: number, d: number): Fr
     T: (k) => r.y0 + inset(k, d),
     B: (k) => r.y1 - inset(k, d),
   };
+}
+
+/**
+ * 프레임마다 쓰는 틀을 위한 풀링판: 객체·클로저를 새로 만들지 않고 돌려 쓴다 (HUD 가 패널·키캡을 프레임당 여러 번 그림).
+ * 같은 순간에 살아 있는 틀은 풀 크기(32) 이하여야 한다 — 한 번 그리는 동안만 쓰고 보관하지 않는다.
+ */
+class PooledFrame implements Frame {
+  x0 = 0; y0 = 0; x1 = 0; y1 = 0;
+  private d = 1;
+  set(x: number, y: number, w: number, h: number, d: number): this {
+    this.d = d;
+    let a = x, len = w;
+    if (len < 0) { a += len; len = -len; }
+    let p0 = Math.round(a * d), p1 = Math.round((a + len) * d);
+    if (len > 0 && p1 <= p0) p1 = p0 + 1;
+    this.x0 = p0; this.x1 = p1;
+    a = y; len = h;
+    if (len < 0) { a += len; len = -len; }
+    p0 = Math.round(a * d); p1 = Math.round((a + len) * d);
+    if (len > 0 && p1 <= p0) p1 = p0 + 1;
+    this.y0 = p0; this.y1 = p1;
+    return this;
+  }
+  L(k: number): number { return this.x0 + Math.round(k * this.d); }
+  R(k: number): number { return this.x1 - Math.round(k * this.d); }
+  T(k: number): number { return this.y0 + Math.round(k * this.d); }
+  B(k: number): number { return this.y1 - Math.round(k * this.d); }
+}
+const FRAME_POOL_SIZE = 32;
+const framePool: PooledFrame[] = [];
+for (let i = 0; i < FRAME_POOL_SIZE; i++) framePool.push(new PooledFrame());
+let framePoolIdx = 0;
+/** frame() 과 같은 결과, 할당 없음 (HUD 그리기 경로용) */
+export function pooledFrame(x: number, y: number, w: number, h: number, d: number): Frame {
+  framePoolIdx = (framePoolIdx + 1) & (FRAME_POOL_SIZE - 1);
+  return framePool[framePoolIdx].set(x, y, w, h, d);
 }
 
 /**

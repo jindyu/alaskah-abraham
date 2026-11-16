@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 /**
  * 화면 효과(블룸 + 틸트 시프트) 설정. 순수 모듈 — three 를 끌어오지 않아 단위 테스트가 닿음.
  * 저장 칸과 별개로 브라우저에 한 번만 저장 (소리 설정과 같은 방식).
@@ -49,7 +50,7 @@ export function isLowEndDevice(): boolean {
     const coarse = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
     const mem = (navigator as Navigator & { deviceMemory?: number }).deviceMemory;
     return defaultFxFor({ coarse, memGB: mem }) === 'low';
-  } catch { return false; }
+  } catch (e) { noteError('fx:detect', e); return false; }
 }
 
 export const isFxLevel = (v: unknown): v is FxLevel => typeof v === 'string' && (FX_LEVELS as readonly string[]).includes(v);
@@ -59,15 +60,15 @@ export function parseFx(raw: string | null, fallback: FxLevel = DEFAULT_FX): FxL
   try {
     const d: unknown = JSON.parse(raw ?? 'null');
     if (typeof d === 'object' && d !== null && !Array.isArray(d) && isFxLevel((d as Record<string, unknown>).level)) return (d as { level: FxLevel }).level;
-  } catch { /* 기본값 */ }
+  } catch (e) { noteError('fx:default', e); /* 기본값 */ }
   return fallback;
 }
 /** 저장값이 있으면 그것, 없을 때만 fallback(기기 기본 단계) */
 export function loadFx(fallback: FxLevel = DEFAULT_FX): FxLevel {
-  try { return parseFx(localStorage.getItem(KEY), fallback); } catch { return fallback; }
+  try { return parseFx(localStorage.getItem(KEY), fallback); } catch (e) { noteError('fx:load', e); return fallback; }
 }
 export function saveFx(level: FxLevel) {
-  try { localStorage.setItem(KEY, JSON.stringify({ level })); } catch { /* 저장소 없음 */ }
+  try { localStorage.setItem(KEY, JSON.stringify({ level })); } catch (e) { noteError('fx:save', e); /* 저장소 없음 */ }
 }
 /** 한 단계 돌리기 (끔 → 낮음 → 보통 → 높음 → 끔) */
 export const nextFx = (l: FxLevel, dir: 1 | -1 = 1): FxLevel => FX_LEVELS[(FX_LEVELS.indexOf(l) + dir + FX_LEVELS.length) % FX_LEVELS.length];

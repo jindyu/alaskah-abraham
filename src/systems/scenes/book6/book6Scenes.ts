@@ -14,9 +14,11 @@ export function createSarahMourningSteps(c: SceneContext): Step[] {
       c.audio.playBgm('bgm_lament');
     } },
     { wait: 1.0 },
-    { caption: '사라가 일백이십칠 세를 살았으니 이것이 곧 사라가 누린 햇수라.', hold: 4.8 },
-    { caption: '사라가 가나안 땅 기럇아르바 곧 헤브론에서 죽으매, 아브라함이 들어가 슬퍼하며 애통하였다.', hold: 5.0 },
-    { caption: '아브라함: "나는 당신들 중에 나그네요 거류하는 자이니, 내 죽은 자를 내어 장사할 매장지를 내게 주소서."', style: 'voice', hold: 5.5 },
+    { caption: '사라가 일백이십칠 세를 살았으니 이것이 곧 사라가 누린 햇수라.', hold: 4.8, voice: { chapter: '01_death_of_sarah', role: 'narrator', text: '사라가 백이십칠 세를 살았으니 이것이 곧 사라가 누린 햇수라' } },
+    { caption: '사라가 가나안 땅 기럇아르바 곧 헤브론에서 죽으매, 아브라함이 들어가 슬퍼하며 애통하였다.', hold: 5.0, voice: { chapter: '01_death_of_sarah', role: 'narrator', text: '사라가 가나안 땅 헤브론에서 죽으매 아브라함이 들어가서 사라를 위하여 슬퍼하며 애통하다가' } },
+    { caption: '아브라함: "내 평생의 동반자여… 당신이 있어 약속의 땅을 함께 걸어올 수 있었소."', style: 'voice', speaker: '아브라함', hold: 5.0, voice: { chapter: '01_death_of_sarah', role: 'abraham', text: '사라를 위하여 슬퍼하며 애통하다가' } },
+    { caption: '아브라함: "나는 당신들 중에 나그네요 거류하는 자이니, 내 죽은 자를 내어 장사할 매장지를 내게 주소서."', style: 'voice', speaker: '아브라함', hold: 5.5, voice: { chapter: '02_ephrons_bargain', role: 'abraham', text: '나는 나그네요 우거하는 자로소이다. 청하건대 내게 매장할 소유지를 주어, 내 죽은 자를 내 앞에서 장사하게 하소서.' } },
+    { caption: '헷 족속이 대답하되, "내 주여 당신은 우리 가운데 있는 하나님의 지도자이시니 가장 좋은 묘실에 장사하소서."', hold: 5.2, voice: { chapter: '01_death_of_sarah', role: 'narrator', text: '내 주여 들으소서 당신은 우리 가운데 있는 하나님이 세우신 지도자이시니' } },
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
@@ -39,15 +41,16 @@ export function createEphronBargainSteps(c: SceneContext): Step[] {
       c.audio.playBgm('bgm_shadow_intrigue');
     } },
     { wait: 0.8 },
-    { caption: '에브론: "내 주여, 들으소서. 밭머리에 있는 막벨라 굴뿐 아니라 그 밭도 당신께 드리겠나이다."', hold: 5.2 },
-    { caption: '아브라함: "아니라, 그 밭값을 내게서 받으소서. 내가 정당한 값을 치르고 내 죽은 자를 장사하겠노라."', style: 'voice', hold: 5.5 },
-    { caption: '에브론: "땅값은 은 사백 세겔이나, 그것이 나와 당신 사이에 무슨 문제가 되리이까?"', hold: 5.0 },
+    { caption: '에브론: "내 주여, 들으소서. 밭머리에 있는 막벨라 굴뿐 아니라 그 밭도 당신께 드리겠나이다."', hold: 5.2, voice: { chapter: '02_ephrons_bargain', role: 'ephron', text: '내 주여 내게 들으소서. 그 밭을 내가 당신에게 드리고 그 속의 굴도 내가 당신에게 드리되,' } },
+    { caption: '아브라함: "아니라, 그 밭값을 내게서 받으소서. 내가 정당한 값을 치르고 내 죽은 자를 장사하겠노라."', style: 'voice', speaker: '아브라함', hold: 5.5, voice: { chapter: '02_ephrons_bargain', role: 'abraham', text: '당신이 합당히 여기면 청하오니 내 손에서 그 밭 값을 받으소서. 내가 그리하고 내 죽은 자를 거기 장사하겠나이다.' } },
+    { caption: '에브론: "땅값은 은 사백 세겔이나, 그것이 나와 당신 사이에 무슨 문제가 되리이까?"', hold: 5.0, voice: { chapter: '02_ephrons_bargain', role: 'ephron', text: '땅값은 은 사백 세겔이나 그것이 나와 당신 사이에 무슨 문제가 되리이까' } },
     { do: () => {
       c.audio.playSfx('ui_confirm');
       if (c.particles) c.particles.emit('glory_sparkles', -5.5, 1.2, 6.5, 30);
     } },
-    { caption: '아브라함이 에브론의 말을 듣고 상인의 통용하는 은 사백 세겔을 달아 에브론에게 주었다!', hold: 5.2 },
-    { caption: '이로써 막벨라 굴과 밭과 둘레의 모든 나무가 아브라함의 확정된 영구 매장 소유지가 되었다.', hold: 5.2 },
+    { caption: '아브라함이 에브론의 말을 듣고 상인의 통용하는 은 사백 세겔을 달아 에브론에게 주었다!', hold: 5.2, voice: { chapter: '02_ephrons_bargain', role: 'narrator', text: '상인이 통용하는 은 사백 세겔을 달아 에브론에게 주었더니' } },
+    { caption: '상인의 통용하는 은 사백 세겔이 저울에 달리는 소리가 온 성문에 맑게 울려 퍼졌다.', hold: 5.0, voice: { chapter: '02_ephrons_bargain', role: 'narrator', text: '아브라함이 에브론의 말을 따라 에브론이 헷 족속이 듣는 데서 말한 대로 상인이 통용하는 은 사백 세겔을 달아 에브론에게 주었더니' } },
+    { caption: '이로써 막벨라 굴과 밭과 둘레의 모든 나무가 아브라함의 확정된 영구 매장 소유지가 되었다.', hold: 5.2, voice: { chapter: '02_ephrons_bargain', role: 'narrator', text: '마므레 앞 막벨라에 있는 에브론의 밭 곧 그 밭과 거기에 속한 굴과 그 밭과 그 주위에 둘린 모든 나무가 아브라함의 소유로 확정된지라' } },
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
@@ -65,9 +68,11 @@ export function createEliezerOathSteps(c: SceneContext): Step[] {
       c.audio.playBgm('bgm_nomad_journey');
     } },
     { wait: 0.8 },
-    { caption: '아브라함: "내 허벅지 아래 손을 넣고 하늘의 하나님 여호와를 가리켜 맹세하라."', style: 'voice', hold: 5.0 },
-    { caption: '"이 가나안 족속의 딸이 아닌 내 고향, 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라!"', style: 'voice', hold: 5.5 },
-    { caption: '엘리에셀: "주인의 하나님 여호와께서 순적한 길을 주실 줄 믿고 길을 떠나나이다."', hold: 4.8 },
+    { caption: '아브라함: "내 허벅지 아래 손을 넣고 하늘의 하나님 여호와를 가리켜 맹세하라."', style: 'voice', speaker: '아브라함', hold: 5.0, voice: { chapter: '04_a_bride_for_isaac', role: 'abraham', text: '청하건대 내 허벅지 밑에 네 손을 넣으라' } },
+    { caption: '"이 가나안 족속의 딸이 아닌 내 고향, 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라!"', style: 'voice', speaker: '아브라함', hold: 5.5, voice: { chapter: '04_a_bride_for_isaac', role: 'abraham', text: '내 고향 내 족속에게로 가서 내 아들 이삭을 위하여 아내를 택하라' } },
+    { caption: '엘리에셀: "만일 여인이 나를 따라 이 땅으로 오려고 하지 아니하면 어찌하오리이까?"', style: 'voice', speaker: '엘리에셀', hold: 5.0, voice: { chapter: '04_a_bride_for_isaac', role: 'eliezer', text: '종이 이르되 여자가 나를 따라 이 땅으로 오려고 하지 아니하거든' } },
+    { caption: '아브라함: "하늘의 하나님 여호와께서 그의 사자를 너보다 앞서 보내실지니라!"', style: 'voice', speaker: '아브라함', hold: 5.2, voice: { chapter: '04_a_bride_for_isaac', role: 'abraham', text: '그가 그 사자를 너보다 앞서 보내실지라' } },
+    { caption: '엘리에셀: "주인의 하나님 여호와께서 순적한 길을 주실 줄 믿고 길을 떠나나이다."', hold: 4.8, voice: { chapter: '04_a_bride_for_isaac', role: 'eliezer', text: '이에 종이 그의 주인의 낙타 중 열 필을 끌고 떠났는데' } },
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
@@ -87,15 +92,16 @@ export function createRebekahWellSteps(c: SceneContext): Step[] {
       c.audio.playBgm('bgm_peaceful');
     } },
     { wait: 1.0 },
-    { caption: '엘리에셀: "내가 물을 청할 때 나뿐 아니라 낙타에게도 마시우게 하는 여인이 주께서 정하신 배필이 되게 하옵소서."', style: 'voice', hold: 5.5 },
-    { caption: '기도를 마치기도 전에 리브가가 물동이를 어깨에 메고 나오매, "내 주여 마시소서" 하고 급히 물동이를 기울였다.', hold: 5.2 },
-    { caption: '"당신의 낙타를 위하여서도 물을 길어 배불리 마시게 하리이다!" 부지런히 구유에 물을 부어 낙타 모두를 마시웠다.', hold: 5.5 },
+    { caption: '엘리에셀: "내가 물을 청할 때 나뿐 아니라 낙타에게도 마시우게 하는 여인이 주께서 정하신 배필이 되게 하옵소서."', style: 'voice', speaker: '엘리에셀', hold: 5.5, voice: { chapter: '05_labans_house', role: 'eliezer', text: '한 소녀에게 이르기를 청하건대 너는 물동이를 기울여 나로 마시게 하라 하리니 그의 대답이 마시라 내가 당신의 낙타에게도 마시게 하리라 하면 그는 주께서 주의 종 이삭을 위하여 정하신 자라' } },
+    { caption: '기도를 마치기도 전에 리브가가 물동이를 어깨에 메고 나오매, "내 주여 마시소서" 하고 급히 물동이를 기울였다.', hold: 5.2, voice: { chapter: '05_labans_house', role: 'narrator', text: '말을 마치기도 전에 리브가가 물동이를 어깨에 메고 나오니' } },
+    { caption: '리브가: "내 주여 마시소서! 당신의 낙타를 위하여서도 물을 길어 배불리 마시게 하리이다."', style: 'voice', speaker: '리브가', hold: 5.5, voice: { chapter: '05_labans_house', role: 'rebekah', text: '내 주여 마시소서 하며 급히 그 물동이를 손에 내려 마시게 하고' } },
+    { caption: '"당신의 낙타를 위하여서도 물을 길어 배불리 마시게 하리이다!" 부지런히 구유에 물을 부어 낙타 모두를 마시웠다.', hold: 5.5, voice: { chapter: '05_labans_house', role: 'narrator', text: '마시게 하기를 다하고 이르되 당신의 낙타를 위하여서도 물을 길어 그것들도 배불리 마시게 하리이다 하고' } },
     { do: () => {
-      c.audio.playSfx('sacred_bell');
+      c.audio.playSfx('fx_covenant_chime');
       if (c.particles) c.particles.emit('glory_sparkles', 0, 1.5, 0, 35);
       c.audio.playBgm('bgm_divine');
     } },
-    { caption: '엘리에셀이 감격하여 금 코걸이와 손목고리를 선사하며, 순적한 길을 인도하신 하나님을 찬송하였다.', hold: 5.5 },
+    { caption: '엘리에셀이 감격하여 금 코걸이와 손목고리를 선사하며, 순적한 길을 인도하신 하나님을 찬송하였다.', hold: 5.5, voice: { chapter: '05_labans_house', role: 'eliezer', text: '이르되 나의 주인 아브라함의 하나님 여호와를 찬송하나이다 나의 주인에게 주의 사랑과 성실을 그치지 아니하셨사오며' } },
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
@@ -112,9 +118,10 @@ export function createTwilightMeetingSteps(c: SceneContext): Step[] {
       c.audio.playBgm('bgm_hope_legacy');
     } },
     { wait: 1.0 },
-    { caption: '해 질 무렵 이삭이 들에 나가 묵상하다가 눈을 들어 보매, 낙타들이 오고 있었다.', hold: 5.0 },
-    { caption: '리브가가 눈을 들어 이삭을 보고 낙타에서 내려 너울로 얼굴을 가리니, 순결한 신부의 영접이었다.', hold: 5.2 },
-    { caption: '이삭이 리브가를 인도하여 어머니 사라의 장막으로 들이고 그를 사랑하였으니, 비로소 큰 위로를 얻었다.', hold: 5.2 },
+    { caption: '해 질 무렵 이삭이 들에 나가 묵상하다가 눈을 들어 보매, 낙타들이 오고 있었다.', hold: 5.0, voice: { chapter: '05_labans_house', role: 'narrator', text: '이삭이 저물 때에 들에 나가 묵상하다가 눈을 들어 보매 낙타들이 오는지라' } },
+    { caption: '이삭: "저 평원에서 다가오는 이들은 누구인고… 황혼의 바람 속에 낙타 방울 소리가 들려온다."', style: 'voice', hold: 5.0, voice: { chapter: '05_labans_house', role: 'isaac', text: '이삭이 저물 때에 들에 나가 묵상하다가 눈을 들어 보매 낙타들이 오는지라' } },
+    { caption: '리브가가 눈을 들어 이삭을 보고 낙타에서 내려 너울로 얼굴을 가리니, 순결한 신부의 영접이었다.', hold: 5.2, voice: { chapter: '05_labans_house', role: 'narrator', text: '리브가가 눈을 들어 이삭을 바라보고 낙타에서 내려' } },
+    { caption: '이삭이 리브가를 인도하여 어머니 사라의 장막으로 들이고 그를 사랑하였으니, 비로소 큰 위로를 얻었다.', hold: 5.2, voice: { chapter: '05_labans_house', role: 'narrator', text: '이삭이 리브가를 인도하여 그의 어머니 사라의 장막으로 들이고 그를 맞이하여 아내로 삼고 사랑하였으니 이삭이 그의 어머니를 장례한 후에 위로를 얻었더라' } },
     { do: () => {
       c.renderer.resetTilt();
       c.hud.cinematicTitle = null;
@@ -137,10 +144,12 @@ export function createAbrahamPassingSteps(c: SceneContext): Step[] {
       }
     } },
     { wait: 1.2 },
-    { caption: '아브라함의 향년이 일백칠십오 세라. 그의 나이가 높고 늙어서 기운이 다하여 평안히 열조에게로 돌아갔다.', hold: 5.5 },
-    { caption: '그의 아들들인 이삭과 이스마엘이 함께 손을 잡고 막벨라 굴 사라의 곁에 아버지를 정중히 안장하였다.', hold: 5.5 },
-    { caption: '갈대아 우르에서 시작된 믿음의 여정, 칠 배나 뜨거운 풀무불과 모리아 산의 순종을 지나 영원한 본향에 이르렀다.', hold: 5.8 },
-    { caption: '"내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니, 땅의 모든 족속이 너로 말미암아 복을 얻으리라!"', style: 'voice', hold: 6.5 },
+    { caption: '아브라함의 향년이 일백칠십오 세라. 그의 나이가 높고 늙어서 기운이 다하여 평안히 열조에게로 돌아갔다.', hold: 5.5, voice: { chapter: '07_death_of_abraham', role: 'narrator', text: '아브라함의 향년이 백칠십오 세라 그의 나이가 높고 늙어서 기운이 다하여 죽어 자기 열조에게로 돌아가매' } },
+    { caption: '아브라함: "…내가 본 약속을, 내 자손들도 대대로 보게 되리라."', style: 'voice', hold: 4.8, voice: { chapter: '07_death_of_abraham', role: 'abraham', text: '…내가 본 것을, 내 자손들도 보게 되리라.' } },
+    { caption: '그의 아들들인 이삭과 이스마엘이 함께 손을 잡고 막벨라 굴 사라의 곁에 아버지를 정중히 안장하였다.', hold: 5.5, voice: { chapter: '07_death_of_abraham', role: 'narrator', text: '그의 아들들인 이삭과 이스마엘이 그를 헤브론 앞 막벨라 굴' } },
+    { caption: '이삭과 이스마엘이 두 손을 맞잡고 서서, 아버지의 거룩한 믿음의 유산을 가슴 깊이 새겼다.', hold: 5.5, voice: { chapter: '07_death_of_abraham', role: 'narrator', text: '아브라함이 죽은 후에 하나님이 그의 아들 이삭에게 복을 주셨고' } },
+    { caption: '갈대아 우르에서 시작된 믿음의 여정, 칠 배나 뜨거운 풀무불과 모리아 산의 순종을 지나 영원한 본향에 이르렀다.', hold: 5.8, voice: { chapter: '07_death_of_abraham', role: 'narrator', text: '갈대아 우르에서 시작된 믿음의 여정, 칠 배나 뜨거운 풀무불과 모리아 산의 순종을 지나 영원한 본향에 이르렀다.' } },
+    { caption: '"내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니, 땅의 모든 족속이 너로 말미암아 복을 얻으리라!"', style: 'voice', hold: 6.5, voice: { chapter: '01_the_calling', role: 'narrator', text: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 할 것이니,' } },
     { do: () => {
       if (c.beam) c.beam.strength = 0;
       c.renderer.resetTilt();

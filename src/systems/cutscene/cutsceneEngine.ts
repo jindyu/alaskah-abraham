@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { isKo } from '../../i18n/lang';
+import type { TintPreset } from '../../renderer/pixelRenderer';
 import { Actor, type ActorPose, type EmoteType } from '../../entities/actor';
 import { CrowdManager } from '../../entities/crowd';
 import type { AudioManager } from '../../audio/audioManager';
@@ -34,6 +36,7 @@ export class CutsceneEngine {
   private movingActors = new Map<string, { toX: number; toZ: number; speed: number }>();
   private cameraTarget: { toX: number; toZ: number; startX: number; startZ: number; t: number; dur: number } | null = null;
   private followingActorId: string | null = null;
+  private arrivedIds: string[] = [];
 
   constructor(host: CutsceneHost) {
     this.host = host;
@@ -100,20 +103,21 @@ export class CutsceneEngine {
 
     // ── 이동 중인 액터들 업데이트 ──
     if (this.movingActors.size > 0) {
-      const arrivedIds: string[] = [];
+      this.arrivedIds.length = 0;
       for (const [id, move] of this.movingActors) {
         const actor = this.actors.get(id);
         if (!actor) {
-          arrivedIds.push(id);
+          this.arrivedIds.push(id);
           continue;
         }
         const arrived = actor.moveTo(move.toX, move.toZ, move.speed, dt);
         if (arrived) {
           actor.setPose('stand');
-          arrivedIds.push(id);
+          this.arrivedIds.push(id);
         }
       }
-      for (const id of arrivedIds) this.movingActors.delete(id);
+      for (const id of this.arrivedIds) this.movingActors.delete(id);
+      this.arrivedIds.length = 0;
     }
 
     // ── 정지 상태 액터 애니메이션 ──
@@ -158,6 +162,10 @@ export class CutsceneEngine {
           portrait: step.speaker ? step.speaker.toLowerCase() : null,
         };
 
+        const directPath = typeof step.voice_path === 'string'
+          ? step.voice_path.replace(/^res:\/\/assets\//, '')
+          : (typeof step.voice_key === 'string' ? step.voice_key : undefined);
+
         this.host.audio.playVoice(
           rawText,
           step.id || step.speaker || 'narrator',
@@ -165,7 +173,10 @@ export class CutsceneEngine {
           () => {
             // 보이스 재생 종료
           },
+          directPath,
         );
+        // 보이스 클립은 한국어뿐이다: 영어 모드에서는 화자별 블립으로 대사가 넘어가는 소리를 대신한다
+        if (!isKo()) this.host.audio.playVoiceBlip(step.speaker || 'narrator');
         this.waitingForAdvance = true;
         break;
       }
@@ -196,7 +207,7 @@ export class CutsceneEngine {
         if (col && typeof col.r === 'number') {
           this.host.renderer.applyTint(col.r, col.g, col.b, col.a ?? 0.3);
         } else if (typeof step.preset === 'string') {
-          this.host.renderer.applyTintPreset(step.preset as any);
+          this.host.renderer.applyTintPreset(step.preset as TintPreset);
         }
         this.nextStepImmediate();
         break;

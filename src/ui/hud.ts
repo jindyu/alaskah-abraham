@@ -1,102 +1,65 @@
-import { dev, frame, hudScale, inset, policyTextSize, snapRect, TEXT_POLICY_NONE, textGrow, textWiden, widenWidth, type Frame, type TextPolicy } from './uiScale';
-import { centerY, densityOf, drawDigits, pixelText } from './pixelText';
-import type { CaptionState } from '../systems/caption';
-import { ACCENT, ACCENT_LIGHT, CREAM, INK, INK_SOFT, INK_WARM, OUTLINE, PAPER, PAPER_LIGHT, PAPER_SHADOW, RULE, WOOD, WOOD_LIGHT } from './theme';
-import { wrapLines, wrapParagraphs } from './wrap';
+import { dev, pooledFrame, hudScale, inset, policyTextSize, snapRect, TEXT_POLICY_NONE, textGrow, textWiden, widenWidth, type Frame, type TextPolicy } from './uiScale';
+import { densityOf, pixelText } from './pixelText';
+import type { CaptionState } from '../systems/cutscene/cutscene';
+import { CREAM, INK, OUTLINE, PAPER_SHADOW, WOOD, WOOD_LIGHT } from './theme';
+import { wrapLines } from './wrap';
 import { tr } from '../i18n/tr';
-import { CATALOG } from '../systems/story';
-export interface ActiveDialogue {
-  speaker: string | null;
-  text: string;
-  age: number;
-  life: number;
-}
+import { handleChapterSelectClick, handlePauseMenuClick, handleHelpClick, handleCodexClick, handleChoiceClick } from './hudClicks';
+import { drawFrame } from './hudFrame';
+import { createCodexEntries } from './hudCodex';
+import { layoutCaption, type CaptionLayout } from './hudLayout';
+import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
+import { touchSideClearCss } from './touchControls';
+import { narrationLife } from './dialogueLayout';
+import { newOnboard, onboardSeen, type OnboardState } from './onboarding';
+import type { ActiveDialogue, CodexEntry, DialogueChoice, DialogueOption, GoalProgress, Heart, Prompt, Speech, Toast } from './hudTypes';
 
-export interface GoalProgress {
-  current: number;
-  total: number;
-  label?: string;
-}
-
-export interface DialogueOption {
-  text: string;
-  badge?: string;
-  badgeColor?: string;
-}
-
-export interface DialogueChoice {
-  prompt: string;
-  options: DialogueOption[];
-  selectedIndex: number;
-  onSelect: (index: number) => void;
-}
-
-export interface CodexEntry {
-  id: string;
-  title: string;
-  source: string;
-  summary: string;
-  detail: string;
-  unlocked: boolean;
-}
+type DropFirst<T extends unknown[]> = T extends [unknown, ...infer R] ? R : never;
+export type { ActiveDialogue, GoalProgress, DialogueOption, DialogueChoice, CodexEntry, Prompt } from './hudTypes';
 
 /** 풍경을 덜 가리면서 읽을 수 있는 할 일 글자 크기 */
-const GOAL_PX = 12;
-import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
-import { touchClusterTopCss, touchSideClearCss } from './touchControls';
-import { TOAST_LINE_H, TOAST_H, TOAST_GAP, toastCenterX, toastHeight, toastSlideY, toastSpan } from './toastLayout';
-
-
+/** 할 일 본문 기본 글자 크기 (실제 크기는 textSize.goalPx — 작은 창에서 더 크게) */
+export const GOAL_PX = 13;
 /** 할 일 패널 글 최대 줄 수 (핵심 줄 + 세부 목표 + 획득처) */
-const GOAL_MAX_LINES = 6;
-/** 터치 기기 왼쪽 위 도움말 DOM 단추의 폭 (CSS px, 안전 영역 여백 안쪽부터. 알림이 그 오른쪽부터 시작) */
-const TOUCH_GUIDE_BTN_CSS = 124;
+export const GOAL_MAX_LINES = 6;
 /** 할 일 완료 띠 높이 (UI 좌표) */
-const BANNER_H = 46;
-/** 상호작용 프롬프트 키캡 옆에 'Space' 도 같은 행동임을 덧붙이는 처음 몇 번 (그 뒤엔 E 만 보임) */
-const SPACE_HINT_PROMPTS = 5;
-const DIAL_STARS: readonly [number, number][] = [[-9, -8], [-3, -12], [6, -10], [10, -5], [-12, -4]];
-const RAIN_DROPS: readonly [number, number][] = [[3, 8], [7, 9], [11, 8], [5, 11], [9, 12]];
-const SUN_RAYS: readonly [number, number][] = [[6, 0], [6, 12], [0, 6], [12, 6], [2, 2], [10, 2], [2, 10], [10, 10]];
-
-interface Toast { key: string; iconId: string | null; name: string; count: number; age: number; life: number }
-interface Heart { x: number; y: number; z: number; age: number }
-interface Speech { x: number; y: number; z: number; text: string; age: number; life: number; delay: number; follow?: () => { x: number; z: number } }
-export interface Prompt { x: number; y: number; label: string; hint?: string }
+export const BANNER_H = 46;
 
 /**
  * 화면 해상도 캔버스에 그리는 UI. 기본 배율은 월드와 같고,
  * 작은 화면에서는 고정 폭 패널이 들어가도록 UI만 더 작게 맞춘다.
  * 구성: 시계 패널 · 은 조각 · 핫바 · 선택 아이템 이름 · 획득 토스트 · 상호작용 프롬프트 · 하트
  */
+/** 하트 아이콘 도트 (heartIcon 이 프레임마다 쓰는 읽기 전용 상수) */
+/** 음성 자막 뒤 빛 띠(여백, 투명도) — 상수 */
+export const GLOW_BANDS: ReadonlyArray<readonly [number, number]> = [[18, 0.1], [10, 0.14], [4, 0.18]];
+const HEART_ROWS: readonly string[] = ['.kk.kk.', 'kRRkrrk', 'kRrrrrk', 'krrrrrk', '.krrrk.', '..krk..', '...k...'];
+const HEART_COL: Record<number, string> = { 107: '#5a1a22', 114: '#e0485a', 82: '#ffb0b8' }; // k, r, R
+
 export class Hud {
   readonly canvas = document.createElement('canvas');
   readonly ctx: CanvasRenderingContext2D;
-  private w = 1;
-  private h = 1;
-  private toasts: Toast[] = [];
+  w = 1;
+  h = 1;
+  toasts: Toast[] = [];
   /** 터치 알림이 쓸 수 있는 오른쪽 끝: 시계·할 일 패널의 왼쪽 (clockPanel 이 매 프레임 채움) */
-  private toastRight = 0;
+  toastRight = 0;
   /** 완료 띠가 떠 있을 때 터치 알림을 아래로 내린 양 (UI 좌표, 띠가 사라지면 서서히 0) */
-  private toastDrop = 0;
-  private hearts: Heart[] = [];
-  private speech: Speech[] = [];
+  toastDrop = 0;
+  hearts: Heart[] = [];
+  speech: Speech[] = [];
   /** 커스터마이징 화면 등에서 게임 UI(핫바·토스트·프롬프트)를 숨김 */
   gameUi = true;
   /** 화면 전환용 검은 막 (0=없음, 1=완전히 가림) */
   fade = 0;
   /** 페이드 효과 편의 함수 */
+  /** 진행 중인 페이드 (draw(dt) 가 dt 로 진행시킴 — 백그라운드 탭에서도 어긋나지 않고 겹치면 교체됨) */
+  fadeAnim: { start: number; end: number; dur: number; t: number } | null = null;
   fadeTo(fadeIn: boolean, duration = 0.6): void {
     const start = fadeIn ? 1 : 0;
     const end = fadeIn ? 0 : 1;
     this.fade = start;
-    let t = 0;
-    const timer = setInterval(() => {
-      t += 0.03;
-      const p = Math.min(1, t / duration);
-      this.fade = start + (end - start) * p;
-      if (p >= 1) clearInterval(timer);
-    }, 30);
+    this.fadeAnim = { start, end, dur: Math.max(0.001, duration), t: 0 };
   }
 
   /** 화면 번쩍임 효과 (번개, 폭발, 언약 황금빛 플래시) */
@@ -120,7 +83,7 @@ export class Hud {
   dialogue: { speaker: string; text: string; portrait: string | null } | null = null;
   /** 인터랙티브 대화 2지선다 선택지 패널 */
   choice: DialogueChoice | null = null;
-  private choiceOptionRects: { x: number; y: number; w: number; h: number }[] = [];
+  choiceOptionRects: { x: number; y: number; w: number; h: number }[] = [];
   /** 캐릭터 아래 활성 대사창 (크고 또렷하게 표시) */
   activeDialogue: ActiveDialogue | null = null;
   /** 시네마틱 챕터 타이틀 */
@@ -129,283 +92,36 @@ export class Hud {
   chapterSelect = { open: false, bookIndex: 1, chapterIndex: 0 };
   /** 일시정지 메뉴 [Esc] */
   pauseMenu = { open: false, selectedItem: 0 };
+  /** 조작 안내 및 온보딩 도움말 [F1 / H] */
+  help = { open: false };
   /** 성경 & 미드라시 도감 (Biblical Lore Codex) [C] */
   codex = {
     open: false,
     selectedIndex: 0,
-    entries: [
-      {
-        id: 'noah_ark_curse',
-        title: '노아의 방주와 아라랏 산의 언약',
-        source: '창세기 9장 / 미드라시',
-        summary: '방주에서 나온 여덟 사람, 무지개 언약, 그리고 셈의 축복',
-        detail: '대홍수가 끝나고 방주가 아라랏 산에 머물렀을 때, 노아와 아내, 세 아들(셈, 함, 야벳) 부부 여덟 사람이 땅에 발을 디뎠습니다. 노아는 제단을 쌓고 무지개 언약을 받았으며, 훗날 "셈의 하나님 여호와를 찬송하리로다"라 축복했습니다. 아브라함은 바로 그 축복받은 맏아들 셈의 거룩한 계보를 잇는 믿음의 후손이었습니다.',
-        unlocked: true,
-      },
-      {
-        id: 'babel_nimrod',
-        title: '바벨탑과 니므롯의 제국',
-        source: '창세기 10~11장',
-        summary: '하늘에 닿으려 한 인간의 오만과 신이 되고자 한 니므롯의 시작',
-        detail: '노아의 방주 이후 인류는 시날 평지에 모여 "우리의 이름을 내고 흩어짐을 면하자"며 거대한 바벨탑을 쌓았습니다. 세상의 첫 용사 사냥꾼 니므롯은 스스로 신이 되어 제국을 다스렸고, 온 세상은 우상 숭배로 어두워졌습니다.',
-        unlocked: true,
-      },
-      {
-        id: 'old_customer',
-        title: '50세 노인 손님과 우상의 헛됨',
-        source: '창세기 라바 38:13',
-        summary: '50세 노인이 어제 빚은 하루살이 우상에 절하려다 아브람의 일침에 부끄러워함',
-        detail: '데라의 우상 공방에 한 노인이 찾아와 신상을 사려 했습니다. 아브람이 "어르신 연세가 어찌 되십니까?" 묻자 노인은 "쉰 살이오"라 답했습니다. 아브람이 "쉰 살이나 되신 분이 어제 아버지가 빚은 하루살이 조각상에 머리를 조아리려 하십니까?"라고 묻자, 노인은 깊이 부끄러워하며 빈손으로 돌아갔습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'ur_night_call',
-        title: '갈대아 우르의 밤하늘과 첫 부르심',
-        source: '사도행전 7:2-3 / 느헤미야 9:7',
-        summary: '달신 숭배의 도성 우르에서 밤하늘 별을 올려다보던 아브람에게 임한 영광의 하나님',
-        detail: '갈대아 우르 온 도성이 달신 난나(Nanna)를 섬길 때, 아브람은 공방 옥상에 올라 하늘의 별들을 지으신 참된 창조주를 고뇌했습니다. 그때 영광의 하나님이 메소포타미아에 나타나 "너의 고향과 친척과 아버지의 집을 떠나 내가 네게 보여줄 땅으로 가라" 명하셨습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'the_axe',
-        title: '도끼와 부서진 우상들의 침묵',
-        source: '창세기 라바 38:13',
-        summary: '여인의 밀가루 제물과 큰 우상 손에 쥐여준 도끼, 데라와의 논쟁',
-        detail: '어떤 여인이 우상들에게 바치라며 고운 밀가루 사발을 가져왔습니다. 아브람은 이를 큰 우상 앞에 두고, 청동 도끼로 작은 우상들을 다 부순 뒤 가장 큰 우상의 손에 도끼를 쥐여주었습니다. "신들이 음식을 두고 서로 다투다 큰 신상이 다 부쉈습니다"라는 아브람의 말에, 데라는 스스로 "저것들이 어찌 움직이느냐!"고 소리치며 우상의 무능함을 자인하게 되었습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'nimrod_court',
-        title: '니므롯 왕 앞에서의 4단 신학 논쟁',
-        source: '탈무드 페사힘 118a / 창세기 라바 38:13',
-        summary: '불 → 물 → 구름 → 바람 → 사람을 거쳐 오직 하나님만이 참신이심을 논증',
-        detail: '분노한 데라에 의해 니므롯 왕 앞에 끌려간 아브람은 담대히 논쟁했습니다. "불을 섬기라"는 왕에게 아브람은 "불을 끄는 물을 섬기오리까? 물을 품은 구름을 섬기오리까? 구름을 흩뜨리는 바람을 섬기오리까? 바람을 견디는 사람을 섬기오리까?" 반문하며, 피조물이 아닌 만물의 창조주 하나님 한 분만을 증언했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'furnace_roses',
-        title: '풀무불의 기적과 장미꽃 동산',
-        source: '탈무드 페사힘 118a / 창세기 라바 38:13',
-        summary: '칠 배나 달구어진 화염이 시원한 아침 이슬과 만발한 붉은 장미꽃 동산으로 변함',
-        detail: '니므롯의 명령으로 칠 배나 뜨거운 가마에 던져진 아브람. 그러나 하늘에서 주의 천사가 내려와 결박을 풀었습니다. 타오르던 숯불은 향기로운 장미꽃 동산과 푸른 풀밭으로 변했고, 아브람은 옷자락 하나 그을리지 않은 채 천사와 거닐었습니다. 이를 본 니므롯은 황금 홀을 떨어뜨리며 경악했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'terah_peace',
-        title: '하란의 안식과 75세의 대소명',
-        source: '창세기 11:31~12:4',
-        summary: '오아시스 하란에서 데라의 평안한 임종과 마침내 시작된 가나안 대장정',
-        detail: '우르를 탈출하여 유프라테스를 거슬러 올라간 아브람 일행은 하란에 머물렀습니다. 아버지 데라는 향년 205세로 평안히 숨을 거두며 아들에게 살아계신 하나님을 따르라는 유언을 남겼습니다. 슬픔을 딛고 75세의 아브람은 "너는 복이 될지라"는 약속을 품고 가나안으로 출발했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'lentil_stew',
-        title: '에서와 붉은 팥죽 한 그릇',
-        source: '창세기 25:29-34 / 탈무드 바바 바트라 16b',
-        summary: '아브라함의 장례 날 끓인 붉은 렌즈콩 팥죽 한 그릇에 장자권을 판 에서',
-        detail: '탈무드에 따르면 야곱이 팥죽(붉은 렌즈콩)을 끓이던 날은 조부 아브라함이 별세하여 가문이 애도하던 날이었습니다(렌즈콩은 둥근 모양으로 인생의 윤회를 상징하는 조문 음식). 사냥에서 굶주려 돌아온 에서는 "내가 죽게 되었으니 장자권이 내게 무엇이 유익하리요"라며 하나님의 언약과 장자의 특권을 팥죽 한 그릇에 팔아넘겼습니다.',
-        unlocked: false,
-      },
-      // ── 제2권: 약속의 땅 도감 ──
-      {
-        id: 'shechem_altar',
-        title: '세겜 모레 상수리나무와 첫 제단',
-        source: '창세기 12:6-7',
-        summary: '가나안 땅에 첫발을 디딘 아브람이 하나님께 단을 쌓고 감사를 드림',
-        detail: '하란을 떠나 마침내 약속의 땅 가나안에 들어선 아브람은 세겜 땅 모레 상수리나무에 이르렀습니다. 하나님께서 "내가 이 땅을 네 자손에게 주리라" 말씀하시자, 아브람은 주저하지 않고 그 자리에 돌을 쌓아 여호와께 첫 감사 제단을 봉헌했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'sarai_chest',
-        title: '애굽 국경의 보석 상자와 사래',
-        source: '미드라시 라바 40:5',
-        summary: '기근을 피해 애굽으로 가며 사래를 궤짝에 숨겼으나 세관에서 드러남',
-        detail: '가나안 땅에 극심한 기근이 닥치자 아브람은 애굽으로 내려갔습니다. 사래의 빼어난 미모 때문에 죽임을 당할까 두려워 그녀를 놋쇠 궤짝에 숨겼으나, 국경 세관원이 "보석에 매기는 세금을 내라"며 궤를 열자 온 세관이 환한 빛으로 가득 찼고 사래의 아름다움이 드러났습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'lot_parting',
-        title: '벧엘 언덕에서의 양보와 결별',
-        source: '창세기 13:8-13',
-        summary: '"네가 좌하면 내가 우하리라" — 조카 롯에게 먼저 선택권을 양보한 믿음',
-        detail: '애굽에서 큰 재물을 얻어 돌아온 아브람과 롯은 목초지가 좁아 목자들끼리 다투게 되었습니다. 아브람은 "우리는 한 친족이라 다투지 말자"며 벧엘 언덕에서 롯에게 먼저 기름진 소돔 평야를 양보했습니다. 롯이 떠난 후 하나님은 아브람에게 "눈을 들어 동서남북을 바라보라, 보이는 땅을 너와 네 자손에게 주리라" 약속하셨습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'hobah_night_raid',
-        title: '318명 사병과 호바 야간 기습 작전',
-        source: '창세기 14:14-16',
-        summary: '그돌라오멜 4개국 연합군에 사로잡힌 롯을 구하기 위한 단과 호바 추격전',
-        detail: '싯딤 골짜기 전쟁에서 소돔이 패하고 롯이 포로로 끌려갔다는 소식을 들은 아브람은 집에서 기르고 훈련한 사병 318명을 거느리고 단까지 쫓아갔습니다. 밤에 군사를 나누어 야간 기습(Night Ambush)을 감행하여 다메섹 북쪽 호바까지 추격, 롯과 빼앗긴 모든 재물을 완전히 되찾아왔습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'melchizedek_bread_wine',
-        title: '살렘 왕 멜기세덱의 떡과 포도주',
-        source: '창세기 14:18-20 / 히브리서 7:1-3',
-        summary: '전쟁에서 승리하고 돌아오는 아브람을 떡과 포도주로 영접한 지극히 높으신 하나님의 제사장',
-        detail: '승전하고 돌아오는 아브람을 맞이한 이는 예루살렘의 옛 왕이자 제사장인 멜기세덱이었습니다. 그는 떡과 포도주(성찬의 모형)를 가지고 나와 "천지의 주재시요 지극히 높으신 하나님이여 아브람에게 복을 주옵소서" 축복했고, 아브람은 얻은 모든 것의 십분의 일을 멜기세덱에게 드렸습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'shield_reward',
-        title: '언약의 방패와 지극히 큰 상급',
-        source: '창세기 14:21-24 / 15:1',
-        summary: '"네 실 한오라기도 취하지 않겠다" 소돔 왕의 재물을 거절한 결기와 하나님의 방패',
-        detail: '소돔 왕이 "사람은 내게 보내고 물품은 네가 가지라" 제안하자, 아브람은 "소돔 왕 때문에 부자가 되었다는 말을 듣지 않기 위해 네 실 한오라기나 신발 끈 하나도 취하지 않겠다" 단호히 거절했습니다. 이후 하나님의 말씀이 임하여 "아브람아 두려워하지 말라 나는 네 방패요 너의 지극히 큰 상급이니라" 선포하셨습니다.',
-        unlocked: false,
-      },
-      // ── 제3권: 별과 언약 도감 ──
-      {
-        id: 'covenant_flaming_torch',
-        title: '쪼갠 고기와 타는 횃불 언약',
-        source: '창세기 15:9-17',
-        summary: '하늘의 별을 보며 세운 언약, 솔개를 쫓고 어둠 속을 지나가는 타는 횃불',
-        detail: '하나님께서 아브람을 밖으로 이끌고 "하늘을 우러러 뭇별을 셀 수 있나 보라, 네 자손이 이와 같으리라" 약속하셨습니다. 아브람이 이를 믿으니 의로 여기셨고, 3년 된 암소와 암염소와 숫양을 쪼개어 마주 놓았습니다. 해 질 무렵 솔개를 쫓으며 깊은 잠에 빠졌을 때, 연기 나는 화로와 활활 타는 횃불이 쪼갠 고기 사이로 지나가며 일방적이고 영원한 언약이 체결되었습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'hagar_lahairoi',
-        title: '하갈의 눈물과 브엘라해로이',
-        source: '창세기 16:7-14',
-        summary: '학대를 피해 광야로 도망친 여종 하갈을 살피시는 감찰하시는 하나님',
-        detail: '사래의 학대를 견디지 못해 술 길 광야 샘물가로 도망친 여종 하갈. 여호와의 사자가 나타나 "네 자손을 크게 번성하게 하리니 그 이름을 이스마엘이라 하라" 위로하셨습니다. 하갈은 "나를 살피시는 하나님을 내가 뵈었다" 고백하며 그 샘 이름을 브엘라해로이(나를 살피시는 생존자의 우물)라 불렀습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'ishmael_archer',
-        title: '들사람 이스마엘과 활쏘기',
-        source: '창세기 16:12 / 21:20',
-        summary: '모든 사람을 치고 그의 손이 거칠 것이나 하나님이 아이와 함께하시며 활 쏘는 자가 됨',
-        detail: '이스마엘은 들나귀 같은 사람이 되어 거칠게 자라났으나, 하나님께서는 그의 부르짖음을 들으시고 함께하셨습니다. 그는 바란 광야에 거주하며 뛰어난 활 쏘는 자(Archer)로 성장하여 열두 방백의 조상이 되었습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'abraham_new_name',
-        title: '아브라함과 사라의 새 이름과 할례',
-        source: '창세기 17:1-15',
-        summary: '99세에 나타나신 엘 샤다이(전능하신 하나님), 열국의 아비와 어미의 새 언약',
-        detail: '아브람이 99세 되었을 때 하나님께서 "나는 전능한 하나님이라 너는 내 앞에서 완전하라" 말씀하셨습니다. 그의 이름을 높은 아버지인 아브람에서 열국의 아버지인 "아브라함"으로, 사래를 열국의 어머니인 "사라"로 바꾸어주셨고, 대대로 지킬 언약의 표징으로 모든 남자의 몸에 할례를 행하게 하셨습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'abraham_laughter',
-        title: '백 세 사람의 웃음과 이삭의 약속',
-        source: '창세기 17:17-19',
-        summary: '"내년 이맘때에 사라가 아들을 낳으리니 그 이름을 이삭(웃음)이라 하라"',
-        detail: '백 세 된 사람이 어찌 자식을 낳을까, 구십 세 된 사라가 어찌 출산하리요 하며 아브라함은 엎드려 웃었습니다. 그러나 하나님께서는 "아니라 네 아내 사라가 정녕 네게 아들을 낳으리니 그 이름을 이삭(그가 웃을 것이다)이라 하라, 내가 그와 영원한 언약을 세우리라" 분명히 약속하셨습니다.',
-        unlocked: false,
-      },
-      // ── 제4권: 소돔의 불 도감 ──
-      {
-        id: 'three_visitors',
-        title: '마므레 세 나그네의 오찬',
-        source: '창세기 18:1-8',
-        summary: '한낮 뜨거울 때 장막 문에 앉았다가 달려가 엎드려 영접한 세 천사',
-        detail: '날이 뜨거울 때 아브라함이 장막 문에 앉아 있다가 눈을 들어보니 세 사람이 맞은편에 서 있었습니다. 아브라함은 즉시 달려나가 몸을 땅에 굽히고 물을 가져다 발을 씻기며, 사라에게 고운 가루 세 스아로 떡을 굽게 하고 살지고 좋은 송아지를 잡아 엉긴 젖과 우유와 함께 극진히 대접했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'ten_righteous',
-        title: '의인 열 명을 위한 중보 기도',
-        source: '창세기 18:23-33',
-        summary: '소돔을 내려다보는 절벽에서 50명부터 10명까지 여섯 번에 걸쳐 엎드린 기도',
-        detail: '소돔을 멸하시려는 하나님의 뜻을 들은 아브라함은 주 앞에 서서 간절히 매달렸습니다. "의인을 악인과 함께 멸하려 하시나이까?" 50명에서 시작하여 45명, 40명, 30명, 20명, 마침내 "열 명으로 말미암아도 멸하지 아니하리라"는 주님의 긍휼 어린 응답을 받아내었습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'sodom_escape',
-        title: '소돔의 불 심판과 소알 탈출',
-        source: '창세기 19:15-25',
-        summary: '천사들의 손에 이끌려 성 밖으로 달려 나온 롯 가족과 유황불 심판',
-        detail: '동틀 때에 천사들이 롯의 손과 그 아내와 두 딸의 손을 잡아 인도하여 성 밖에 두었습니다. "도망하여 생명을 구존하라 돌아보거나 들에 머물지 말라!" 롯이 작은 성 소알에 이르렀을 때, 여호와께서 하늘 곧 여호와께로부터 유황과 불을 비같이 소돔과 고모라에 내려 그 땅과 모든 주민을 엎어 멸하셨습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'pillar_of_salt',
-        title: '뒤를 돌아본 롯의 아내와 소금기둥',
-        source: '창세기 19:26 / 누가복음 17:32',
-        summary: '돌아보지 말라는 경고를 잊고 남겨둔 소돔의 영화를 돌아보다 굳어진 소금기둥',
-        detail: '유황불이 휘몰아치며 천지가 진동할 때, 롯의 아내는 뒤에 남겨둔 화려한 재물과 미련을 버리지 못하고 성을 돌아보았습니다. 그 순간 거센 소금바람과 유황재 속에 그녀는 굳어져 영원한 경고의 표상인 하얀 소금기둥(Pillar of Salt)이 되었습니다.',
-        unlocked: false,
-      },
-      // ── 제5권: 모리아 도감 ──
-      {
-        id: 'isaac_birth',
-        title: '백 세에 얻은 아들과 사라의 웃음',
-        source: '창세기 21:1-7',
-        summary: '"하나님이 나를 웃게 하시니 듣는 자가 다 나와 함께 웃으리로다"',
-        detail: '여호와께서 말씀하신 대로 사라를 돌보셨고, 아브라함이 백 세가 되었을 때 사라가 임신하여 아들을 낳았습니다. 아브라함은 하나님의 명령대로 팔일 만에 할례를 행하고 그 이름을 이삭이라 지었으며, 사라는 "하나님이 나로 크게 웃게 하셨다"며 기쁨을 찬송했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'beersheba_covenant',
-        title: '브엘세바의 우물과 에셀나무',
-        source: '창세기 21:22-33',
-        summary: '암양 새끼 일곱으로 맺은 맹세의 우물, 영원하신 여호와의 이름을 부름',
-        detail: '그랄 왕 아비멜렉과 군대장관 비골이 찾아와 평화의 언약을 청했습니다. 아브라함은 빼앗겼던 우물에 대해 증거를 삼기 위해 암양 새끼 일곱을 따로 떼어 주며 영구한 소유권을 확정지었습니다. 그곳을 브엘세바(일곱의 우물 / 맹세의 우물)라 부르고, 에셀나무를 심어 영원하신 여호와의 이름을 불렀습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'moriah_journey',
-        title: '모리아 산 사흘 길의 침묵과 순종',
-        source: '창세기 22:1-4',
-        summary: '"네 사랑하는 독자 이삭을 번제로 드리라" — 아침 일찍 나귀 안장을 얹고 출발한 순종',
-        detail: '하나님께서 아브라함을 시험하시려 "네 사랑하는 독자 이삭을 데리고 모리아 땅으로 가서 내가 네게 일러 준 산에서 그를 번제로 드리라" 명하셨습니다. 아브라함은 주저하거나 지체하지 않고 아침 일찍 일어나 번제 나무를 쪼개어 나귀에 싣고, 두 종과 이삭과 함께 사흘 길의 묵직한 침묵을 걸어갔습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'akedah_sacrifice',
-        title: '이삭의 결박(아케다)과 여호와 이레',
-        source: '창세기 22:9-14 / 히브리서 11:17-19',
-        summary: '칼을 멈추신 천사의 음성, 가시덤불에 걸린 숫양과 여호와의 산에서 준비되리라',
-        detail: '모리아 산 정상에 단을 쌓고 나무를 벌여놓은 후, 아브라함은 아들 이삭을 결박하여 제단 나무 위에 얹고 칼을 잡았습니다. 그 순간 하늘에서 "아브라함아 아브라함아! 그 아이에게 손을 대지 말라!" 부르셨습니다. 눈을 들어 살펴보니 수풀에 뿔이 걸린 숫양이 있어 아들을 대신하여 번제로 드렸으니, 그 땅 이름을 "여호와 이레(여호와께서 친히 준비하시리라)"라 불렀습니다.',
-        unlocked: false,
-      },
-      // ── 제6권: 막벨라 도감 ──
-      {
-        id: 'sarah_death',
-        title: '사라의 별세와 헤브론의 애도',
-        source: '창세기 23:1-2',
-        summary: '127세로 기럇아르바 곧 헤브론에서 숨을 거둔 사라를 위해 슬퍼하며 통곡함',
-        detail: '사라가 127세를 살고 가나안 땅 헤브론에서 별세하였습니다. 갈대아 우르에서부터 하란과 애굽, 네게브와 브엘세바에 이르기까지 평생을 믿음의 길에 동행했던 사랑하는 아내를 잃은 아브라함은 깊은 슬픔 속에 들어가 눈물을 흘리며 애도하였습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'machpelah_purchase',
-        title: '막벨라 굴 매입과 은 400세겔',
-        source: '창세기 23:3-20',
-        summary: '헷 족속 에브론에게 상인의 통용 은 400세겔을 달아주고 산 약속의 땅 첫 소유지',
-        detail: '아브라함은 헷 족속 장로들 앞에서 "나는 당신들 중에 나그네요 거류하는 자이니 매장할 소유지를 달라" 청했습니다. 헷 족속과 소할의 아들 에브론이 밭과 굴을 거저 주겠다고 사양하는 척하자, 아브라함은 주저 없이 당시 상인들의 통용 은 400세겔을 정확히 달아주어 막벨라 밭과 굴과 둘레의 모든 나무를 자신의 영구한 매장지 소유로 확정하였습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'eliezer_oath',
-        title: '엘리에셀의 거룩한 맹세',
-        source: '창세기 24:1-9',
-        summary: '"내 고향 내 족속에게로 가서 아들 이삭을 위하여 아내를 택하라" 환도뼈 아래 손을 넣은 맹세',
-        detail: '노년의 아브라함은 모든 소유를 맡은 가장 늙은 종 엘리에셀을 불러 허벅지(환도뼈) 아래 손을 넣고 하늘의 하나님 여호와를 가리켜 맹세하게 했습니다. 가나안 여인이 아닌 아브라함의 고향 메소포타미아로 가서 이삭의 신부를 데려오되, 여인이 오려 하지 않더라도 아들을 그 땅으로 데려가지 말라 명했습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'rebekah_well',
-        title: '나홀 성 우물가의 리브가',
-        source: '창세기 24:10-27',
-        summary: '낙타 10필에게도 물을 흡족히 길어 마시운 어질고 순결한 신부 리브가와의 만남',
-        detail: '낙타 10필에 보물을 싣고 메소포타미아 나홀의 성 우물가에 이른 엘리에셀은 "물을 달라 할 때 나뿐 아니라 낙타에게도 마시우게 하는 여인이 주께서 이삭을 위해 정하신 자니이다" 기도했습니다. 기도가 끝나기도 전에 물동이를 이고 온 리브가가 자청하여 물구유에 물을 부어 낙타 모두를 배불리 마시우니, 엘리에셀은 하나님께서 순적한 길을 주셨음을 깨닫고 금 코걸이와 손목고리를 선사하며 감사 예배를 드렸습니다.',
-        unlocked: false,
-      },
-      {
-        id: 'abraham_death',
-        title: '아브라함의 평안한 안식과 유업',
-        source: '창세기 25:7-10 / 히브리서 11:13-16',
-        summary: '175세, 나이가 높고 늙어서 기운이 다하여 열조에게로 돌아감. 이삭과 이스마엘이 함께 안장함',
-        detail: '아브라함은 175세의 나이에 만족하고 평안히 숨을 거두어 자기 백성에게로 돌아갔습니다. 그의 아들들인 이삭과 이스마엘이 함께 헤브론 막벨라 굴 사라의 곁에 아버지를 정중히 장사하였습니다. 갈대아 우르에서 시작된 믿음의 순종은 하늘 본향을 향한 영원한 유업이 되어 오늘날 모든 믿는 자의 본이 되었습니다.',
-        unlocked: false,
-      },
-    ] as CodexEntry[],
+    entries: createCodexEntries(),
   };
-  private codexItemRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  codexItemRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  chapterBookRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  chapterItemRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  /** 끝낸 장 ("권:장") — 장 선택에서 ✓ 표시 */
+  doneChapters: ReadonlySet<string> = new Set();
+  /** 장 선택을 열 때의 '지금 하던 장' (이어하기 표시) */
+  resumeAt: { book: number; chapter: number } | null = null;
+  /** 첫 플레이 안내 상태 (hudFrame 이 진행) */
+  readonly onboardEls: HTMLCanvasElement[] = [];
+  onboard: OnboardState = newOnboard(onboardSeen());
+  /** 지금까지 한 선택 (id → 갈래 이름) — 장 선택에 요약으로 보인다 */
+  picks: ReadonlyMap<string, string> = new Map();
+  chapterPanelRect = { x: 0, y: 0, w: 0, h: 0 };
+  chapterCloseRect = { x: 0, y: 0, w: 0, h: 0 };
+  pausePanelRect = { x: 0, y: 0, w: 0, h: 0 };
+  pauseItemRects: { x: number; y: number; w: number; h: number; index: number }[] = [];
+  helpPanelRect = { x: 0, y: 0, w: 0, h: 0 };
+
+  /** 챕터 선택 화면에서 장을 골라 불러올 때 콜백 */
+  onChapterSelectLoad?: (bookIndex: number, chapterIndex: number) => void;
+  /** 일시정지 메뉴 항목 실행 콜백 */
+  onPauseMenuSelect?: (index: number) => void;
   /** 음성 칩 사운드 발생 콜백 */
   onBlip?: (speaker: string) => void;
   /** 시계 패널의 날짜 대신 쓸 글 (방주 안: "비 n일째") */
@@ -414,10 +130,13 @@ export class Hud {
   goal: string | null = null;
   /** 목표 카테고리 (우상단 퀘스트 패널 헤더: 예: "주요 임무", "제1권 · 갈대아 우르") */
   goalCategory: string | null = null;
+  /** 컷신(자막·제목 띠) 동안 목표 패널을 가리는 남은 시간(초). 자막 사이의 짧은 빈틈에 패널이 깜빡이지 않게 조금 더 유지한다 */
+  goalHideLeft = 0;
   /** 목표 진행도 (우상단 퀘스트 패널 진행바 및 수치) */
   goalProgress: GoalProgress | null = null;
   /** 좌상단 고대 메소포타미아 미니맵 */
   minimap = {
+    label: '우르',
     visible: true,
     playerX: 0,
     playerZ: 0,
@@ -432,17 +151,18 @@ export class Hud {
       { id: 'gate', label: '성문', x: 22.0, z: 3.5, color: '#8f5f3e' },
     ],
   };
+  /** 월드 HUD 공중에 띄울 목표 가이드 핀 위치 */
+  targetMarker: { x: number; y: number; z: number } | null = null;
   /** 할 일 아래 작은 조작 안내 (첫날) */
   hint: string | null = null;
   /** 안내 글을 줄로 나눈 결과 (글이 바뀔 때만 다시 나눔) */
-  private hintSrc: string | null = null;
-  private hintLines: string[] = [];
-  private readonly hsBuf: HTMLCanvasElement[] = [];
+  hintSrc: string | null = null;
+  hintLines: string[] = [];
+  readonly hsBuf: HTMLCanvasElement[] = [];
   /** 할 일 글을 폭에 맞춰 나눈 결과 (글·폭·글자 크기·자리가 바뀔 때만 다시 나눔) */
-  private goalSrc: string | null = null;
-  private goalKey = '';
-  private goalLines: string[] = [''];
-  private readonly gsBuf: HTMLCanvasElement[] = [];
+  goalSrc: string | null = null;
+  goalLines: string[] = [''];
+  readonly gsBuf: HTMLCanvasElement[] = [];
   /** 시계 패널까지 숨김 (컷신 중) */
   hideClock = false;
   /** 터치 기기: 키보드 안내(Space 병기 등)를 빼고 터치 안내를 씀 */
@@ -450,28 +170,31 @@ export class Hud {
   /** 화면 픽셀 비율 (고해상도 폰에서 글자·패널을 또렷하게 그림) */
   private dpr = 1;
   /** 캔버스 CSS 높이 (터치 단추 무리의 UI 자리를 셀 때) */
-  private cssH = 0;
+  cssH = 0;
+  cssW = 0;
   /** 플레이어 자리 (화면 밖 할 일 화살표: 같은 공간 안의 대상만 — 방·아라랏은 멀리 떨어진 좌표) */
   readonly markerFrom = { x: 0, z: 0 };
   /** 할 일 패널 반짝임 (진행이 한 칸 나아갈 때 1 → 0) */
   goalFlash = 0;
   /** 화면 위 가운데 '완료!' 띠 */
-  private banner: { title: string; sub: string; age: number; compact?: boolean } | null = null;
+  banner: { title: string; sub: string; age: number; compact?: boolean } | null = null;
   /** 할 일을 하나 마쳤을 때 위 가운데에 띄움 (sub = 마친 일) */
   celebrate(title: string, sub: string, compact = false) { this.banner = { title, sub, age: 0, compact }; }
-  private time = 0;
+  time = 0;
   /** 프롬프트가 새로 떴던 횟수 (SPACE_HINT_PROMPTS 번까지 'Space' 병기)와 지금 떠 있는지 */
-  private promptSeen = 0;
-  private promptOn = false;
+  promptSeen = 0;
+  promptOn = false;
   /** 이번 프레임에 그린 상호작용 프롬프트 상자 (없으면 null) */
-  private promptRect: { x: number; y: number; w: number; h: number } | null = null;
+  promptRect: { x: number; y: number; w: number; h: number } | null = null;
+  /** promptRect 가 가리키는 재사용 상자 (프레임마다 새 객체를 만들지 않으려고) */
+  readonly promptRectBuf = { x: 0, y: 0, w: 0, h: 0 };
   /** UI 좌표에서 화면 픽셀로 가는 배율 */
-  private d = 1;
+  d = 1;
 
   /** 격자 맞춤 전의 원래 fillRect (장치 픽셀 좌표를 /d 해서 넘김 — fillDev) */
   private readonly rawFill: (x: number, y: number, w: number, h: number) => void;
 
-  constructor(parent: HTMLElement, private readonly project: (x: number, y: number, z: number) => { x: number; y: number }) {
+  constructor(parent: HTMLElement, readonly project: (x: number, y: number, z: number) => { x: number; y: number }) {
     Object.assign(this.canvas.style, { pointerEvents: 'none', imageRendering: 'pixelated' });
     parent.appendChild(this.canvas);
     const g = this.ctx = this.canvas.getContext('2d')!;
@@ -489,10 +212,16 @@ export class Hud {
    * 캔버스는 화면 해상도(내부 × 월드 배율 × dpr). 패널·아이콘은 별도의 UI 배율로 그리고,
    * 글자는 그 배율의 화면 px 크기로 직접 만들어 1:1 로 찍는다 (배율·반올림 규칙은 uiScale.ts).
    */
+
+  /** 화면 가장자리 어둡게 하는 그라디언트 캐시 (hudFrame.drawVignette 가 크기가 바뀔 때만 다시 만듦) */
+  vignette: CanvasGradient | null = null;
+  vignetteW = 0;
+  vignetteH = 0;
+
   resize(w: number, h: number, scale: number) {
     const s = hudScale(w, h, scale, typeof devicePixelRatio === 'number' ? devicePixelRatio : 1);
     if (s.d !== this.d || s.dpr !== this.dpr) this.textRevN++; // 터치 최소 크기(CSS px)는 배율에 따라 UI 크기가 달라짐
-    this.dpr = s.dpr; this.cssH = s.cssH;
+    this.dpr = s.dpr; this.cssH = s.cssH; this.cssW = s.cssW;
     this.w = s.uiW; this.h = s.uiH; this.d = s.d;
     this.canvas.width = s.canvasW;
     this.canvas.height = s.canvasH;
@@ -549,14 +278,14 @@ export class Hud {
   }
 
   /** 장치 픽셀 사각형 [x0,x1)×[y0,y1) 을 칠함 (frame 으로 구한 겹 그리기용) */
-  private fillDev(color: string, x0: number, y0: number, x1: number, y1: number) {
+  fillDev(color: string, x0: number, y0: number, x1: number, y1: number) {
     if (x1 <= x0 || y1 <= y0) return;
     const d = this.d;
     this.ctx.fillStyle = color;
     this.rawFill(x0 / d, y0 / d, (x1 - x0) / d, (y1 - y0) / d);
   }
   /** 여러 겹 그림의 틀 (uiScale.frame, 지금 배율) */
-  frame(x: number, y: number, w: number, h: number): Frame { return frame(x, y, w, h, this.d); }
+  frame(x: number, y: number, w: number, h: number): Frame { return pooledFrame(x, y, w, h, this.d); }
   /** 틀 f 의 네 가장자리에서 각각 l·t·r·b 칸 들어간 사각형을 칠함 (네 변 두께가 늘 같음) */
   fillIn(color: string, f: Frame, l: number, t: number, r: number, b: number) {
     this.fillDev(color, f.L(l), f.T(t), f.R(r), f.B(b));
@@ -587,6 +316,11 @@ export class Hud {
     this.activeDialogue = null;
   }
 
+  /** 좌상단 미니맵 지명 라벨 설정 */
+  setMinimapLabel(name: string): void {
+    this.minimap.label = name;
+  }
+
   /** 획득 알림. 같은 key가 떠 있으면 개수를 합침 */
   toast(key: string, iconId: string | null, name: string, count = 0, life?: number) {
     // 시스템 알림(오디오 볼륨, 저장, 시스템 에러, 카운트 획득 등)을 제외한 스토리 대사 및 안내는
@@ -615,7 +349,7 @@ export class Hud {
         };
         if (knownSpeakers[key]) speaker = knownSpeakers[key];
       }
-      this.showDialogue(speaker, text, life ?? (speaker ? 4.5 : 3.8));
+      this.showDialogue(speaker, text, speaker ? (life ?? 4.5) : narrationLife(life ?? 3.8, text.length));
       return;
     }
 
@@ -627,14 +361,25 @@ export class Hud {
     if (this.toasts.length > 3) this.toasts.shift();
   }
 
+  /** 떠 있는 알림을 모두 지움 (장이 바뀔 때 이전 장의 알림이 남지 않게) */
+  clearToasts() { this.toasts.length = 0; }
+
   /** 떠 있는 알림을 지움 (다 이룬 목표 등) */
-  clearToast(key: string) { this.toasts = this.toasts.filter((t) => t.key !== key); }
+  clearToast(key: string) {
+    const ts = this.toasts;
+    let j = 0;
+    for (let i = 0; i < ts.length; i++) if (ts[i].key !== key) ts[j++] = ts[i];
+    ts.length = j;
+  }
 
   /** 머리 위 짧은 말풍선 (follow를 주면 대상을 따라감) */
   say(text: string, y: number, follow: () => { x: number; z: number }, life = 1.8, delay = 0) {
     const p = follow();
-    this.speech = this.speech.filter((s) => s.follow !== follow);
-    this.speech.push({ x: p.x, y, z: p.z, text, age: 0, life, delay, follow });
+    const sp = this.speech;
+    let j = 0;
+    for (let i = 0; i < sp.length; i++) if (sp[i].follow !== follow) sp[j++] = sp[i];
+    sp.length = j;
+    sp.push({ x: p.x, y, z: p.z, text, age: 0, life, delay, follow });
   }
 
   get uiW() { return this.w; }
@@ -647,7 +392,7 @@ export class Hud {
   private edgeSrc: Insets | null = null;
   private edgeScale = 0;
   private edgeUi: Insets = NO_INSETS;
-  private get edge(): Insets {
+  get edge(): Insets {
     const css = safeAreaCss(), s = this.cssScale;
     if (css !== this.edgeSrc || s !== this.edgeScale) { this.edgeSrc = css; this.edgeScale = s; this.edgeUi = toUiInsets(css, s); }
     return this.edgeUi;
@@ -658,307 +403,10 @@ export class Hud {
   }
 
 
-  draw(dt: number, prompt: Prompt | null) {
-    this.time += dt;
-    this.goalFlash = Math.max(0, this.goalFlash - dt * 1.2);
-    this.promptRect = null;
-    const g = this.ctx;
-    g.setTransform(1, 0, 0, 1, 0, 0);
-    g.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    g.setTransform(this.d, 0, 0, this.d, 0, 0);
-    g.imageSmoothingEnabled = false;
+  draw(dt: number, prompt: Prompt | null): void { drawFrame(this, dt, prompt); }
 
-    // 컷신 등으로 게임 UI 가 꺼지면 '완료!' 띠도 버림 (띠 시간은 그릴 때만 흐르므로, 두면 컷신이 끝난 뒤 다시 나타남)
-    if (!this.gameUi) this.banner = null;
-    const e = this.edge;
-    this.toastRight = this.w - 8 - e.right;
-    if (this.gameUi) {
-      // ── 미니맵 (왼쪽 위) ──
-      if (this.minimap.visible && !this.letterbox) {
-        this.drawMinimap(8 + e.left, 8 + e.top);
-      }
 
-      // ── 할 일 (오른쪽 위) ──
-      if (!this.hideClock && this.goal) this.goalPanel(this.goal, 8 + e.top);
 
-      // ── 알림 토스트 (왼쪽 아래, 새 것이 아래) ──
-      { // 지난 알림 빼기 (새 배열을 만들지 않고 제자리에서)
-        const ts = this.toasts;
-        let j = 0;
-        for (let i = 0; i < ts.length; i++) { const t = ts[i]; t.age += dt; if (t.age < t.life) ts[j++] = t; }
-        ts.length = j;
-      }
-      // 터치 기기: 왼쪽 아래는 이동 스틱이 덮으므로 위 가운데로 (아래로 쌓임)
-      if (this.touch) this.toastsTop(dt, e.top, e.left + Math.ceil(TOUCH_GUIDE_BTN_CSS / this.cssScale));
-      let ty = this.h - 12 - e.bottom;
-      for (let i = this.toasts.length - 1; !this.touch && i >= 0; i--) { // 터치는 위에서 이미 그림
-        const t = this.toasts[i];
-        const text = t.count ? `+${t.count} ${t.name}` : t.name;
-        const label = this.txt(text, 13, INK);
-        const tw = Math.ceil(this.tw(label)) + 14, th = 26 + this.grow(13);
-        ty -= th;
-        // 들어올 때 계단식으로 밀려 들어오고, 나갈 때 두 단계로 흐려짐
-        const slide = t.age < 0.2 ? Math.round((1 - t.age / 0.2) * 4) * -(tw / 4) : 0;
-        const fade = t.life - t.age;
-        g.globalAlpha = fade < 0.2 ? 0.35 : fade < 0.45 ? 0.7 : 1;
-        const tx = 8 + e.left + slide;
-        this.panel(tx, ty, tw, th);
-        this.put(label, tx + 7, centerY(label, ty + 5, ty + th - 6));
-        g.globalAlpha = 1;
-        ty -= 3;
-      }
-
-      // ── 할 일 완료 띠 ──
-      if (this.banner) {
-        const b = this.banner; b.age += dt;
-        if (b.age > 2.8) this.banner = null; else this.drawBanner(b);
-      }
-
-      // ── 상호작용 프롬프트 ──
-      if (prompt) {
-        if (!this.promptOn) { this.promptOn = true; this.promptSeen++; }
-        this.prompt(prompt, !this.touch && this.promptSeen <= SPACE_HINT_PROMPTS);
-      } else this.promptOn = false;
-    }
-
-    // ── 하트 (쓰다듬기) — 프롬프트 위에 그려서 가려지지 않게 ──
-    { const hs = this.hearts; let j = 0; for (let i = 0; i < hs.length; i++) { const h = hs[i]; h.age += dt; if (h.age < 1.1) hs[j++] = h; } hs.length = j; }
-    for (const h of this.hearts) {
-      const p = this.project(h.x, h.y, h.z);
-      this.heartIcon(Math.round(p.x) - 3, Math.round(p.y - 6 - Math.floor(h.age * 18)), h.age > 0.8);
-    }
-
-    // ── 말풍선 (동료 양 "음메~") ──
-    { const sp = this.speech; let j = 0; for (let i = 0; i < sp.length; i++) { const s = sp[i]; s.age += dt; if (s.age < s.delay + s.life) sp[j++] = s; } sp.length = j; }
-    for (const s0 of this.speech) {
-      if (s0.age < s0.delay) continue; // 앞 줄이 끝난 뒤에 뜨는 말풍선
-      const sp = s0, age = s0.age - s0.delay;
-      const at = sp.follow ? sp.follow() : sp;
-      const p = this.project(at.x, sp.y, at.z);
-      const t = this.txt(sp.text, 11, INK);
-      const w = Math.ceil(this.tw(t)) + 10, h = 17 + this.grow(11);
-      const x = Math.round(p.x - w / 2);
-      let y = Math.round(p.y - h - 4 - Math.min(3, Math.floor(age * 10)));
-      // 상호작용 안내 상자와 겹치면 그 위로 비킴 (꼬리는 말하는 이를 가리키지 못하니 생략)
-      const pr = this.promptRect as { x: number; y: number; w: number; h: number } | null; // 위에서 null 로 비웠다가 prompt() 가 채우므로 TS 좁힘을 풂
-      const dodge = !!pr && x < pr.x + pr.w && x + w > pr.x && y < pr.y + pr.h && y + h + 3 > pr.y;
-      if (dodge && pr) y = Math.max(4, pr.y - h - 3);
-      g.globalAlpha = age > sp.life - 0.3 ? 0.5 : 1;
-      const bf = this.frame(x, y, w, h);
-      this.fillIn(OUTLINE, bf, 1, 0, 1, 0); this.fillIn(OUTLINE, bf, 0, 1, 0, 1);
-      this.fillIn(PAPER, bf, 1, 1, 1, 1);
-      g.fillStyle = OUTLINE;
-      if (!dodge) { g.fillRect(Math.round(p.x) - 1, y + h, 3, 1); g.fillRect(Math.round(p.x), y + h + 1, 1, 2); }
-      this.put(t, x + 5, centerY(t, y + 2, y + h - 3));
-      g.globalAlpha = 1;
-    }
-
-    // ── 컷신: 레터박스와 자막 ──
-    if (this.letterbox > 0) {
-      const bh = Math.round(this.h * 0.12 * this.letterbox);
-      g.fillStyle = '#0a0806';
-      g.fillRect(0, 0, this.w, bh);
-      g.fillRect(0, this.h - bh, this.w, bh);
-    }
-    if (this.fade > 0) {
-      g.globalAlpha = Math.min(1, this.fade);
-      g.fillStyle = '#120c08';
-      g.fillRect(0, 0, this.w, this.h);
-      g.globalAlpha = 1;
-    }
-    if (this.screenFlash) {
-      this.screenFlash.age += dt;
-      const progress = this.screenFlash.age / this.screenFlash.duration;
-      if (progress >= 1) {
-        this.screenFlash = null;
-      } else {
-        const curAlpha = (1 - progress) * this.screenFlash.a;
-        g.globalAlpha = Math.min(1, Math.max(0, curAlpha));
-        g.fillStyle = `rgb(${this.screenFlash.r},${this.screenFlash.g},${this.screenFlash.b})`;
-        g.fillRect(0, 0, this.w, this.h);
-        g.globalAlpha = 1;
-      }
-    }
-    if (this.caption) this.drawCaption(this.caption);
-    if (this.cinematicTitle) this.drawCinematicTitle(this.cinematicTitle);
-    this.drawDialogue(dt);
-    if (this.dialogue) this.drawDialoguePanel(this.dialogue);
-    if (this.choice) this.drawChoicePanel(this.choice);
-    if (this.codex.open) this.drawCodex();
-    if (this.chapterSelect.open) this.drawChapterSelect();
-    if (this.pauseMenu.open) this.drawPauseMenu();
-  }
-
-  private drawCinematicTitle(titleText: string): void {
-    const g = this.ctx;
-    const lines = titleText.split('\n');
-    const base = 22;
-    const lh = 32;
-    const totalH = lines.length * lh + 20;
-    const maxW = Math.max(...lines.map((l) => this.tw(this.txt(l, base, '#ffd700')))) + 40;
-    const x = Math.round(this.w / 2 - maxW / 2);
-    const y = Math.round(this.h / 2 - totalH / 2);
-
-    g.fillStyle = 'rgba(10, 8, 6, 0.75)';
-    g.fillRect(0, y - 10, this.w, totalH + 20);
-
-    lines.forEach((l, i) => {
-      const isHeader = i === 0 && lines.length > 1;
-      const size = isHeader ? 14 : base;
-      const col = isHeader ? '#d0c8b0' : '#ffe484';
-      const c = this.txt(l, size, col);
-      const lx = Math.round(this.w / 2 - this.tw(c) / 2);
-      const ly = y + 10 + i * lh;
-      this.put(c, lx, ly);
-    });
-  }
-
-  /** 주인공 캐릭터 아래 대사 패널 렌더링 ("대사가 주인공 캐릭터 아래쪽으로 좀 아래에 좀크게 나오게") */
-  private drawDialogue(dt: number): void {
-    if (!this.activeDialogue) return;
-    const d = this.activeDialogue;
-    d.age += dt;
-    if (d.age >= d.life) {
-      this.activeDialogue = null;
-      return;
-    }
-
-    const g = this.ctx;
-    const e = this.edge;
-
-    // 1) 주인공 캐릭터의 화면 투영 좌표 (markerFrom)
-    const p = this.project(this.markerFrom.x, 0, this.markerFrom.z);
-
-    // 2) 대사 글자 크기 (16px) 및 줄바꿈
-    const baseFontSize = 16;
-    const cleanText = d.text.trim();
-    const maxInnerW = Math.min(520, Math.round(this.w * 0.82) - 40);
-    const lines = wrapLines(cleanText, maxInnerW, (s) => this.tw(this.txt(s, baseFontSize, INK)), 3);
-
-    const lineElements = lines.map((l) => this.txt(l, baseFontSize, INK));
-    const maxTextW = Math.max(...lineElements.map((el) => this.tw(el)));
-
-    let speakerW = 0;
-    let badgeTextEl: HTMLCanvasElement | null = null;
-    if (d.speaker) {
-      badgeTextEl = this.txt(d.speaker, 13, '#ffe484', '#1f1308');
-      speakerW = this.tw(badgeTextEl) + 24;
-    }
-
-    const panelW = Math.max(Math.max(speakerW + 36, 240), Math.min(maxInnerW + 36, Math.ceil(maxTextW) + 36));
-    const lineH = 24;
-    const textH = lines.length * lineH;
-    const padTop = d.speaker ? 18 : 12;
-    const padBottom = 12;
-    const panelH = padTop + textH + padBottom;
-
-    // 3) X 좌표: 캐릭터 수평 중심에 배치, 화면 가장자리 벗어나지 않게 클램핑
-    let panelX = Math.round(p.x - panelW / 2);
-    const minX = 20 + e.left;
-    const maxX = this.w - panelW - 20 - e.right;
-    panelX = Math.max(minX, Math.min(maxX, panelX));
-
-    // 4) Y 좌표: 주인공 캐릭터의 아래쪽으로 좀 아래에, 하단에서 어느 정도 떨어진 곳
-    // p.y = 발 위치. 캐릭터 아래쪽으로 40px
-    const pBelowChar = Math.round(p.y + 40);
-    // 화면 하단(this.h - e.bottom)에서 적어도 48px 이상 띄워 하단 여유 확보
-    const maxPanelY = this.h - panelH - 48 - e.bottom;
-    // 캐릭터가 화면 중앙 근처일 때 자연스러운 위치(0.58*h)와 캐릭터 아래쪽 위치 중 알맞은 곳 선택
-    const preferredY = Math.max(pBelowChar, Math.round(this.h * 0.58));
-    let panelY = preferredY;
-    if (panelY > maxPanelY) panelY = maxPanelY;
-    if (panelY < 32 + e.top) panelY = 32 + e.top;
-
-    // 5) 부드러운 페이드인 / 페이드아웃 및 팝업 애니메이션
-    const fadeIn = Math.min(1, d.age / 0.15);
-    const fadeOut = Math.min(1, (d.life - d.age) / 0.35);
-    const alpha = fadeIn * fadeOut;
-    if (alpha <= 0) return;
-
-    g.save();
-    g.globalAlpha = alpha;
-
-    // 위로 살짝 부드럽게 안착
-    const slideOffset = Math.round((1 - fadeIn) * 4);
-    const curY = panelY + slideOffset;
-
-    // 6) 대화 패널 본체 (우아한 양피지/원목 패널)
-    this.panel(panelX, curY, panelW, panelH);
-
-    // 7) 캐릭터를 향하는 말풍선 꼬리 포인터
-    const pointerX = Math.max(panelX + 24, Math.min(panelX + panelW - 24, Math.round(p.x)));
-    if (curY > p.y + 10) {
-      g.fillStyle = WOOD;
-      g.fillRect(pointerX - 4, curY - 3, 8, 3);
-      g.fillRect(pointerX - 2, curY - 5, 4, 2);
-      g.fillStyle = CREAM;
-      g.fillRect(pointerX - 2, curY - 2, 4, 2);
-    }
-
-    // 8) 화자 뱃지 (있을 때만)
-    if (d.speaker && badgeTextEl) {
-      const bw = Math.round(this.tw(badgeTextEl)) + 18;
-      const bh = 22;
-      const bx = panelX + 14;
-      const by = curY - 10;
-
-      const f = this.frame(bx, by, bw, bh);
-      this.fillIn(OUTLINE, f, 1, 0, 1, 0);
-      this.fillIn(OUTLINE, f, 0, 1, 0, 1);
-      this.fillIn('#382315', f, 1, 1, 1, 1);
-      this.put(badgeTextEl, bx + 9, centerY(badgeTextEl, by, by + bh - 1));
-    }
-
-    // 9) 본문 텍스트 (16px, INK)
-    const textStartX = panelX + 18;
-    const textStartY = curY + padTop + 2;
-
-    lineElements.forEach((lineEl, idx) => {
-      this.put(lineEl, textStartX, textStartY + idx * lineH);
-    });
-
-    g.restore();
-  }
-
-  private drawDialoguePanel(d: { speaker: string; text: string; portrait: string | null }): void {
-    const e = this.edge;
-    const panelW = Math.min(600, Math.round(this.w * 0.92));
-    const panelH = 96;
-    const x = Math.round((this.w - panelW) / 2);
-    const y = this.h - panelH - 16 - e.bottom;
-
-    this.panel(x, y, panelW, panelH);
-
-    // 화자 뱃지
-    if (d.speaker) {
-      const badgeText = this.txt(d.speaker, 12, '#ffffff');
-      const bw = Math.round(this.tw(badgeText)) + 18;
-      const bh = 22;
-      const bx = x + 12;
-      const by = y - 12;
-
-      const f = this.frame(bx, by, bw, bh);
-      this.fillIn(OUTLINE, f, 1, 0, 1, 0);
-      this.fillIn(OUTLINE, f, 0, 1, 0, 1);
-      this.fillIn('#3d2817', f, 1, 1, 1, 1);
-      this.put(badgeText, bx + 9, centerY(badgeText, by, by + bh - 1));
-    }
-
-    // 본문 텍스트 (줄바꿈)
-    const contentX = x + 20;
-    const contentY = y + 18;
-    const maxTextW = panelW - 40;
-    const lines = wrapLines(d.text, maxTextW, (s) => this.tw(this.txt(s, 14, INK)), 3);
-
-    lines.forEach((l, idx) => {
-      const t = this.txt(l, 14, INK);
-      this.put(t, contentX, contentY + idx * 22);
-    });
-
-    // 다음 대사 넘기기 힌트
-    const advanceHint = this.txt('▼ Enter / 클릭', 10, INK_SOFT);
-    this.put(advanceHint, x + panelW - this.tw(advanceHint) - 16, y + panelH - 18);
-  }
 
   showChoice(prompt: string, options: DialogueOption[], onSelect: (index: number) => void): void {
     this.choice = {
@@ -969,216 +417,17 @@ export class Hud {
     };
   }
 
-  handleChoiceClick(x: number, y: number): boolean {
-    if (!this.choice) return false;
-    for (let i = 0; i < this.choiceOptionRects.length; i++) {
-      const r = this.choiceOptionRects[i];
-      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
-        this.choice.selectedIndex = i;
-        const cb = this.choice.onSelect;
-        this.choice = null;
-        cb(i);
-        return true;
-      }
-    }
-    return true; // 모달 바깥 클릭 시에도 월드 이동 삼킴
-  }
+  handleChoiceClick(...a: DropFirst<Parameters<typeof handleChoiceClick>>): ReturnType<typeof handleChoiceClick> { return handleChoiceClick(this, ...a); }
 
-  private drawChoicePanel(ch: DialogueChoice): void {
-    const g = this.ctx;
-    const e = this.edge;
-    this.choiceOptionRects = [];
 
-    const optH = 44;
-    const headerH = 32;
-    const footerH = 20;
-    const panelW = Math.min(580, Math.round(this.w * 0.94));
-    const panelH = headerH + ch.options.length * optH + footerH + 8;
-    const x = Math.round((this.w - panelW) / 2);
-    // 대사창 바로 위에 가지런히 배치
-    const y = Math.max(16, this.h - panelH - (this.dialogue ? 116 : 28) - e.bottom);
 
-    this.panel(x, y, panelW, panelH);
 
-    // 제목/상황 프롬프트 바
-    const pTitle = this.txt(ch.prompt || '아브람의 대답 선택', 11, '#ffffff');
-    const bw = Math.round(this.tw(pTitle)) + 20;
-    const bh = 22;
-    const bx = x + 14;
-    const by = y - 11;
-    const f = this.frame(bx, by, bw, bh);
-    this.fillIn(OUTLINE, f, 1, 0, 1, 0);
-    this.fillIn(OUTLINE, f, 0, 1, 0, 1);
-    this.fillIn('#4a2e1b', f, 1, 1, 1, 1);
-    this.put(pTitle, bx + 10, centerY(pTitle, by, by + bh - 1));
+  handleChapterSelectClick(...a: DropFirst<Parameters<typeof handleChapterSelectClick>>): ReturnType<typeof handleChapterSelectClick> { return handleChapterSelectClick(this, ...a); }
 
-    // 선택지 리스트
-    const startY = y + headerH;
-    ch.options.forEach((opt, idx) => {
-      const isSel = idx === ch.selectedIndex;
-      const oy = startY + idx * optH;
-      const ox = x + 14;
-      const ow = panelW - 28;
-      const oh = optH - 6;
+  handlePauseMenuClick(...a: DropFirst<Parameters<typeof handlePauseMenuClick>>): ReturnType<typeof handlePauseMenuClick> { return handlePauseMenuClick(this, ...a); }
 
-      this.choiceOptionRects.push({ x: ox, y: oy, w: ow, h: oh });
+  handleHelpClick(...a: DropFirst<Parameters<typeof handleHelpClick>>): ReturnType<typeof handleHelpClick> { return handleHelpClick(this, ...a); }
 
-      // 카드 배경
-      g.fillStyle = isSel ? '#fff7e4' : '#ede2ce';
-      g.fillRect(ox, oy, ow, oh);
-
-      // 테두리
-      g.strokeStyle = isSel ? '#d48236' : '#c8b69c';
-      g.lineWidth = isSel ? 2 : 1;
-      g.strokeRect(ox, oy, ow, oh);
-
-      // 선택 인디케이터
-      if (isSel) {
-        g.fillStyle = '#d48236';
-        g.fillRect(ox, oy, 4, oh);
-      }
-
-      // 뱃지 (예: [미드라시 풍자] / [성경적 직언])
-      let textOffsetX = ox + (isSel ? 16 : 12);
-      if (opt.badge) {
-        const badgeColor = opt.badgeColor || (idx === 0 ? '#b85422' : '#28629e');
-        const bText = this.txt(opt.badge, 10, '#ffffff');
-        const bW = Math.round(this.tw(bText)) + 12;
-        const bH = 18;
-        const bY = oy + Math.round((oh - bH) / 2);
-        g.fillStyle = badgeColor;
-        g.fillRect(textOffsetX, bY, bW, bH);
-        this.put(bText, textOffsetX + 6, bY + 3);
-        textOffsetX += bW + 8;
-      }
-
-      // 옵션 본문
-      const optText = this.txt(opt.text, 12, isSel ? '#2a1a10' : INK);
-      this.put(optText, textOffsetX, oy + Math.round((oh - 14) / 2));
-    });
-
-    // 하단 키 안내
-    const hintText = this.txt('[↑/↓] 선택  ·  [1, 2] 단축키  ·  [Enter / 클릭] 결정', 10, INK_SOFT);
-    this.put(hintText, x + Math.round((panelW - this.tw(hintText)) / 2), y + panelH - 17);
-  }
-
-  private drawChapterSelect(): void {
-    const g = this.ctx;
-    g.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    g.fillRect(0, 0, this.w, this.h);
-
-    const mw = Math.min(640, Math.round(this.w * 0.94));
-    const mh = Math.min(460, Math.round(this.h * 0.88));
-    const mx = Math.round((this.w - mw) / 2);
-    const my = Math.round((this.h - mh) / 2);
-
-    this.panel(mx, my, mw, mh);
-
-    const title = this.txt('성경 대서사 권 / 장 선택 (Chapter Select)', 16, INK);
-    this.put(title, mx + 20, my + 14);
-
-    // 8개 권 탭 (상단 가로)
-    const bookNames = ['인트로', '1권: 불·팥죽', '2권: 약속의 땅', '3권: 별·언약', '4권: 소돔의 불', '5권: 모리아', '6권: 막벨라', '아우트로'];
-    const tabY = my + 42;
-    const tabW = Math.floor((mw - 40) / bookNames.length);
-
-    bookNames.forEach((name, idx) => {
-      const isSel = idx === this.chapterSelect.bookIndex;
-      const tx = mx + 20 + idx * tabW;
-      const col = isSel ? '#ffffff' : INK_SOFT;
-      const bg = isSel ? '#8e4a2e' : '#e2d5be';
-      g.fillStyle = bg;
-      g.fillRect(tx, tabY, tabW - 4, 22);
-      const t = this.txt(name, 10, col);
-      this.put(t, tx + 4, tabY + 4);
-    });
-
-    // 선택된 권의 챕터 목록 (세로 리스트, 좌측)
-    const listY = tabY + 30;
-    const listH = mh - 130;
-    const bookData = CATALOG[this.chapterSelect.bookIndex];
-    const chList = bookData?.chapters || [];
-
-    // 스크롤 가시 범위 (최대 10개)
-    const visibleCount = 10;
-    const scrollOffset = Math.max(0, Math.min(chList.length - visibleCount, this.chapterSelect.chapterIndex - 4));
-    const slice = chList.slice(scrollOffset, scrollOffset + visibleCount);
-
-    slice.forEach((ch, sIdx) => {
-      const actualIdx = scrollOffset + sIdx;
-      const isSel = actualIdx === this.chapterSelect.chapterIndex;
-      const itemY = listY + sIdx * 24;
-      const col = isSel ? ACCENT : INK;
-      if (isSel) {
-        g.fillStyle = '#eddcc2';
-        g.fillRect(mx + 20, itemY - 2, 280, 22);
-      }
-      const t = this.txt((isSel ? '▶ ' : '  ') + ch.title, 11, col);
-      this.put(t, mx + 24, itemY + 2);
-    });
-
-    // 우측 챕터 상세 정보 및 요약
-    const selChapter = chList[this.chapterSelect.chapterIndex];
-    if (selChapter) {
-      const infoX = mx + 310;
-      const infoW = mw - 330;
-      const chTitle = this.txt(selChapter.title, 13, INK);
-      this.put(chTitle, infoX, listY);
-
-      if (selChapter.location) {
-        const loc = this.txt('배경: ' + selChapter.location, 10, INK_WARM);
-        this.put(loc, infoX, listY + 22);
-      }
-
-      if (selChapter.characters && selChapter.characters.length > 0) {
-        const chars = this.txt('등장: ' + selChapter.characters.join(', '), 10, INK_SOFT);
-        this.put(chars, infoX, listY + 40);
-      }
-
-      // 요약 줄바꿈
-      if (selChapter.summary) {
-        const sumLines = wrapLines(selChapter.summary, infoW - 10, (s) => this.tw(this.txt(s, 11, INK)), 7);
-        sumLines.forEach((l, lIdx) => {
-          const st = this.txt(l, 11, INK);
-          this.put(st, infoX, listY + 68 + lIdx * 20);
-        });
-      }
-    }
-
-    const hint = this.txt('[←/→] 권 이동 · [↑/↓] 장 선택 · [Enter] 즉시 이동 · [Tab/Esc] 닫기', 11, INK_WARM);
-    this.put(hint, mx + 20, my + mh - 24);
-  }
-
-  private drawPauseMenu(): void {
-    const g = this.ctx;
-    g.fillStyle = 'rgba(0, 0, 0, 0.6)';
-    g.fillRect(0, 0, this.w, this.h);
-
-    const pw = 280;
-    const ph = 240;
-    const px = Math.round((this.w - pw) / 2);
-    const py = Math.round((this.h - ph) / 2);
-
-    this.panel(px, py, pw, ph);
-
-    const title = this.txt('일시 정지 (Paused)', 15, INK);
-    this.put(title, Math.round(px + (pw - this.tw(title)) / 2), py + 16);
-
-    const items = [
-      '계속하기 (Resume)',
-      '배경음악 (BGM)',
-      '효과음 (SFX)',
-      '음성 안내 (Voice)',
-      '닫기 [Esc]',
-    ];
-
-    items.forEach((item, idx) => {
-      const selected = idx === this.pauseMenu.selectedItem;
-      const color = selected ? ACCENT : INK;
-      const t = this.txt((selected ? '▶ ' : '   ') + item, 12, color);
-      this.put(t, px + 28, py + 54 + idx * 32);
-    });
-  }
 
   unlockCodex(id: string): boolean {
     const entry = this.codex.entries.find((e) => e.id === id);
@@ -1191,489 +440,65 @@ export class Hud {
     return false;
   }
 
-  handleCodexClick(x: number, y: number): boolean {
-    if (!this.codex.open) return false;
-    for (const r of this.codexItemRects) {
-      if (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) {
-        this.codex.selectedIndex = r.index;
-        return true;
-      }
-    }
-    return true;
-  }
-
-  private drawCodex(): void {
-    const g = this.ctx;
-    g.fillStyle = 'rgba(0, 0, 0, 0.65)';
-    g.fillRect(0, 0, this.w, this.h);
-
-    const mw = Math.min(680, this.w - 32);
-    const mh = Math.min(440, this.h - 32);
-    const mx = Math.round((this.w - mw) / 2);
-    const my = Math.round((this.h - mh) / 2);
-
-    this.panel(mx, my, mw, mh);
-    this.codexItemRects = [];
-
-    // 상단 헤더
-    const headerTitle = this.txt('📖 성경 & 미드라시 도감 (Biblical Lore Codex)', 14, INK);
-    this.put(headerTitle, mx + 24, my + 16);
-
-    const unlockedCount = this.codex.entries.filter((e) => e.unlocked).length;
-    const countText = this.txt(`기록된 전승: ${unlockedCount} / ${this.codex.entries.length}`, 11, INK_SOFT);
-    this.put(countText, mx + mw - this.tw(countText) - 24, my + 18);
-
-    // 구분선
-    g.fillStyle = '#c8b496';
-    g.fillRect(mx + 20, my + 38, mw - 40, 1);
-
-    // 좌측: 목록 (폭 240)
-    const listX = mx + 20;
-    const listY = my + 48;
-    const listW = 230;
-    const itemH = 36;
-
-    this.codex.entries.forEach((entry, idx) => {
-      const isSel = idx === this.codex.selectedIndex;
-      const iy = listY + idx * itemH;
-
-      this.codexItemRects.push({ x: listX, y: iy, w: listW, h: itemH - 4, index: idx });
-
-      if (isSel) {
-        g.fillStyle = '#eddcc2';
-        g.fillRect(listX, iy, listW, itemH - 4);
-        g.fillStyle = ACCENT;
-        g.fillRect(listX, iy, 4, itemH - 4);
-      }
-
-      const icon = entry.unlocked ? '📜 ' : '🔒 ';
-      const titleStr = entry.unlocked ? entry.title : '미지의 성서 전승';
-      const col = isSel ? ACCENT : (entry.unlocked ? INK : INK_SOFT);
-      const titleEl = this.txt(icon + titleStr, 11, col);
-      this.put(titleEl, listX + 8, iy + 6);
-
-      const srcStr = entry.unlocked ? entry.source : '???';
-      const srcEl = this.txt(srcStr, 9, INK_WARM);
-      this.put(srcEl, listX + 24, iy + 20);
-    });
-
-    // 중앙 수직 구분선
-    g.fillStyle = '#c8b496';
-    g.fillRect(mx + 258, my + 48, 1, mh - 84);
-
-    // 우측: 상세 정보 패널 (폭 mw - 280)
-    const detailX = mx + 274;
-    const detailY = my + 48;
-    const detailW = mw - 296;
-
-    const sel = this.codex.entries[this.codex.selectedIndex];
-    if (sel && sel.unlocked) {
-      // 제목
-      const titleEl = this.txt(sel.title, 13, INK);
-      this.put(titleEl, detailX, detailY);
-
-      // 출처 뱃지
-      const srcEl = this.txt(`[출처: ${sel.source}]`, 10, '#b85422');
-      this.put(srcEl, detailX, detailY + 20);
-
-      // 요약 인용 박스
-      const boxY = detailY + 38;
-      g.fillStyle = '#f4ebd8';
-      g.fillRect(detailX, boxY, detailW, 36);
-      g.strokeStyle = '#dfd0b4';
-      g.lineWidth = 1;
-      g.strokeRect(detailX, boxY, detailW, 36);
-
-      const sumLines = wrapLines(sel.summary, detailW - 16, (s) => this.tw(this.txt(s, 10, INK)), 2);
-      sumLines.forEach((sl, sIdx) => {
-        this.put(this.txt(sl, 10, INK), detailX + 8, boxY + 5 + sIdx * 14);
-      });
-
-      // 상세 해설 본문
-      const detLines = wrapLines(sel.detail, detailW, (s) => this.tw(this.txt(s, 11, INK_SOFT)), 10);
-      detLines.forEach((dl, dIdx) => {
-        this.put(this.txt(dl, 11, INK_SOFT), detailX, boxY + 46 + dIdx * 16);
-      });
-    } else if (sel) {
-      const lockTitle = this.txt('🔒 미해금 전승 기록', 13, INK_SOFT);
-      this.put(lockTitle, detailX, detailY);
-      const lockDesc = this.txt('아브라함의 여정을 진행하며 해당 사건을 경험하면 도감이 기록됩니다.', 11, INK_WARM);
-      this.put(lockDesc, detailX, detailY + 28);
-    }
-
-    // 하단 닫기 안내
-    const footerHint = this.txt('▼ [C / Esc] 닫기  |  [↑ / ↓] 항목 이동  |  [클릭] 선택', 10, INK_SOFT);
-    this.put(footerHint, mx + 24, my + mh - 24);
-  }
-
-  /**
-   * 자막. voice = 하늘의 음성: 화면 가운데 금빛 글자, 사람 이름·초상 없이 (빛과 글로만 표현)
-   * narration = 이야기꾼: 아래 레터박스 안 크림색 글자
-   */
-  private drawCaption(c: CaptionState) {
-    const g = this.ctx;
-    const title = c.style === 'title';
-    const voice = c.style === 'voice' || title;
-    // 제목: 크게, 화면 한가운데. base = 보통 단계 크기 (음성 16 · 이야기꾼 13 — 글자 크기 단계는 정책이 키움), size = 실제 UI 크기
-    const base = title ? 30 : voice ? 16 : 13, size = this.fs(base);
-    // 긴 음성은 가운데 가까운 띄어쓰기에서 두 줄로 (글자 띠가 화면을 덮지 않게)
-    const measure = (s: string) => this.tw(this.txt(s, base, '#000000', null));
-    let lines = [c.text];
-    if (voice && measure(c.text) > this.w * 0.6) {
-      const mid = c.text.length / 2;
-      let cut = -1;
-      for (let i = 0; i < c.text.length; i++) if (c.text[i] === ' ' && (cut < 0 || Math.abs(i - mid) < Math.abs(cut - mid))) cut = i;
-      if (cut > 0) lines = [c.text.slice(0, cut), c.text.slice(cut + 1)];
-    }
-    // 화면 폭을 넘는 글(영어 번역·큰 글자 크기)은 줄을 나눔: 이야기꾼 자막은 두 줄까지(레터박스 안), 음성·제목은 세 줄·두 줄까지
-    if (lines.some((l) => measure(l) > this.w * 0.9)) lines = wrapLines(c.text, this.w * 0.9, measure, title ? 2 : voice ? 3 : 2);
-    // 글자가 한 자씩 나오고, 들어올 때·나갈 때 두 단계로 흐려짐
-    let n = Math.min(c.text.length, Math.floor(c.age * (voice ? 16 : 26)));
-    if (n <= 0) return;
-    const a = c.age < 0.15 ? 0.5 : c.hold - c.age < 0.25 ? 0.5 : 1;
-    const lh = size + 8;
-    const widths = lines.map((l) => this.tw(this.txt(l, base, '#000000', null)));
-    const bh = Math.round(this.h * 0.12 * this.letterbox);
-    // 이야기꾼 자막은 아래 안전 영역(둥근 모서리·제스처 막대) 위의 띠 안에 가운데 맞춤 (여백이 0 이면 예전과 같음)
-    const barH = Math.max(bh, 30), textH = Math.max(30, barH - this.edge.bottom), barTop = this.h - this.edge.bottom - textH;
-    const y0 = title ? Math.round(this.h * 0.45 - (lines.length * lh - 8) / 2) : voice ? Math.round(this.h * 0.2)
-      : lines.length === 1 ? barTop + Math.round((textH - 16 - this.grow(13)) / 2) : barTop + Math.max(0, Math.round((textH - (lines.length * lh - 8)) / 2));
-    g.globalAlpha = a;
-    if (voice) {
-      // 글자 뒤 은은한 빛 띠 (계단진 세 겹)
-      // 높이: 마지막 줄 뒤 줄 간격(8)은 빼서 위아래 여백을 같게. 화면이 어두워지면(엔딩 검은 화면) 띠가 상자처럼 보이므로 흐리게
-      const w = Math.max(...widths) + 40, h = lines.length * lh - 8 + 14;
-      const glow = 1 - Math.min(1, this.fade) * 0.85;
-      // 부르심의 흰 빛기둥처럼 밝은 배경 위에서도 읽히게 어두운 바탕을 먼저 깖 (금빛 띠는 그 위에서 따뜻한 기운만 더함)
-      g.globalAlpha = a * 0.55 * glow;
-      g.fillStyle = '#140c06';
-      g.fillRect(Math.round(this.w / 2 - w / 2) - 10, y0 - 7 - 5, w + 20, h + 10);
-      for (const [pad, al] of [[18, 0.1], [10, 0.14], [4, 0.18]] as const) {
-        g.globalAlpha = a * al * glow;
-        g.fillStyle = '#ffd98a';
-        g.fillRect(Math.round(this.w / 2 - w / 2) - pad, y0 - 7 - pad / 2, w + pad * 2, h + pad);
-      }
-      g.globalAlpha = a;
-    }
-    lines.forEach((line, i) => {
-      if (n <= 0) return;
-      const cnt = Math.min(n, line.length);
-      n -= line.length + 1;
-      // 줄 전체를 한 번만 그려 캐시하고 보이는 만큼만 잘라 냄 (글자마다 새 글자판을 만들지 않음 — 대화창 본문과 같은 방식)
-      const t = this.txt(line, base, voice ? '#ffe7a8' : '#f0e2c0', voice ? '#6a4818' : OUTLINE);
-      const x = Math.round(this.w / 2 - widths[i] / 2), y = y0 + i * lh;
-      if (cnt >= line.length) this.put(t, x, y);
-      else {
-        g.save();
-        g.beginPath();
-        // 자르는 선도 장치 픽셀에 맞춤 (흐린 반 픽셀 열이 생기지 않게)
-        const cr = snapRect(x, y - 2, Math.ceil((this.tw(t) * cnt) / Math.max(1, line.length)) + 1, size + 8, this.d), dd = this.d;
-        g.rect(cr.x0 / dd, cr.y0 / dd, (cr.x1 - cr.x0) / dd, (cr.y1 - cr.y0) / dd);
-        g.clip();
-        this.put(t, x, y);
-        g.restore();
-      }
-    });
-    g.globalAlpha = 1;
-  }
-
-
-
-  /** 목표: 오른쪽 위 퀘스트 패널. 카테고리 헤더, 체크리스트, 진행바, 안내선 및 골드 플래시 지원 */
-  private goalPanel(text: string, y0: number) {
-    const catText = this.goalCategory ? this.goalCategory : '주요 임무';
-    const lab = this.txt(catText, 10, '#8a5a36');
-    const top = 22 + this.grow(10), LH = GOAL_PX + 4 + this.grow(GOAL_PX), HL = 13 + this.grow(10);
-
-    // 자동 진행도 감지 또는 명시적 goalProgress
-    const pMatch = text.match(/\((\d+)\s*\/\s*(\d+)\)/);
-    const prog = this.goalProgress || (pMatch ? { current: parseInt(pMatch[1], 10), total: parseInt(pMatch[2], 10) } : null);
-    const hasProg = !!(prog && prog.total > 0);
-    const progH = hasProg ? 16 : 0;
-
-    const height = (n: number, m: number) => top + 4 + n * LH + progH + (m > 0 ? m * HL + 3 : 0) + 4;
-    const base = Math.max(160, Math.min(this.wide(320), Math.round(this.w * 0.44)) - 18);
-    const floor = this.touch ? this.h - this.edge.bottom - Math.ceil(touchClusterTopCss(this.cssH) / this.cssScale) - 4 : Infinity;
-    const translatedGoal = tr(text), translatedHint = this.hint ? tr(this.hint) : '';
-    const progKey = prog ? `${prog.current}/${prog.total}` : '';
-    const key = `${base}|${floor}|${this.textRev}|${y0}|${catText}|${progKey}`;
-
-    if (translatedGoal !== this.goalSrc || translatedHint !== this.hintSrc || key !== this.goalKey) {
-      this.goalSrc = translatedGoal; this.hintSrc = translatedHint; this.goalKey = key;
-      const lay = (maxText: number, goalMax: number) => {
-        const goal = wrapParagraphs(text, maxText, (s) => this.tw(this.txt(s, GOAL_PX, INK)), goalMax);
-        const hint = translatedHint ? translatedHint.split('\n').flatMap((l) => wrapLines(l, maxText, (s) => this.tw(this.txt(s, 10, INK_WARM)), 2)) : [];
-        return { goal, hint };
-      };
-      const avail = floor - y0;
-      let r = lay(base, GOAL_MAX_LINES);
-      if (height(r.goal.length, r.hint.length) > avail) {
-        const wider = Math.max(base, Math.min(Math.round(this.w * 0.55), this.wide(400)) - 18);
-        if (wider > base) r = lay(wider, GOAL_MAX_LINES);
-        const fitGoal = Math.max(1, Math.floor((avail - top - 6 - progH) / LH));
-        if (r.goal.length > fitGoal) r = { goal: wrapParagraphs(text, wider, (s) => this.tw(this.txt(s, GOAL_PX, INK)), fitGoal), hint: r.hint };
-        const fitHint = Math.max(0, Math.floor((avail - height(r.goal.length, 0)) / HL));
-        if (r.hint.length > fitHint) r.hint = r.hint.slice(0, fitHint);
-      }
-      this.goalLines = r.goal; this.hintLines = r.hint;
-    }
-
-    const gs = this.gsBuf;
-    gs.length = 0;
-    let wide = this.tw(lab) + 20;
-
-    for (let i = 0; i < this.goalLines.length; i++) {
-      const s = this.goalLines[i];
-      const isCheck = /^([✓]|\[x\])/.test(s);
-      const isBullet = /^([▪\-•]|\[ \])/.test(s);
-      const clean = s.replace(/^([✓▪\-•]|\[[ x]\])\s*/, '');
-      const col = isCheck ? INK_SOFT : INK;
-      const c = this.txt(clean, GOAL_PX, col);
-      gs.push(c);
-      const lineW = this.tw(c) + (isCheck || isBullet ? 16 : 0);
-      wide = Math.max(wide, lineW);
-    }
-
-    const hs = this.hsBuf;
-    hs.length = 0;
-    for (const s of this.hintLines) {
-      const h = this.txt(s, 10, INK_WARM);
-      hs.push(h);
-      wide = Math.max(wide, this.tw(h) + 12);
-    }
-
-    if (hasProg && prog) {
-      const pLabel = prog.label ?? `${prog.current}/${prog.total}`;
-      const pText = this.txt(pLabel, 9, INK_WARM);
-      wide = Math.max(wide, this.tw(pText) + 80);
-    }
-
-    const W = Math.max(120, Math.round(wide) + 22), H = height(gs.length, hs.length), x0 = this.w - W - 8 - this.edge.right;
-    this.toastRight = Math.min(this.toastRight, x0);
-    this.panel(x0, y0, W, H);
-
-    const g = this.ctx;
-
-    // 진행 골드 플래시 (목표 갱신/진행 시 테두리 발광)
-    if (this.goalFlash > 0) {
-      g.save();
-      g.globalAlpha = Math.min(1, this.goalFlash);
-      g.fillStyle = '#ffd23a';
-      g.fillRect(x0 - 2, y0 - 2, W + 4, 2);
-      g.fillRect(x0 - 2, y0 + H, W + 4, 2);
-      g.fillRect(x0 - 2, y0, 2, H);
-      g.fillRect(x0 + W, y0, 2, H);
-      if (this.goalFlash > 0.4) {
-        g.globalAlpha = (this.goalFlash - 0.4) * 0.7;
-        g.fillStyle = '#fff6b0';
-        g.fillRect(x0 - 3, y0 - 3, W + 6, 1);
-        g.fillRect(x0 - 3, y0 + H + 2, W + 6, 1);
-        g.fillRect(x0 - 3, y0 - 2, 1, H + 4);
-        g.fillRect(x0 + W + 2, y0 - 2, 1, H + 4);
-      }
-      g.restore();
-    }
-
-    // 헤더 카테고리 텍스트
-    this.put(lab, x0 + 9, y0 + 5);
-
-    // 헤더 장식 구분선
-    g.fillStyle = RULE;
-    g.fillRect(x0 + 8, y0 + 17, W - 16, 1);
-    g.fillStyle = PAPER_LIGHT;
-    g.fillRect(x0 + 8, y0 + 18, W - 16, 1);
-    g.fillStyle = '#e8a020';
-    g.fillRect(x0 + 8, y0 + 16, 3, 3);
-
-    // 목표 텍스트 및 서브태스크 체크박스
-    for (let i = 0; i < this.goalLines.length; i++) {
-      const raw = this.goalLines[i];
-      const isCheck = /^([✓]|\[x\])/.test(raw);
-      const isBullet = /^([▪\-•]|\[ \])/.test(raw);
-      const cy = y0 + top + i * LH;
-
-      if (isCheck) {
-        // 녹색 완료 체크박스 [✓]
-        g.fillStyle = OUTLINE; g.fillRect(x0 + 9, cy + 3, 8, 8);
-        g.fillStyle = '#4a8e2e'; g.fillRect(x0 + 10, cy + 4, 6, 6);
-        g.fillStyle = '#ffffff';
-        g.fillRect(x0 + 11, cy + 6, 1, 2);
-        g.fillRect(x0 + 12, cy + 7, 2, 1);
-        g.fillRect(x0 + 14, cy + 4, 1, 3);
-        this.put(gs[i], x0 + 21, centerY(gs[i], cy, cy + LH));
-      } else if (isBullet) {
-        // 앰버 진행중 체크박스 [▪]
-        g.fillStyle = OUTLINE; g.fillRect(x0 + 9, cy + 3, 8, 8);
-        g.fillStyle = '#fff4d8'; g.fillRect(x0 + 10, cy + 4, 6, 6);
-        g.fillStyle = '#d49020'; g.fillRect(x0 + 12, cy + 6, 2, 2);
-        this.put(gs[i], x0 + 21, centerY(gs[i], cy, cy + LH));
-      } else {
-        this.put(gs[i], x0 + 9, centerY(gs[i], cy, cy + LH));
-      }
-    }
-
-    let nextY = y0 + top + gs.length * LH;
-
-    // 진행도 바 (Progress Bar)
-    if (hasProg && prog) {
-      const barX = x0 + 9, barW = W - 18, barH = 5;
-      const barY = nextY + 7;
-
-      // 수치 레이블
-      const pctNum = Math.round(Math.min(1, prog.current / prog.total) * 100);
-      const progStr = prog.label ?? `${prog.current}/${prog.total} (${pctNum}%)`;
-      const progTxt = this.txt(progStr, 9, INK_WARM);
-      this.put(progTxt, x0 + W - 9 - this.tw(progTxt), nextY + 1);
-
-      // 바 테두리 및 홈
-      g.fillStyle = OUTLINE; g.fillRect(barX, barY, barW, barH);
-      g.fillStyle = PAPER_SHADOW; g.fillRect(barX + 1, barY + 1, barW - 2, barH - 2);
-
-      // 바 채우기
-      const pct = Math.max(0, Math.min(1, prog.current / prog.total));
-      const fillW = Math.round((barW - 2) * pct);
-      if (fillW > 0) {
-        const isDone = prog.current >= prog.total;
-        g.fillStyle = isDone ? '#4a8e2e' : ACCENT;
-        g.fillRect(barX + 1, barY + 1, fillW, barH - 2);
-        g.fillStyle = isDone ? '#76c448' : ACCENT_LIGHT;
-        g.fillRect(barX + 1, barY + 1, fillW, 1);
-      }
-
-      nextY += 16;
-    }
-
-    // 하단 조작/장소 힌트 (안내)
-    for (let i = 0; i < hs.length; i++) {
-      const hy = nextY + 1 + i * HL;
-      g.fillStyle = '#e8a020';
-      g.fillRect(x0 + 9, hy + 4, 3, 3);
-      this.put(hs[i], x0 + 16, centerY(hs[i], hy, hy + HL - 1));
-    }
-  }
+  handleCodexClick(...a: DropFirst<Parameters<typeof handleCodexClick>>): ReturnType<typeof handleCodexClick> { return handleCodexClick(this, ...a); }
 
 
 
 
 
-  /**
-   * 터치 기기의 알림: 위 가운데, 오래된 것이 위·새 것이 아래로 쌓임. 가로는 왼쪽 도움말 단추·지도(leftEdge)와
-   * 오른쪽 시계·할 일 패널 사이, 글이 길면 두 줄까지. 들어올 때 위에서 내려오고 나갈 때는 PC 와 같이 두 단계로 흐려짐.
-   * 완료 띠(위 가운데)가 떠 있는 동안은 그 아래로 내려가 있다가 띠가 사라지면 올라옴
-   */
-  private toastsTop(dt: number, edgeTop: number, leftEdge: number) {
-    const g = this.ctx, e = this.edge;
-    const span = toastSpan(this.w, leftEdge, this.toastRight, e.left, e.right);
-    const bannerBottom = this.banner ? 10 + this.bannerH() + 4 : 0;
-    const base = 8 + edgeTop, target = Math.max(0, bannerBottom - base);
-    this.toastDrop += Math.sign(target - this.toastDrop) * Math.min(Math.abs(target - this.toastDrop), 160 * dt);
-    let ty = base + Math.round(this.toastDrop);
-    const gr = this.grow(13), LH = TOAST_LINE_H + gr, H1 = TOAST_H + gr;
-    for (const t of this.toasts) {
-      const text = t.count ? `+${t.count} ${t.name}` : t.name;
-      const inner = span.x1 - span.x0 - (t.iconId ? 30 : 14);
-      const lines = wrapLines(text, inner, (s) => this.tw(this.txt(s, 13, INK)), 2).map((s) => this.txt(s, 13, INK));
-      const th = toastHeight(lines.length, gr);
-      const tw = Math.ceil(Math.max(...lines.map((l) => this.tw(l)))) + 14;
-      const fade = t.life - t.age;
-      g.globalAlpha = fade < 0.2 ? 0.35 : fade < 0.45 ? 0.7 : 1;
-      const tx = toastCenterX(span, tw), y = ty + toastSlideY(t.age, th);
-      this.panel(tx, y, tw, th);
-      lines.forEach((l, i) => this.put(l, tx + 7, centerY(l, y + 5 + i * LH, y + H1 - 6 + i * LH)));
-      g.globalAlpha = 1;
-      ty += th + TOAST_GAP;
-    }
-  }
+
+
+
+
+
 
   /** 완료 띠 높이: 제목(18)·부제(11) 글자가 커진 만큼 높아짐 (기본 BANNER_H) */
-  private bannerH() { return BANNER_H + this.grow(18) + this.grow(11); }
+  bannerH() { return BANNER_H + this.grow(18) + this.grow(11); }
 
-  private drawBanner(b: { title: string; sub: string; age: number; compact?: boolean }) {
-    const g = this.ctx;
-    const translated = tr(b.sub);
-    const sub = b.compact ? translated.split('\n')[0].replace(/\s*\([^)]*\)/g, '').trim() : translated;
-    const short = wrapLines(sub, this.w - 64, text => this.tw(this.txt(text, 11, CREAM, OUTLINE)), 1)[0];
-    const t = this.txt(b.title, 18, '#ffe7a8', '#6a4818'), s = this.txt(short, 11, CREAM, OUTLINE);
-    const W = Math.max(this.tw(t), this.tw(s)) + 40, H = this.bannerH();
-    const x0 = Math.round(this.w / 2 - W / 2);
-    // 위에서 내려왔다가 끝에 흐려짐
-    const y0 = 10 + Math.round(Math.min(0, b.age * 120 - 18));
-    g.globalAlpha = b.age > 2.4 ? Math.max(0, (2.8 - b.age) / 0.4) : 1;
-    const f = this.frame(x0, y0, W, H);
-    this.fillIn(OUTLINE, f, 0, 0, 0, 0);
-    this.fillIn('#3a2a1c', f, 1, 1, 1, 1);
-    this.fillDev('#c99a3a', f.L(1), f.T(1), f.R(1), f.T(3)); this.fillDev('#c99a3a', f.L(1), f.B(3), f.R(1), f.B(1));
-    this.put(t, Math.round(this.w / 2 - this.tw(t) / 2), y0 + 5);
-    this.put(s, Math.round(this.w / 2 - this.tw(s) / 2), y0 + 29 + this.grow(18));
-    // 반짝이 (양옆에서 튀는 별 몇 개)
-    for (let k = 0; k < 6; k++) {
-      const a = b.age * 3 + k;
-      const sx = x0 + (k % 2 ? W + 6 + (k * 7) % 14 : -10 - (k * 7) % 14), sy = y0 + 8 + ((k * 13 + Math.floor(a * 6)) % 30);
-      g.fillStyle = k % 3 ? '#ffe070' : '#ffffff'; g.fillRect(sx, sy, 2, 2);
+
+
+  promptHintSrc = '';
+  promptHintMaxW = 0;
+  promptHintLines: string[] = [];
+  promptHintWidth = 0;
+  promptHintRev = -1;
+
+  /** 같은 글·폭·글꼴·줄 수면 이전 줄바꿈 결과를 재사용한다 (프레임마다 새 배열/클로저를 만들지 않음) */
+  private wrapMemoMap = new Map<string, { w: number; size: number; max: number; rev: number; out: string[] }>();
+  wrapMemo(text: string, maxW: number, size: number, maxLines: number, color: string = INK): string[] {
+    const e = this.wrapMemoMap.get(text);
+    if (e && e.w === maxW && e.size === size && e.max === maxLines && e.rev === this.textRevN) return e.out;
+    const out = wrapLines(text, maxW, (s) => this.tw(this.txt(s, size, color)), maxLines);
+    if (e) { e.w = maxW; e.size = size; e.max = maxLines; e.rev = this.textRevN; e.out = out; }
+    else {
+      if (this.wrapMemoMap.size > 300) this.wrapMemoMap.clear();
+      this.wrapMemoMap.set(text, { w: maxW, size, max: maxLines, rev: this.textRevN, out });
     }
-    g.globalAlpha = 1;
+    return out;
   }
 
-
-  private promptHintSrc = '';
-  private promptHintMaxW = 0;
-  private promptHintLines: string[] = [];
-  private promptHintWidth = 0;
-  private promptHintRev = -1;
-  private prompt(p: Prompt, withSpace: boolean) {
-    const g = this.ctx;
-    const label = this.txt(p.label, 13, INK);
-    const key = this.txt(this.touch ? '행동' : 'E', 11, PAPER, null);
-    // 글자가 커지면 키캡·첫 줄·안내 줄이 그만큼 높아짐 (기본: 키캡 14, 첫 줄 15, 안내 줄 13)
-    const ks = 14 + this.grow(11), kw = this.touch ? Math.ceil(this.tw(key)) + 8 : ks;
-    const rowH = Math.max(15 + this.grow(13), ks + 1), HL = 13 + this.grow(10);
-    const labelX = 7 + kw + 5;
-    // 처음 몇 번만 라벨 뒤에 작게 'Space' (도움말의 'E / Space' 와 같은 뜻). 폭은 글자 폭으로 계산
-    const space = withSpace ? this.txt('Space', 9, INK_SOFT) : null;
-    const labelW = Math.ceil(this.tw(label)) + labelX + 6 + (space ? Math.ceil(this.tw(space)) + 5 : 0);
-    const hint = p.hint ? tr(p.hint) : '';
-    const maxHintW = Math.min(this.wide(300), this.w - 32);
-    if (hint !== this.promptHintSrc || maxHintW !== this.promptHintMaxW || this.textRev !== this.promptHintRev) {
-      this.promptHintSrc = hint; this.promptHintMaxW = maxHintW; this.promptHintRev = this.textRev;
-      this.promptHintLines = hint ? wrapLines(hint, maxHintW, s => this.tw(this.txt(s, 10, INK_WARM)), 2) : [];
-      this.promptHintWidth = 0;
-      for (const line of this.promptHintLines) this.promptHintWidth = Math.max(this.promptHintWidth, this.tw(this.txt(line, 10, INK_WARM)) + 16);
-    }
-    const hintLines = this.promptHintLines;
-    const h0 = 11 + rowH, w = Math.max(labelW, this.promptHintWidth), h = h0 + (hintLines.length ? 4 + hintLines.length * HL : 0);
-    const bob = Math.floor(this.time * 3) % 2;
-    const e = this.edge;
-    const x = Math.max(4 + e.left, Math.min(this.w - w - 4 - e.right, Math.round(p.x - w / 2)));
-    const y = Math.max(4 + e.top, Math.round(p.y - h - 10) - bob);
-    this.promptRect = { x, y, w, h: h + 3 }; // 말풍선이 이 상자를 가리지 않게 (아래 말풍선 단계에서 비킴)
-    this.panel(x, y, w, h);
-    // 키캡 (속지 안에서 세로 가운데)
-    const ky = y + 5 + Math.round((rowH - ks) / 2);
-    this.keycap(x + 7, ky, kw, ks);
-    this.put(key, x + 7 + (kw - this.tw(key) + 2) / 2, centerY(key, ky + 1, ky + ks - 3));
-    this.put(label, x + labelX, centerY(label, y + 5, y + 5 + rowH));
-    if (space) this.put(space, x + labelX + Math.ceil(this.tw(label)) + 5, centerY(space, y + 5, y + 5 + rowH));
-    for (let i = 0; i < hintLines.length; i++) this.put(this.txt(hintLines[i], 10, INK_WARM), x + 8, y + h0 - 1 + i * HL);
-    // 말풍선 꼬리
-    g.fillStyle = OUTLINE;
-    g.fillRect(Math.round(p.x) - 3, y + h, 7, 1);
-    g.fillRect(Math.round(p.x) - 2, y + h + 1, 5, 1);
-    g.fillRect(Math.round(p.x) - 1, y + h + 2, 3, 1);
-    g.fillStyle = WOOD;
-    g.fillRect(Math.round(p.x) - 2, y + h, 5, 1);
-    g.fillRect(Math.round(p.x) - 1, y + h + 1, 3, 1);
+  /** 자막 한 줄 배치(줄·폭)는 자막 객체와 화면 폭이 같으면 재사용 (계산은 hudLayout.layoutCaption) */
+  captionLayout = new WeakMap<object, CaptionLayout>();
+  layoutCaption(c: CaptionState, base: number, voice: boolean, title: boolean): CaptionLayout {
+    return layoutCaption(this, c, base, voice, title);
   }
 
-  private heartIcon(x: number, y: number, faded: boolean) {
+  /** 토스트 한 개의 줄·폭 배치 캐시 (토스트 객체별, 사용 가능 폭이 바뀌면 다시 계산) */
+  toastLayout = new WeakMap<object, { inner: number; lines: ReturnType<Hud['txt']>[]; tw: number }>();
+
+  heartIcon(x: number, y: number, faded: boolean) {
     const g = this.ctx;
-    const rows = ['.kk.kk.', 'kRRkrrk', 'kRrrrrk', 'krrrrrk', '.krrrk.', '..krk..', '...k...'];
-    const col: Record<string, string> = { k: '#5a1a22', r: '#e0485a', R: '#ffb0b8' };
     g.globalAlpha = faded ? 0.5 : 1;
-    rows.forEach((row, yy) => [...row].forEach((ch, xx) => {
-      if (!col[ch]) return;
-      g.fillStyle = col[ch];
-      g.fillRect(x + xx, y + yy, 1, 1);
-    }));
+    // 모듈 상수(HEART_ROWS/HEART_COL)를 인덱스 루프로 훑어 프레임당 배열·객체를 만들지 않는다
+    for (let yy = 0; yy < HEART_ROWS.length; yy++) {
+      const row = HEART_ROWS[yy];
+      for (let xx = 0; xx < row.length; xx++) {
+        const c = HEART_COL[row.charCodeAt(xx)];
+        if (!c) continue;
+        g.fillStyle = c;
+        g.fillRect(x + xx, y + yy, 1, 1);
+      }
+    }
     g.globalAlpha = 1;
   }
 
@@ -1682,108 +507,24 @@ export class Hud {
    * inset(k) 만큼 들어가 그려서, 정수가 아닌 배율에서도 네 변의 테 두께가 같고 패널마다 같은 모양 (U10)
    */
   panel(x: number, y: number, w: number, h: number) {
+    // 프레임마다 여러 번 불리므로 클로저·배열 리터럴 없이 직접 칠한다 (할당 0)
     const f = this.frame(x, y, w, h);
-    const fill = (c: string, l: number, t: number, r: number, b: number) => this.fillIn(c, f, l, t, r, b);
-    const { L, R, T, B } = f;
-    fill(OUTLINE, 2, 0, 2, 0);
-    fill(OUTLINE, 0, 2, 0, 2);
-    fill(OUTLINE, 1, 1, 1, 1);
-    fill(WOOD, 2, 2, 2, 2);
-    this.fillDev(WOOD_LIGHT, L(2), T(2), R(2), T(3));
-    this.fillDev('#5e3b22', L(2), B(3), R(2), B(2));
-    fill(OUTLINE, 4, 4, 4, 4);
-    fill(CREAM, 5, 5, 5, 5);
-    this.fillDev(PAPER_SHADOW, L(5), B(7), R(5), B(5));
-    this.fillDev('#fff0cc', L(5), T(5), R(5), T(6));
-    for (const [x0, x1] of [[L(3), L(4)], [R(4), R(3)]])
-      for (const [y0, y1] of [[T(3), T(4)], [B(4), B(3)]]) this.fillDev('#d8b070', x0, y0, x1, y1);
+    const L = f.L(2), R = f.R(2), T = f.T(2), B = f.B(2);
+    this.fillIn(OUTLINE, f, 2, 0, 2, 0);
+    this.fillIn(OUTLINE, f, 0, 2, 0, 2);
+    this.fillIn(OUTLINE, f, 1, 1, 1, 1);
+    this.fillIn(WOOD, f, 2, 2, 2, 2);
+    this.fillDev(WOOD_LIGHT, L, T, R, f.T(3));
+    this.fillDev('#5e3b22', L, f.B(3), R, B);
+    this.fillIn(OUTLINE, f, 4, 4, 4, 4);
+    this.fillIn(CREAM, f, 5, 5, 5, 5);
+    this.fillDev(PAPER_SHADOW, f.L(5), f.B(7), f.R(5), f.B(5));
+    this.fillDev('#fff0cc', f.L(5), f.T(5), f.R(5), f.T(6));
+    // 네 모서리 장식
+    this.fillDev('#d8b070', f.L(3), f.T(3), f.L(4), f.T(4));
+    this.fillDev('#d8b070', f.L(3), f.B(4), f.L(4), f.B(3));
+    this.fillDev('#d8b070', f.R(4), f.T(3), f.R(3), f.T(4));
+    this.fillDev('#d8b070', f.R(4), f.B(4), f.R(3), f.B(3));
   }
 
-  private drawMinimap(x: number, y: number): void {
-    const g = this.ctx;
-    const w = 78, h = 78;
-    this.panel(x, y, w, h);
-
-    const innerX = x + 6;
-    const innerY = y + 6;
-    const innerW = w - 12;
-    const innerH = h - 12;
-    const cx = innerX + innerW / 2;
-    const cy = innerY + innerH / 2;
-
-    g.save();
-    // 미니맵 속지 클리핑
-    g.beginPath();
-    g.rect(innerX, innerY, innerW, innerH);
-    g.clip();
-
-    // 양피지 지도 바닥
-    g.fillStyle = '#ecd8b0';
-    g.fillRect(innerX, innerY, innerW, innerH);
-
-    // 미니맵 축척: 월드 1유닛 = 1.05px
-    const zoom = 1.05;
-    const toMapX = (wx: number) => cx + (wx - this.minimap.playerX * 0.3) * zoom;
-    const toMapY = (wz: number) => cy + (wz - this.minimap.playerZ * 0.3) * zoom;
-
-    // 주 도로 십자선 (동서 대로 & 남북 길)
-    g.fillStyle = '#caa070';
-    g.fillRect(innerX, toMapY(3.5) - 2, innerW, 4);
-    g.fillRect(toMapX(0) - 2, innerY, 4, innerH);
-
-    // 랜드마크 렌더링
-    for (const lm of this.minimap.landmarks) {
-      const mx = Math.round(toMapX(lm.x));
-      const my = Math.round(toMapY(lm.z));
-      g.fillStyle = lm.color;
-      g.fillRect(mx - 2, my - 2, 5, 5);
-      g.strokeStyle = '#3a2210';
-      g.lineWidth = 1;
-      g.strokeRect(mx - 2.5, my - 2.5, 6, 6);
-    }
-
-    // 퀘스트 목표 핀 (타겟 핀이 있을 때)
-    if (this.minimap.targetPin) {
-      const tx = Math.round(toMapX(this.minimap.targetPin.x));
-      const ty = Math.round(toMapY(this.minimap.targetPin.z));
-      const pulse = 3 + Math.sin(this.time * 8) * 1.5;
-      g.fillStyle = '#e03030';
-      g.beginPath();
-      g.arc(tx, ty, pulse, 0, Math.PI * 2);
-      g.fill();
-      g.fillStyle = '#ffffff';
-      g.fillRect(tx - 1, ty - 1, 2, 2);
-    }
-
-    // 플레이어 마커 (현재 위치 & 시선 방향)
-    const px = Math.round(toMapX(this.minimap.playerX));
-    const py = Math.round(toMapY(this.minimap.playerZ));
-    const facing = this.minimap.playerFacing;
-
-    // 시선 방향 콘 화살표
-    g.fillStyle = 'rgba(240, 200, 80, 0.45)';
-    g.beginPath();
-    g.moveTo(px, py);
-    g.arc(px, py, 9, facing - 0.4, facing + 0.4);
-    g.closePath();
-    g.fill();
-
-    // 플레이어 중심 마커
-    g.fillStyle = '#f0c030';
-    g.beginPath();
-    g.arc(px, py, 2.5, 0, Math.PI * 2);
-    g.fill();
-    g.strokeStyle = '#2a1a0e';
-    g.lineWidth = 1;
-    g.stroke();
-
-    g.restore();
-
-    // 나침반 N 마커 (우측 상단 작은 글씨)
-    g.fillStyle = '#8a2020';
-    g.font = 'bold 9px monospace';
-    g.fillText('N', innerX + innerW - 9, innerY + 9);
-    // 지도 이름 표기 (좌측 하단 '우르')
-    this.put(this.txt('우르', 9, INK_WARM), innerX + 2, innerY + innerH - 9);
-  }
 }

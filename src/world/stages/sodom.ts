@@ -3,6 +3,16 @@ import { VoxelBuilder } from '../voxel';
 import { PAL, PAL_REGION } from '../palette';
 import { Collision } from '../collision';
 import * as P from '../props';
+import { buildFarField, buildHorizonPlane, scatterGroundCover } from './common';
+import {
+  createStageGroundMesh,
+  buildPerimeterRidges,
+  buildMudbrickBuilding,
+  buildSmokeColumn,
+  buildTorchStand,
+  buildStoragePropCluster,
+} from './scenery36';
+import { fbm, hash2, valueNoise } from '../../core/rng';
 
 export interface SodomStage {
   root: THREE.Group;
@@ -14,12 +24,72 @@ export interface SodomStage {
   update: (dt: number, time: number) => void;
 }
 
+const SODOM_HALF = 18;
+
+/** 소돔 고해상도 지면: 붉은 사암 대지, 유황 노란 결정, 소금 백색 피루, 성문 앞 포석 */
+function buildSodomGroundMesh(): THREE.Mesh {
+  const reg = PAL_REGION.SODOM_NEGEV;
+  const resolution = 480;
+
+  return createStageGroundMesh(SODOM_HALF, resolution, (x, z, _u, _v, i, j) => {
+    // 1. 기본 붉은 협곡 대지
+    const nBase = fbm(x / 7, z / 7, 201, 2) * 0.5 + valueNoise(i / 14, j / 14, 202) * 0.3 + hash2(i, j, 203) * 0.2;
+    let c = nBase > 0.65 ? 0xc29058 : nBase > 0.4 ? 0xa8704a : 0x8a5a44;
+
+    // 미세 모래알/자갈
+    const hGrit = hash2(i, j, 205);
+    if (hGrit < 0.015) c = 0x76381e;
+    else if (hGrit > 0.985) c = 0xcc885a;
+
+    // 2. 유황 침전물 및 노란 결정 지대 (북동쪽, 남서쪽)
+    const nSulfur1 = Math.hypot(x - (-6), z - 5);
+    const nSulfur2 = Math.hypot(x - 7, z - (-4));
+    if (nSulfur1 < 5.2 || nSulfur2 < 4.8) {
+      const dMin = Math.min(nSulfur1 / 5.2, nSulfur2 / 4.8);
+      const sNoise = valueNoise(i / 8, j / 8, 221);
+      if (sNoise > dMin * 0.85) {
+        c = sNoise > 0.6 ? reg.sulfurYellow : 0xcab032;
+        if (hash2(i, j, 223) < 0.05) c = 0xffe860;
+      }
+    }
+
+    // 3. 소금 피루 / 하얀 알칼리 소금 결정 (남동쪽 소금기둥 주변)
+    const dSalt = Math.hypot(x - 8.5, z - 7.5);
+    if (dSalt < 6.5) {
+      const saltNoise = fbm(x * 1.5, z * 1.5, 231, 2);
+      if (saltNoise > 0.35 + (dSalt / 6.5) * 0.4) {
+        c = saltNoise > 0.65 ? reg.saltPillar : 0xd8d4cb;
+        if (hash2(i, j, 233) < 0.08) c = 0xf5f3ee;
+      }
+    }
+
+    // 4. 성문 앞 석조 광장 (z: -10 ~ -4, |x| < 7)
+    if (z >= -9.8 && z <= -3.8 && Math.abs(x) < 6.8) {
+      const cell = 12;
+      const li = i % cell;
+      const lj = j % cell;
+      if (li === 0 || lj === 0) {
+        c = 0x5a4234; // 틈새 줄눈
+      } else {
+        const stoneTones = [0x8c7460, 0x9b826e, 0x7e6856, 0xaa927c];
+        const tone = stoneTones[Math.floor(hash2(Math.floor(i / cell), Math.floor(j / cell), 241) * 4)];
+        c = li === 1 || lj === 1 ? 0xbda58e : tone;
+        if (hash2(i, j, 243) < 0.03) c = 0x483224; // 풍화 균열
+      }
+    }
+
+    // 5. 그을린 재와 검은 유황 흔적 (불길에 휩싸인 거리)
+    const nAsh = fbm(x * 2, z * 2, 251, 2);
+    if (nAsh > 0.72) {
+      c = 0x2e2420; // 숯 검댕이
+    }
+
+    return c;
+  });
+}
+
 /**
  * 제4권 소돔 성문 및 멸망의 거리 3D 복셀 무대
- * - 높은 사암 성벽과 아치형 성문 광장
- * - 롯의 2층 벽돌 가옥과 안뜰
- * - 하늘에서 쏟아지는 유황불과 무너진 석재 잔해
- * - 뒤를 돌아보아 굳어진 백색 복셀 '소금 기둥(Pillar of Salt)'
  */
 export function buildSodomStage(): SodomStage {
   const root = new THREE.Group();
@@ -27,88 +97,209 @@ export function buildSodomStage(): SodomStage {
   const vb = new VoxelBuilder(16, false); // TD=16
   const reg = PAL_REGION.SODOM_NEGEV;
 
-  // 1. 소돔 평야 붉은 흙과 유황 노란 지면 (36x36)
-  vb.box(0, -0.25, 0, 36, 0.5, 36, reg.canyonRed, { tex: 'soil' });
+  // 1. 소돔 원경 지평선 및 고해상도 지면 메쉬
+  root.add(buildHorizonPlane(0x7a4e5e, 360, -0.05, 0.2));
+  root.add(buildSodomGroundMesh());
 
-  // 유황 침전물 얼룩들
-  vb.box(-5, -0.05, 4, 6, 0.2, 5, reg.sulfurYellow, { tex: 'plain' });
-  vb.box(6, -0.05, -3, 5, 0.2, 6, reg.sulfurYellow, { tex: 'plain' });
 
-  // 2. 소돔 북쪽 거대 방어 성벽 (좌우 옹벽과 중앙 성문)
-  vb.box(-8, 3.2, -10, 10, 6.4, 2.4, PAL.stone[1], { tex: 'brick' });
-  col.addBox(-8, -10, 10, 2.4);
+  buildFarField(root, SODOM_HALF, { seed: 4, pal: [0x2e2630, 0x3e3240, 0x56444e, 0x6a5058], tex: 'cliff', accents: [0x4a3c4c], haze: 0x7a4e5e, depth: 44, ground: 0x6a4a40, rim: { min: 3.0, max: 5.5, south: 0.45, openNorth: true } });
+  // 2. 외곽 공허 차단: 붉은 협곡 절벽 및 도시 경계벽 (남/동/서 절벽)
+  buildPerimeterRidges(vb, col, SODOM_HALF, [0x4e3c50, 0x645064, 0x7a5a5c, 0x3c3042], {
+    seed: 401,
+    minH: 3.8,
+    maxH: 7.2,
+    tex: 'cliff',
+    openNorth: true, // 북쪽은 거대 성벽과 망루로 차단
+  });
 
-  vb.box(8, 3.2, -10, 10, 6.4, 2.4, PAL.stone[1], { tex: 'brick' });
-  col.addBox(8, -10, 10, 2.4);
+  // 3. 북쪽 거대 방어 성벽 및 쌍둥이 망루 (x: -18 ~ 18, z: -11 ~ -14)
+  const wallZ = -11.5;
+  const wallH = 6.8;
+  // 좌측 성벽
+  vb.box(-11, 0, wallZ, 14, wallH, 3.2, 0x9a9088, { tex: 'stone' });
+  col.addBox(-11, wallZ, 14, 3.5);
+  // 성벽 상부 톱니형 여장(Crenellations)
+  for (let bx = -17; bx <= -5; bx += 2.0) {
+    vb.box(bx, wallH, wallZ, 1.2, 0.9, 0.6, 0xb0a496, { tex: 'stone' });
+  }
 
-  // 중앙 성문 아치 및 문루
-  vb.box(0, 5.2, -10, 6, 2.4, 2.4, PAL.stone[2], { tex: 'brick' });
-  // 나무 성문
-  vb.box(-1.2, 2.0, -10, 2.2, 4.0, 0.4, PAL.wood[1], { tex: 'wood' });
-  vb.box(1.2, 2.0, -10, 2.2, 4.0, 0.4, PAL.wood[1], { tex: 'wood' });
-  col.addBox(-1.5, -10, 1.5, 1.0);
-  col.addBox(1.5, -10, 1.5, 1.0);
+  // 우측 성벽
+  vb.box(11, 0, wallZ, 14, wallH, 3.2, 0x9a9088, { tex: 'stone' });
+  col.addBox(11, wallZ, 14, 3.5);
+  for (let bx = 5; bx <= 17; bx += 2.0) {
+    vb.box(bx, wallH, wallZ, 1.2, 0.9, 0.6, 0xb0a496, { tex: 'stone' });
+  }
 
-  // 3. 롯의 가옥 (남서쪽 2층 흙벽돌 가옥)
-  vb.box(-7, 2.2, 2, 7, 4.4, 6, PAL.brick[1], { tex: 'brick' });
-  col.addBox(-7, 2, 7, 6);
-  // 롯의 가옥 문
-  vb.box(-3.4, 1.2, 2, 0.2, 2.4, 1.2, PAL.wood[0], { tex: 'wood' });
-  // 옥상 난간
-  vb.box(-7, 4.6, 2, 7.2, 0.6, 6.2, PAL.brick[2], { tex: 'brick' });
+  // 중앙 쌍둥이 망루 (좌: x=-3.5, 우: x=3.5, 폭 3.0m, 높이 9.2m)
+  const towerH = 9.2;
+  vb.box(-3.5, 0, wallZ, 3.2, towerH, 4.2, 0xb0a496, { tex: 'stone' });
+  col.addBox(-3.5, wallZ, 3.4, 4.4);
+  // 좌 망루 옥상 여장
+  vb.box(-3.5, towerH, wallZ - 1.8, 3.2, 0.8, 0.5, PAL.stone[3], { tex: 'stone' });
+  vb.box(-3.5, towerH, wallZ + 1.8, 3.2, 0.8, 0.5, PAL.stone[3], { tex: 'stone' });
+  vb.box(-4.8, towerH, wallZ, 0.5, 0.8, 3.6, PAL.stone[3], { tex: 'stone' });
+  // 망루 감시창
+  vb.box(-3.5, 6.2, wallZ + 2.12, 0.6, 1.0, 0.08, 0xffa030, { tex: 'glow' });
 
-  // 4. 소돔 탈출로 남동쪽 언덕 바위
-  vb.box(8, 0.6, 7, 8, 1.2, 8, PAL.stone[2], { tex: 'cliff' });
-  col.addBox(8, 7, 8, 8);
+  vb.box(3.5, 0, wallZ, 3.2, towerH, 4.2, 0xb0a496, { tex: 'stone' });
+  col.addBox(3.5, wallZ, 3.4, 4.4);
+  // 우 망루 옥상 여장
+  vb.box(3.5, towerH, wallZ - 1.8, 3.2, 0.8, 0.5, PAL.stone[3], { tex: 'stone' });
+  vb.box(3.5, towerH, wallZ + 1.8, 3.2, 0.8, 0.5, PAL.stone[3], { tex: 'stone' });
+  vb.box(4.8, towerH, wallZ, 0.5, 0.8, 3.6, PAL.stone[3], { tex: 'stone' });
+  vb.box(3.5, 6.2, wallZ + 2.12, 0.6, 1.0, 0.08, 0xffa030, { tex: 'glow' });
 
-  // 5. 무너진 잔해 및 불타는 기둥들
-  P.rock(vb, col, 3, 2, 1.5);
-  P.rock(vb, col, -2, -5, 1.2);
-  P.rock(vb, col, 5, -6, 1.4);
+  // 성문 아치 및 상인방
+  vb.box(0, 4.8, wallZ, 4.2, 2.6, 3.6, PAL.stone[3], { tex: 'stone' });
+  // 청동 장식 육중한 목재 이중 성문
+  vb.box(-1.1, 0, wallZ, 2.0, 4.8, 0.45, PAL.wood[0], { tex: 'wood' });
+  vb.box(1.1, 0, wallZ, 2.0, 4.8, 0.45, PAL.wood[0], { tex: 'wood' });
+  // 청동 빗장 및 보강 띠
+  vb.box(0, 2.4, wallZ + 0.25, 3.8, 0.3, 0.12, 0x9a7a40, { tex: 'metal' });
+  vb.box(0, 1.2, wallZ + 0.25, 3.8, 0.15, 0.12, 0x9a7a40, { tex: 'metal' });
+  col.addBox(-1.3, wallZ, 1.8, 1.0);
+  col.addBox(1.3, wallZ, 1.8, 1.0);
 
-  const stageMesh = vb.build();
-  root.add(stageMesh);
+  // 4. 롯의 2층 흙벽돌 가옥 (남서쪽 x: -7, z: 2)
+  // 폭 6.8m, 높이 5.2m, 깊이 5.8m. 문은 x: -3.4, z: 2 에 위치
+  const lotHouse = new THREE.Group();
+  lotHouse.position.set(-7, 0, 2);
+  root.add(lotHouse);
 
-  // 6. 소금 기둥 (탈출로 언덕 위에 홀로 선 롯의 아내)
+  buildMudbrickBuilding(vb, col, -7, 2, 6.6, 5.0, 5.6, {
+    brickColor: 0xd8b890,
+    roofColor: 0x8a6048,
+    doorPos: { side: 'east', offset: 0, dw: 1.2, dh: 2.4 }, // x=-3.7 지점 문
+    litWindows: [
+      { side: 'east', y: 3.4, offset: -1.2 },
+      { side: 'north', y: 3.2, offset: -1.5 },
+      { side: 'south', y: 2.2, offset: 1.0 },
+    ],
+    awning: true,
+    wallTex: 'plaster',
+  });
+
+  // 롯의 가옥 문 인터랙션 지점 (-3.4, 0, 2) 앞 발판석
+  vb.box(-3.4, 0.02, 2, 1.4, 0.08, 1.6, PAL.stone[3], { tex: 'stone' });
+  // 가옥 옥상 오르는 외벽 목재 계단
+  for (let s = 0; s < 7; s++) {
+    const sy = s * 0.45;
+    const sz = 2 - 2.2 + s * 0.65;
+    vb.box(-3.5, sy, sz, 0.8, 0.4, 0.6, PAL.wood[1], { tex: 'wood' });
+  }
+
+  // 5. 소돔 시가지 밀집 흙벽돌 주택들 (불타는 가옥들)
+  // 서북쪽 주택 (x: -12.5, z: -4.5)
+  buildMudbrickBuilding(vb, col, -12.5, -4.5, 5.2, 4.4, 5.0, {
+    brickColor: 0xb8a088,
+    roofColor: 0x6e4a3c,
+    doorPos: { side: 'east', offset: 0, dw: 1.0, dh: 2.0 },
+    litWindows: [{ side: 'east', y: 2.8, offset: 0.8 }],
+    wallTex: 'plaster',
+  });
+  // 남서쪽 주택 (x: -12.5, z: 7.5)
+  buildMudbrickBuilding(vb, col, -12.5, 7.5, 5.0, 4.0, 5.2, {
+    brickColor: 0xe0c49c,
+    roofColor: 0x7a5440,
+    doorPos: { side: 'north', offset: 0, dw: 1.0, dh: 2.0 },
+    litWindows: [{ side: 'north', y: 2.5, offset: -0.8 }],
+    wallTex: 'plaster',
+  });
+  // 동북쪽 주택 (x: 12.0, z: -4.5)
+  buildMudbrickBuilding(vb, col, 12.0, -4.5, 5.4, 4.6, 5.2, {
+    brickColor: 0xc8a888,
+    doorPos: { side: 'west', offset: 0, dw: 1.0, dh: 2.0 },
+    litWindows: [{ side: 'west', y: 2.8, offset: -0.8 }],
+    wallTex: 'plaster',
+  });
+  // 동남쪽 주택 (x: 12.5, z: 3.5)
+  buildMudbrickBuilding(vb, col, 12.5, 3.5, 5.2, 4.2, 4.8, {
+    brickColor: 0xa89484,
+    doorPos: { side: 'west', offset: 0, dw: 1.0, dh: 2.0 },
+    litWindows: [{ side: 'west', y: 2.6, offset: 0.8 }],
+    wallTex: 'plaster',
+  });
+
+  // 6. 소알을 향한 탈출로 언덕 및 소금 기둥 (남동쪽 x: 8, z: 7)
+  // 계단식 바위 언덕길
+  vb.box(8, 0, 7, 7.5, 1.4, 7.5, PAL.stone[2], { tex: 'cliff' });
+  vb.box(9.2, 1.4, 7.8, 5.0, 1.2, 5.5, PAL.stone[3], { tex: 'cliff' });
+  col.addBox(8.8, 7.6, 6.5, 6.5);
+
+  // 탈출로 디딤 바위들 (접근성 보장)
+  vb.box(5.8, 0, 5.8, 1.8, 0.4, 1.8, PAL.stone[2], { tex: 'stone' });
+  vb.box(6.8, 0.4, 6.4, 1.6, 0.5, 1.6, PAL.stone[3], { tex: 'stone' });
+
+  // 소금 기둥 (뒤를 돌아보는 롯의 아내 실루엣)
   const saltPillar = new THREE.Group();
+  saltPillar.position.set(8, 1.4, 7);
   const saltVb = new VoxelBuilder(16, false);
-  // 바위 받침대
-  saltVb.box(8, 1.4, 7, 1.6, 0.6, 1.6, PAL.stone[3], { tex: 'cliff' });
-  // 사람 형상의 백색 소금 기둥
-  saltVb.box(8, 2.4, 7, 0.6, 1.4, 0.6, reg.saltPillar, { tex: 'plain' });
-  saltVb.box(8, 3.3, 7, 0.5, 0.5, 0.5, reg.saltPillar, { tex: 'plain' }); // 머리
-  // 뒤(소돔 성문)를 돌아보는 실루엣
-  saltVb.box(7.8, 3.3, 6.8, 0.2, 0.2, 0.3, reg.saltPillar, { tex: 'plain' });
+  // 흰 소금 결정 받침대
+  saltVb.box(0, 0, 0, 1.8, 0.6, 1.8, reg.saltPillar, { tex: 'cliff' });
+  // 휘몰아치는 소금옷 드레이프 몸체
+  saltVb.box(0, 0.6, 0, 0.85, 1.6, 0.85, reg.saltPillar, { tex: 'plain' });
+  saltVb.box(0, 2.2, 0, 0.65, 0.65, 0.65, reg.saltPillar, { tex: 'plain' }); // 머리
+  // 뒤(소돔 성문 북쪽)를 애처롭게 돌아보는 머리 각도 및 옷자락
+  saltVb.box(-0.25, 2.25, -0.2, 0.35, 0.4, 0.35, reg.saltPillar, { tex: 'plain' });
+  saltVb.box(0.3, 0.8, -0.25, 0.3, 1.0, 0.4, reg.saltPillar, { tex: 'plain' });
   saltPillar.add(saltVb.build());
   root.add(saltPillar);
 
-  // 7. 유황불 낙하 조명들
+  // 7. 타오르는 지붕과 무너진 잔해의 피어오르는 연기 기둥들
+  buildSmokeColumn(vb, -12.5, 4.4, -4.5, 8.5, 601, 0x342f2b);
+  buildSmokeColumn(vb, 12.0, 4.6, -4.5, 9.0, 602, 0x3d3632);
+  buildSmokeColumn(vb, -3.5, 9.2, -11.5, 7.5, 603, 0x443d38);
+  buildSmokeColumn(vb, 3, 0, 2, 6.0, 604, 0x554c46); // 거리의 불타는 잔해
+
+  // 8. 거리의 무너진 석재 잔해, 숯 덩어리 및 부서진 목재
+  P.rock(vb, col, 2.8, -1.5, 1.6);
+  P.rock(vb, col, -1.8, -4.2, 1.4);
+  P.rock(vb, col, 4.5, -5.5, 1.5);
+  P.rock(vb, col, -4.5, 6.2, 1.3);
+
+  // 무너진 사암 기둥 잔해 (거리 한가운데 쓰러짐)
+  vb.box(2.2, 0, 0.8, 1.2, 0.7, 2.8, PAL.stone[2], { tex: 'stone', jitter: 0.05 });
+  col.addBox(2.2, 0.8, 1.4, 3.0);
+
+  // 9. 거리 조명 및 소품 (횃불대, 물항아리 클러스터, 바구니, 마른 관목)
+  buildTorchStand(vb, col, -2.5, -2.0, 2.2);
+  buildTorchStand(vb, col, 2.5, -2.0, 2.2);
+  buildTorchStand(vb, col, 5.0, 3.0, 2.0);
+
+  buildStoragePropCluster(vb, -4.2, 0.2, 5, 711);
+  buildStoragePropCluster(vb, 4.5, -3.2, 4, 712);
+
+  P.bush(vb, col, -8.0, -8.0, 0.9, PAL.shrub);
+  P.bush(vb, col, 7.5, -8.5, 0.9, PAL.shrub);
+  P.bush(vb, col, -9.5, 3.5, 0.8, PAL.shrub);
+
+  scatterGroundCover(vb, col, { seed: 601, half: 18, count: 110, tufts: [0x7a5a38, 0x8a6a40, 0x5a4028], pebbles: [0x5e4a40, 0x7a5a48, 0x3a2a24] });
+  const stageMesh = vb.build();
+  root.add(stageMesh);
+
+  // 10. 유황불 낙하 조명들 (포인트 라이트)
   const sulfurLights: THREE.PointLight[] = [];
   const lightPositions = [
     { x: -5, y: 3.5, z: 2 },
     { x: 4, y: 2.8, z: -4 },
     { x: 0, y: 4.5, z: -8 },
-    { x: 8, y: 2.2, z: 5 },
+    { x: 8, y: 3.0, z: 5 },
   ];
 
   lightPositions.forEach((pos) => {
-    const light = new THREE.PointLight(0xff3311, 2.0, 10, 1.8);
+    const light = new THREE.PointLight(0xff3a14, 2.4, 12, 1.8);
     light.position.set(pos.x, pos.y, pos.z);
     root.add(light);
     sulfurLights.push(light);
   });
 
-  const lotHouse = new THREE.Group();
-  lotHouse.position.set(-7, 0, 2);
-  root.add(lotHouse);
+  col.bounds = { minX: -14.5, maxX: 14.5, minZ: -14.5, maxZ: 14.5 };
 
-  col.bounds = { minX: -14, maxX: 14, minZ: -14, maxZ: 14 };
-
+  // per-frame zero allocation update
   const update = (_dt: number, time: number) => {
-    // 유황불 깜빡임
-    sulfurLights.forEach((light, idx) => {
-      light.intensity = 2.0 + Math.sin(time * 9.0 + idx * 2.0) * 0.45;
-    });
+    for (let i = 0; i < sulfurLights.length; i++) {
+      sulfurLights[i].intensity = 2.4 + Math.sin(time * 9.0 + i * 2.0) * 0.55;
+    }
   };
 
   return {

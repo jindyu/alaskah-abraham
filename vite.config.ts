@@ -7,7 +7,11 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 1200,
     rollupOptions: {
       output: {
-        manualChunks: (id: string) => (/[\/]node_modules[\/]three[\/]/.test(id) ? 'three' : null),
+        manualChunks(id: string) {
+          if (id.includes('node_modules/three')) {
+            return 'three';
+          }
+        },
       },
     },
   },

@@ -37,17 +37,38 @@ export interface Interactable {
 /** 캐릭터 앞쪽에서 가장 가까운 대상 고르기 */
 export class Interactions {
   private readonly list = new Map<string, Interactable>();
+  /** list 의 값을 배열로 복사해 둔 것 (nearest 가 프레임마다 Map 반복자를 만들지 않도록 — 바뀔 때만 다시 만듦) */
+  private arr: Interactable[] = [];
+  private arrDirty = false;
   /** 캐릭터 몸에서 대상 가장자리까지 닿는 거리 */
   reach = 0.85;
 
+  /** 상호작용이 실행될 때마다 id 를 알린다 (장 안 진행 기록용). 등록 시점에 act 를 한 번만 감싼다. */
+  onAct: ((id: string) => void) | null = null;
+  private readonly wrapped = new WeakSet<Interactable>();
+
   add(...items: Interactable[]) {
-    for (const it of items) this.list.set(it.id, it);
+    for (const it of items) {
+      if (!this.wrapped.has(it)) {
+        this.wrapped.add(it);
+        const orig = it.act.bind(it);
+        it.act = () => { if (this.onAct) this.onAct(it.id); orig(); };
+      }
+      this.list.set(it.id, it);
+    }
+    this.arrDirty = true;
   }
   clear() {
     this.list.clear();
+    this.arrDirty = true;
+  }
+  /** 등록된 대상 수 */
+  get size(): number {
+    return this.list.size;
   }
   remove(id: string) {
     this.list.delete(id);
+    this.arrDirty = true;
   }
   /** id 로 대상 찾기 (머리 위 표시가 씀) */
   get(id: string): Interactable | undefined {
@@ -68,13 +89,16 @@ export class Interactions {
   nearest(px: number, pz: number, facing: number): Interactable | null {
     const fx = Math.sin(facing), fz = Math.cos(facing), skipped = this.skipped;
     skipped.length = 0;
+    if (this.arrDirty) { this.arr.length = 0; for (const it of this.list.values()) this.arr.push(it); this.arrDirty = false; }
+    const arr = this.arr;
     for (;;) {
       let best: Interactable | null = null, bestScore = Infinity;
-      for (const it of this.list.values()) {
+      for (let ai = 0; ai < arr.length; ai++) {
+        const it = arr[ai];
         if (skipped.length && skipped.includes(it)) continue;
         const p = it.pos();
         const dx = p.x - px, dz = p.z - pz;
-        const d = Math.hypot(dx, dz);
+        const d = Math.sqrt(dx * dx + dz * dz);
         const gap = d - it.r;
         if (gap > this.reach) continue;
         // 바라보는 쪽을 우선: 등 뒤 대상은 아주 가까울 때만

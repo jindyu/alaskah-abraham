@@ -3,10 +3,11 @@
  * 창 우선순위·대화·상점·컷신이 키보드와 똑같이 반응한다 (게임 쪽 코드는 손대지 않음).
  *   왼쪽 아래 스틱 = 방향키(8방향, 메뉴·상점에서는 위아래좌우 고르기)
  *   오른쪽 아래 '행동' = E (대화 넘기기·확인도 같음)
- *   오른쪽 단추줄 = 달리기(토글, Shift) · 가방(I) · 도감(J) · 메뉴(Esc, 열린 창 닫기도 겸함)
+ *   오른쪽 단추줄 = 달리기(토글, Shift) · 장 선택(Tab) · 도감(C) · 메뉴(Esc, 열린 창 닫기도 겸함)
  * 보이는 때: 터치 기기(pointer: coarse)이거나 터치가 한 번이라도 들어왔을 때. 물리 키보드를 누르면 숨김.
  * 주소 ?touch=1 은 항상 보임, ?touch=0 은 항상 숨김 (개발·QA용).
  */
+import { noteError } from '../core/diagnostics';
 import { tr } from '../i18n/tr';
 import { onLangChange } from '../i18n/lang';
 import { isNativeApp } from '../native/platform';
@@ -22,6 +23,19 @@ export function stickCodes(dx: number, dy: number, radius: number): StickCode[] 
   if (ny < -0.38) out.push('ArrowUp'); else if (ny > 0.38) out.push('ArrowDown');
   if (nx < -0.38) out.push('ArrowLeft'); else if (nx > 0.38) out.push('ArrowRight');
   return out;
+}
+
+const STICK_ORDER: readonly StickCode[] = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+/** stickCodes 와 같은 판정을 비트마스크로 (스틱을 움직일 때마다 배열·Set 을 만들지 않으려고) — 0:위 1:아래 2:왼 3:오른 */
+export function stickMask(dx: number, dy: number, radius: number): number {
+  const d = Math.sqrt(dx * dx + dy * dy);
+  if (!(radius > 0) || d < radius * 0.3) return 0;
+  const nx = dx / d, ny = dy / d;
+  let m = 0;
+  if (ny < -0.38) m |= 1; else if (ny > 0.38) m |= 2;
+  if (nx < -0.38) m |= 4; else if (nx > 0.38) m |= 8;
+  return m;
 }
 
 /** 스틱 손잡이 위치: 반지름 안으로 자른 (dx, dy) */
@@ -41,7 +55,7 @@ export function wantsTouchUi(search: string, coarse: boolean): boolean {
 
 const KEY: Record<string, string> = {
   ArrowUp: 'ArrowUp', ArrowDown: 'ArrowDown', ArrowLeft: 'ArrowLeft', ArrowRight: 'ArrowRight',
-  KeyE: 'e', Escape: 'Escape', KeyI: 'i', KeyJ: 'j', ShiftLeft: 'Shift',
+  KeyE: 'e', Escape: 'Escape', KeyI: 'i', KeyJ: 'j', KeyC: 'c', Tab: 'Tab', F1: 'F1', ShiftLeft: 'Shift',
 };
 
 // 작은 단추 넷은 2×2 로 행동 단추 위에 모음 (오른쪽 위 시계·안내 패널을 가리지 않게)
@@ -56,14 +70,24 @@ const CSS = `
 .abraham-touch{--act:92px;--sm:52px;--gap:8px;--edge:22px;--sr:calc(env(safe-area-inset-right,0px) + var(--edge));--sb:calc(env(safe-area-inset-bottom,0px) + 24px)}
 .abraham-act{right:var(--sr);bottom:var(--sb);width:var(--act);height:var(--act);font-size:18px}
 .abraham-sm{width:var(--sm);height:var(--sm);font-size:13px}
+.abraham-help{left:calc(env(safe-area-inset-left,0px) + 10px);top:calc(env(safe-area-inset-top,0px) + 92px);width:auto;max-width:116px;min-width:64px;height:36px;border-radius:18px;padding:0 14px;font-size:13px}
 .abraham-touch.abraham-cut .abraham-stick,.abraham-touch.abraham-cut .abraham-sm{display:none}
 
 .abraham-g0{right:calc(var(--sr) + var(--sm) + var(--gap));bottom:calc(var(--sb) + var(--act) + var(--gap) + var(--sm) + var(--gap))}
 .abraham-g1{right:var(--sr);bottom:calc(var(--sb) + var(--act) + var(--gap) + var(--sm) + var(--gap))}
 .abraham-g2{right:calc(var(--sr) + var(--sm) + var(--gap));bottom:calc(var(--sb) + var(--act) + var(--gap))}
 .abraham-g3{right:var(--sr);bottom:calc(var(--sb) + var(--act) + var(--gap))}
-@media (orientation:portrait){.abraham-touch{--sb:calc(env(safe-area-inset-bottom,0px) + 64px)}.abraham-stick{bottom:calc(env(safe-area-inset-bottom,0px) + 64px)}}
 @media (max-height:480px){.abraham-touch{--act:80px;--sm:46px;--gap:6px;--edge:16px}.abraham-stick{width:116px;height:116px}.abraham-knob{width:50px;height:50px;margin:-25px 0 0 -25px}}
+/* 세로 화면: 작게 줄인 조작부를 맨 아래에 모으고 작은 단추 넷은 한 줄로 (놀이 화면을 덜 가린다) */
+@media (orientation:portrait){
+.abraham-touch{--act:80px;--sm:46px;--gap:6px;--edge:14px;--sb:calc(env(safe-area-inset-bottom,0px) + 28px)}
+.abraham-stick{left:calc(env(safe-area-inset-left,0px) + 14px);bottom:var(--sb);width:112px;height:112px}
+.abraham-knob{width:50px;height:50px;margin:-25px 0 0 -25px}
+.abraham-g0{right:calc(var(--sr) + 3 * (var(--sm) + var(--gap)));bottom:calc(var(--sb) + var(--act) + var(--gap))}
+.abraham-g1{right:calc(var(--sr) + 2 * (var(--sm) + var(--gap)));bottom:calc(var(--sb) + var(--act) + var(--gap))}
+.abraham-g2{right:calc(var(--sr) + var(--sm) + var(--gap));bottom:calc(var(--sb) + var(--act) + var(--gap))}
+.abraham-g3{right:var(--sr);bottom:calc(var(--sb) + var(--act) + var(--gap))}
+}
 `;
 
 /**
@@ -71,8 +95,9 @@ const CSS = `
  * 위 CSS 의 --sb + --act + (--gap + --sm) × 2 와 같은 값 — HUD 가 오른쪽 위 패널을 이 위에서 멈출 때 쓴다 (CSS 를 바꾸면 함께)
  */
 export function touchClusterTopCss(viewH: number, portrait = false): number {
+  if (portrait) return 28 + 80 + 6 + 46; // 세로 화면: 행동 단추 위에 작은 단추 한 줄
   const small = viewH <= 480;
-  const act = small ? 80 : 92, sm = small ? 46 : 52, gap = small ? 6 : 8, sb = portrait ? 64 : 24;
+  const act = small ? 80 : 92, sm = small ? 46 : 52, gap = small ? 6 : 8, sb = 24;
   return sb + act + (gap + sm) * 2;
 }
 
@@ -110,7 +135,7 @@ export function mountTouchControls(win: Window = window): TouchControls {
   const style = doc.createElement('style'); style.textContent = CSS;
 
   const fire = (type: 'keydown' | 'keyup', code: string) => {
-    try { win.dispatchEvent(new KeyboardEvent(type, { code, key: KEY[code] ?? code, bubbles: true, cancelable: true })); } catch { /* 키 이벤트를 못 만드는 환경 */ }
+    try { win.dispatchEvent(new KeyboardEvent(type, { code, key: KEY[code] ?? code, bubbles: true, cancelable: true })); } catch (e) { noteError('touch:keyEvent', e); /* 키 이벤트를 못 만드는 환경 */ }
   };
   const tap = (code: string) => { fire('keydown', code); fire('keyup', code); };
 
@@ -118,29 +143,31 @@ export function mountTouchControls(win: Window = window): TouchControls {
   const RADIUS = 46;
   const stick = doc.createElement('div'); stick.className = 'abraham-stick'; stick.setAttribute('data-touch-ui', '');
   const knob = doc.createElement('div'); knob.className = 'abraham-knob'; stick.append(knob);
-  let held = new Set<string>();
+  let held = 0;
   let stickId = -1;
-  const setHeld = (next: StickCode[]) => {
-    const n = new Set<string>(next);
-    for (const c of held) if (!n.has(c)) fire('keyup', c);
-    for (const c of n) if (!held.has(c)) fire('keydown', c);
-    held = n;
+  const setHeld = (next: number) => {
+    for (let i = 0; i < 4; i++) {
+      const bit = 1 << i, was = (held & bit) !== 0, now = (next & bit) !== 0;
+      if (was && !now) fire('keyup', STICK_ORDER[i]);
+      else if (!was && now) fire('keydown', STICK_ORDER[i]);
+    }
+    held = next;
   };
   const move = (e: PointerEvent) => {
     const r = stick.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
     const k = clampKnob(dx, dy, RADIUS);
     knob.style.transform = `translate(${k.x}px,${k.y}px)`;
-    setHeld(stickCodes(dx, dy, RADIUS));
+    setHeld(stickMask(dx, dy, RADIUS));
   };
   const release = (e: PointerEvent) => {
     if (e.pointerId !== stickId) return;
-    stickId = -1; knob.style.transform = ''; setHeld([]);
+    stickId = -1; knob.style.transform = ''; setHeld(0);
   };
   stick.addEventListener('pointerdown', (e) => {
     if (stickId !== -1) return;
     stickId = e.pointerId;
-    try { stick.setPointerCapture(e.pointerId); } catch { /* 캡처 못 해도 계속 */ }
+    try { stick.setPointerCapture(e.pointerId); } catch (e) { noteError('touch:pointerCapture', e); /* 캡처 못 해도 계속 */ }
     e.preventDefault(); move(e);
   });
   stick.addEventListener('pointermove', (e) => { if (e.pointerId === stickId) { e.preventDefault(); move(e); } });
@@ -162,10 +189,12 @@ export function mountTouchControls(win: Window = window): TouchControls {
   let running = false;
   const act = mk('abraham-act', '행동', () => fire('keydown', 'KeyE'), undefined, () => fire('keyup', 'KeyE'));
   const run = mk('abraham-sm abraham-g0', '달리기', (b) => { running = !running; b.classList.toggle('on', running); fire(running ? 'keydown' : 'keyup', 'ShiftLeft'); });
-  const bag = mk('abraham-sm abraham-g1', '가방', () => tap('KeyI'));
-  const journal = mk('abraham-sm abraham-g2', '도감', () => tap('KeyJ'));
+  const chapter = mk('abraham-sm abraham-g1', '장 선택', () => tap('Tab'));
+  const journal = mk('abraham-sm abraham-g2', '도감', () => tap('KeyC'));
   const menu = mk('abraham-sm abraham-g3', '메뉴', () => tap('Escape'));
-  root.append(stick, act, run, bag, journal, menu);
+  // 왼쪽 위 도움말 (hud 의 TOUCH_GUIDE_BTN_CSS 만큼 알림 자리를 비워 둔 곳)
+  const help = mk('abraham-help', '도움말', () => tap('F1'));
+  root.append(stick, act, run, chapter, journal, menu, help);
 
   const refreshLabels = () => { for (const [el, ko] of labels) el.textContent = tr(ko); };
   const offLang = onLangChange(refreshLabels);
@@ -174,7 +203,7 @@ export function mountTouchControls(win: Window = window): TouchControls {
   let visible = false;
   const show = () => { visible = true; root.hidden = suppressed; };
   const reset = () => {
-    stickId = -1; knob.style.transform = ''; setHeld([]);
+    stickId = -1; knob.style.transform = ''; setHeld(0);
     if (running) { running = false; run.classList.remove('on'); fire('keyup', 'ShiftLeft'); }
     fire('keyup', 'KeyE');
   };

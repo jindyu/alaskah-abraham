@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 import { tr } from '../i18n/tr';
 /**
  * 게임을 이어 갈 수 없을 때 보여 주는 DOM 안내 화면 (캔버스·HUD 가 없어도 뜸)과, WebGL 컨텍스트 손실·복구 감시.
@@ -42,7 +43,7 @@ export function showOverlay(doc: Document, opts: OverlayOptions): () => void {
     b.textContent = tr(opts.button.label);
     b.style.cssText = 'font:inherit;padding:8px 20px;border:2px solid #f0e6d2;border-radius:4px;background:#3a2f4c;color:inherit;cursor:pointer';
     const click = opts.button.onClick;
-    b.addEventListener('click', () => { try { click(); } catch { /* 안내 버튼이 실패해도 화면은 그대로 */ } });
+    b.addEventListener('click', () => { try { click(); } catch (e) { noteError('fatal:1', e); /* 안내 버튼이 실패해도 화면은 그대로 */ } });
     box.appendChild(b);
   }
   (doc.body ?? doc.documentElement).appendChild(box);
@@ -67,7 +68,7 @@ export class GlContextWatch {
     canvas.addEventListener('webglcontextrestored', () => {
       try { this.onRestore(); this.isLost = false; this.isFailed = false; } catch (err) {
         this.isFailed = true;
-        try { this.onFail(err); } catch { /* 알림 실패는 무시 */ }
+        try { this.onFail(err); } catch (e) { noteError('fatal:2', e); /* 알림 실패는 무시 */ }
       }
     });
   }

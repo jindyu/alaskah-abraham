@@ -4,6 +4,8 @@ import { PAL, PAL_REGION } from '../palette';
 import { VoxelBuilder } from '../voxel';
 import { Px, TD, ditherPick } from '../textures';
 import { fbm, hash2, valueNoise } from '../../core/rng';
+import { buildZiggurat } from '../props/urProps';
+import { buildFarField, tintColor } from './common';
 
 export interface FurnaceStage {
   root: THREE.Group;
@@ -52,8 +54,17 @@ function buildFurnaceGround(): THREE.Mesh {
       let c = ditherPick([0x9c724e, 0x8e6442, 0xa87c54, 0x7e5436], nBase, i, j, 0.3);
 
       // 격자형 석판 줄눈 (1m x 1m = 16x16 텍셀)
-      const li = i % TD;
+      // 줄은 어긋나게(벽돌 쌓기), 석판마다 밝기·따뜻함이 달라 넓은 바닥이 한 장의 평면으로 보이지 않게
+      const row = Math.floor(j / TD);
+      const si = i + (row & 1) * (TD >> 1);
+      const li = si % TD;
       const lj = j % TD;
+      const slab = Math.floor(si / TD);
+      const sk = 0.82 + hash2(slab, row, 851) * 0.3;
+      c = tintColor(c, sk + (lj / TD - 0.5) * 0.06 * hash2(slab, row, 853), (hash2(slab, row, 855) - 0.5) * 0.1);
+      // 마모·잔금: 석판 한 귀퉁이가 닳고, 가는 금이 간다
+      if (hash2(slab, row, 857) > 0.8 && li > TD - 5 && lj < 5) c = tintColor(c, 0.78);
+      if (hash2(slab, row, 859) > 0.86 && Math.abs(li - lj * 0.7 - 3) < 0.7) c = tintColor(c, 0.62);
       if (li === 0 || lj === 0) {
         c = 0x5a3c26; // 진한 갈색 줄눈
       } else if (li === 1 || lj === 1) {
@@ -88,6 +99,25 @@ function buildFurnaceGround(): THREE.Mesh {
         if (li === 0 || lj === 0) c = 0x112244;
       }
 
+      // 4. 광장 단장: 남쪽 입구에서 풀무불로 이어지는 의식용 카펫 길 (청·금·자주 띠)
+      if (z > -1.0 && z < 17 && Math.abs(x) < 2.4) {
+        const ax = Math.abs(x);
+        const fringe = ((Math.floor(z * 2) % 2) === 0);
+        if (ax < 0.3) c = 0xd4a024;
+        else if (ax < 1.5) c = (Math.floor(z * 1.5) % 4 === 0) ? 0xd9b24a : 0x7a1c2c;
+        else if (ax < 1.9) c = 0xd4a024;
+        else c = fringe ? reg.ishtarBlue : 0x16345e;
+        if (hash2(i, j, 861) < 0.06) c = tintColor(c, 0.88);
+      }
+      // 광장 가장자리 띠: 어두운 현무암 테두리 + 청유리 줄 (벽 아래 도랑 느낌)
+      const eDist = Math.min(FURNACE_HALF - Math.abs(x), FURNACE_HALF - Math.abs(z));
+      if (Math.abs(x) > 15.2 && Math.abs(x) < 17.4) c = Math.abs(x) < 15.6 ? 0x16345e : tintColor(c, 0.7);
+      if (eDist < 0) c = 0x3a281a;
+      // 큰 얼룩(보도 석판의 색 편차)
+      if (valueNoise(x / 3, z / 3, 871) > 0.72 && dFurnace > 7) c = tintColor(c, 0.88);
+      // 청동 화로 둘레 원형 상감 (금색 원 + 청색 점)
+      const dRing = Math.abs(Math.hypot(x, z - 4.0) - 5.2);
+      if (dRing < 0.14 && (z > 0)) c = 0xd4a024;
       px.set(i, j, c);
     }
   }
@@ -118,12 +148,13 @@ export function buildUrFurnaceStage(): FurnaceStage {
 
   // 1. 지평선 바닥 및 고해상도 광장 타일
   const horizonGeo = new THREE.PlaneGeometry(240, 240);
-  const horizonMat = new THREE.MeshLambertMaterial({ color: 0x422c1e });
+  const horizonMat = new THREE.MeshLambertMaterial({ color: 0x8a6444 });
   const horizonMesh = new THREE.Mesh(horizonGeo, horizonMat);
   horizonMesh.rotation.x = -Math.PI / 2;
   horizonMesh.position.y = -0.05;
   root.add(horizonMesh);
   root.add(buildFurnaceGround());
+  buildFarField(root, FURNACE_HALF, { seed: 31, pal: [0x9c724e, 0x8e6442, 0xa87c54, 0x7e5436], tex: 'brick', accents: [0x6a4a30, 0x4a3a2a], depth: 30, nearH: 1.0, maxH: 3.0, haze: 0xb89870 });
 
   // ─────────────────────────────────────────────────────────────
   // 2. 바벨의 거대 계단식 소성 풀무불 가마 (전면 개방형 중공 가마 구조)
@@ -133,43 +164,43 @@ export function buildUrFurnaceStage(): FurnaceStage {
   const fb = new VoxelBuilder(9, false);
 
   // 북쪽 후벽 (가마 뒷벽 & 거대 굴뚝)
-  fb.box(0, 1.8, -6.4, 9.6, 3.6, 1.6, reg.brick, { tex: 'brick' });
-  fb.box(0, 4.4, -6.4, 6.4, 1.8, 1.6, 0x784a28, { tex: 'brick' });
+  fb.box(0, 0, -6.4, 9.6, 3.6, 1.6, reg.brick, { tex: 'brick' });
+  fb.box(0, 3.6, -6.4, 6.4, 1.8, 1.6, 0x784a28, { tex: 'brick' });
   // 후방 배기 굴뚝 타워
-  fb.box(0, 6.2, -6.4, 3.6, 2.2, 1.6, 0x4a2612, { tex: 'brick' });
-  fb.box(0, 7.4, -6.4, 2.4, 0.4, 1.2, 0x111111);
+  fb.box(0, 5.4, -6.4, 3.6, 2.2, 1.6, 0x4a2612, { tex: 'brick' });
+  fb.box(0, 7.6, -6.4, 2.4, 0.4, 1.2, 0x111111);
 
   // 서쪽 측벽
-  fb.box(-4.4, 1.5, -3.5, 1.6, 3.0, 4.8, reg.brick, { tex: 'brick' });
-  fb.box(-4.4, 3.4, -3.5, 1.2, 1.0, 4.0, 0x784a28, { tex: 'brick' });
+  fb.box(-4.4, 0, -3.5, 1.6, 3.0, 4.8, reg.brick, { tex: 'brick' });
+  fb.box(-4.4, 3.0, -3.5, 1.2, 1.0, 4.0, 0x784a28, { tex: 'brick' });
 
   // 동쪽 측벽 및 투척 램프 (Execution Ramp)
-  fb.box(4.4, 1.5, -3.5, 1.6, 3.0, 4.8, reg.brick, { tex: 'brick' });
+  fb.box(4.4, 0, -3.5, 1.6, 3.0, 4.8, reg.brick, { tex: 'brick' });
   for (let step = 0; step < 6; step++) {
     const rx = 5.6 + step * 0.35;
     const rz = -0.5 - step * 0.6;
     const rh = 0.38 * (step + 1);
-    fb.box(rx, rh * 0.5, rz, 1.2, rh, 0.8, PAL.stone[1], { tex: 'stone' });
+    fb.box(rx, 0, rz, 1.2, rh, 0.8, PAL.stone[1], { tex: 'stone' });
   }
   // 투척 발코니 플랫폼 (높이 2.4m, x = 3.4, z = -3.5)
   fb.box(3.4, 2.4, -3.5, 1.8, 0.4, 2.0, PAL.stone[2], { tex: 'stone' });
-  fb.box(3.4, 2.9, -2.4, 1.8, 0.6, 0.1, 0xb88628, { tex: 'metal' }); // 난간
+  fb.box(3.4, 2.8, -2.4, 1.8, 0.6, 0.1, 0xb88628, { tex: 'metal' }); // 난간
 
   // 남쪽 전면 낮은 문턱 및 개방형 아치 (높이 3.8m로 올려 내부 시야 완전 개방!)
-  fb.box(-3.2, 0.7, -1.0, 1.6, 1.4, 0.8, reg.brick, { tex: 'brick' });
-  fb.box(3.2, 0.7, -1.0, 1.6, 1.4, 0.8, reg.brick, { tex: 'brick' });
-  fb.box(0, 0.15, -1.0, 5.0, 0.3, 0.8, 0x3d2817); // 바닥 턱
+  fb.box(-3.2, 0, -1.0, 1.6, 1.4, 0.8, reg.brick, { tex: 'brick' });
+  fb.box(3.2, 0, -1.0, 1.6, 1.4, 0.8, reg.brick, { tex: 'brick' });
+  fb.box(0, 0, -1.0, 5.0, 0.3, 0.8, 0x3d2817); // 바닥 턱
   // 전면 황동 장식 석주 (외곽에 배치하여 중앙 5m 시야 완전 개방!)
-  fb.box(-3.4, 1.6, -0.9, 0.5, 3.2, 0.5, 0xb88628, { tex: 'metal' });
-  fb.box(3.4, 1.6, -0.9, 0.5, 3.2, 0.5, 0xb88628, { tex: 'metal' });
+  fb.box(-3.4, 0, -0.9, 0.5, 3.2, 0.5, 0xb88628, { tex: 'metal' });
+  fb.box(3.4, 0, -0.9, 0.5, 3.2, 0.5, 0xb88628, { tex: 'metal' });
 
   furnaceGroup.add(fb.build());
 
   // 가마 내부 타오르는 숯과 화염 메쉬
   const fireBuilder = new VoxelBuilder(9, false);
-  fireBuilder.box(0, 0.35, -3.5, 6.8, 0.6, 4.2, reg.furnaceFire, { tex: 'flame' });
-  fireBuilder.box(0, 0.85, -3.5, 5.0, 0.6, 3.0, 0xff9910, { tex: 'flame' });
-  fireBuilder.box(0, 1.35, -3.5, 3.2, 0.5, 1.8, 0xffea30, { tex: 'flame' });
+  fireBuilder.box(0, 0, -3.5, 6.8, 0.6, 4.2, reg.furnaceFire, { tex: 'flame' });
+  fireBuilder.box(0, 0.5, -3.5, 5.0, 0.6, 3.0, 0xff9910, { tex: 'flame' });
+  fireBuilder.box(0, 1.0, -3.5, 3.2, 0.5, 1.8, 0xffea30, { tex: 'flame' });
   const innerFireMesh = fireBuilder.build();
   furnaceGroup.add(innerFireMesh);
 
@@ -198,9 +229,9 @@ export function buildUrFurnaceStage(): FurnaceStage {
   const gb = new VoxelBuilder(9, false);
 
   // 푸른 풀밭 카펫
-  gb.box(0, 0.42, 0, 7.0, 0.2, 4.4, 0x2e7d32, { tex: 'soil' });
+  gb.box(0, 0, 0, 7.0, 0.2, 4.4, 0x2e7d32, { tex: 'soil' });
   // 맑은 샘물 수로
-  gb.box(0, 0.46, 0, 2.0, 0.16, 4.0, 0x4fc3f7, { tex: 'water' });
+  gb.box(0, 0.1, 0, 2.0, 0.16, 4.0, 0x4fc3f7, { tex: 'water' });
 
   // 18개의 정밀 복셀 장미꽃 덤불 (진홍 장미 & 순백 백합)
   const roseSpots = [
@@ -225,9 +256,9 @@ export function buildUrFurnaceStage(): FurnaceStage {
   ];
 
   for (const s of roseSpots) {
-    gb.box(s.x, 0.62, s.z, 0.52, 0.28, 0.52, 0x1b5e20, { tex: 'soil' });
-    gb.box(s.x, 0.84, s.z, 0.32, 0.24, 0.32, s.col);
-    gb.box(s.x, 0.98, s.z, 0.14, 0.08, 0.14, 0xffeb3b);
+    gb.box(s.x, 0.2, s.z, 0.52, 0.28, 0.52, 0x1b5e20, { tex: 'soil' });
+    gb.box(s.x, 0.48, s.z, 0.32, 0.24, 0.32, s.col);
+    gb.box(s.x, 0.72, s.z, 0.14, 0.08, 0.14, 0xffeb3b);
   }
 
   gardenGroup.add(gb.build());
@@ -270,36 +301,36 @@ export function buildUrFurnaceStage(): FurnaceStage {
   const tb = new VoxelBuilder(9, false);
 
   // 테라스 기저부 (가로 14m x 세로 5m, 높이 3.6m, z: -13.5 ~ -8.5)
-  tb.box(0, 1.8, -11.0, 14.0, 3.6, 5.0, reg.brick, { tex: 'brick' });
+  tb.box(0, 0, -11.0, 14.0, 3.6, 5.0, reg.brick, { tex: 'brick' });
   // 광택 대리석 바닥
-  tb.box(0, 3.65, -11.0, 14.2, 0.2, 5.2, 0xd4af37);
+  tb.box(0, 3.6, -11.0, 14.2, 0.2, 5.2, 0xd4af37);
 
   // 이슈타르 청유리 원기둥 4쌍 (기둥 높이 3.8m)
   const columnX = [-5.5, -2.0, 2.0, 5.5];
   for (const cx of columnX) {
-    tb.box(cx, 5.4, -9.0, 0.9, 3.5, 0.9, reg.ishtarBlue, { tex: 'stone' });
+    tb.box(cx, 3.8, -9.0, 0.9, 3.5, 0.9, reg.ishtarBlue, { tex: 'stone' });
     tb.box(cx, 7.3, -9.0, 1.3, 0.4, 1.3, 0xf3c13a); // 황금 주두
   }
 
   // 테라스 앞쪽 낮은 청동 난간 (높이 0.7m, 시야 가림 없음!)
-  tb.box(0, 4.15, -8.6, 14.0, 0.7, 0.15, 0x8a2018);
+  tb.box(0, 3.8, -8.6, 14.0, 0.7, 0.15, 0x8a2018);
 
-  // 황금 사자 왕좌 (Golden Lion Throne at 0, 3.75, -11.5)
-  tb.box(0, 3.95, -11.4, 3.0, 0.4, 2.4, 0xd4af37);
+  // 황금 사자 왕좌 (Golden Lion Throne at 0, 3.8, -11.5)
+  tb.box(0, 3.8, -11.4, 3.0, 0.4, 2.4, 0xd4af37);
   // 자줏빛 벨벳 방석
-  tb.box(0, 4.35, -11.4, 1.4, 0.35, 1.2, 0x880e4f);
+  tb.box(0, 4.2, -11.4, 1.4, 0.35, 1.2, 0x880e4f);
   // 등받이 & 황금 독수리 날개
-  tb.box(0, 5.6, -12.1, 1.6, 2.0, 0.3, 0xf5c022);
-  tb.box(0, 6.7, -12.1, 0.8, 0.5, 0.35, 0xd32f2f); // 루비 왕관 문장
+  tb.box(0, 4.2, -12.1, 1.6, 2.0, 0.3, 0xf5c022);
+  tb.box(0, 6.2, -12.1, 0.8, 0.5, 0.35, 0xd32f2f); // 루비 왕관 문장
   // 팔걸이 사자상
-  tb.box(-0.85, 4.7, -11.3, 0.3, 0.7, 1.1, 0xd4af37);
-  tb.box(0.85, 4.7, -11.3, 0.3, 0.7, 1.1, 0xd4af37);
+  tb.box(-0.85, 4.2, -11.3, 0.3, 0.7, 1.1, 0xd4af37);
+  tb.box(0.85, 4.2, -11.3, 0.3, 0.7, 1.1, 0xd4af37);
 
   // 왕실 군기 2대
-  tb.box(-2.8, 6.2, -11.5, 0.1, 4.5, 0.1, 0x3d2817);
-  tb.box(-3.4, 7.0, -11.5, 1.2, 1.8, 0.05, 0xb71c1c);
-  tb.box(2.8, 6.2, -11.5, 0.1, 4.5, 0.1, 0x3d2817);
-  tb.box(3.4, 7.0, -11.5, 1.2, 1.8, 0.05, 0xb71c1c);
+  tb.box(-2.8, 3.8, -11.5, 0.1, 4.5, 0.1, 0x3d2817);
+  tb.box(-3.4, 6.2, -11.5, 1.2, 1.8, 0.05, 0xb71c1c);
+  tb.box(2.8, 3.8, -11.5, 0.1, 4.5, 0.1, 0x3d2817);
+  tb.box(3.4, 6.2, -11.5, 1.2, 1.8, 0.05, 0xb71c1c);
 
   throneGroup.add(tb.build());
   root.add(throneGroup);
@@ -313,8 +344,8 @@ export function buildUrFurnaceStage(): FurnaceStage {
   const sb = new VoxelBuilder(9, false);
 
   // 서쪽 석조 참관 난간 (x: -9.5, z: -1.0 ~ 3.5, 높이 1.2m)
-  sb.box(-10.0, 0.6, 0.5, 3.0, 1.2, 6.5, PAL.stone[1], { tex: 'stone' });
-  sb.box(-8.7, 1.5, 0.5, 0.3, 0.7, 6.5, PAL.stone[2], { tex: 'stone' });
+  sb.box(-10.0, 0, 0.5, 3.0, 1.2, 6.5, PAL.stone[1], { tex: 'stone' });
+  sb.box(-8.7, 1.2, 0.5, 0.3, 0.7, 6.5, PAL.stone[2], { tex: 'stone' });
   spectatorGroup.add(sb.build());
   root.add(spectatorGroup);
   col.addBox(-11.6, -8.4, -2.8, 3.8);
@@ -330,9 +361,9 @@ export function buildUrFurnaceStage(): FurnaceStage {
 
   for (const bSpot of brazierSpots) {
     const bb = new VoxelBuilder(9, false);
-    bb.box(bSpot.x, 0.45, bSpot.z, 0.65, 0.9, 0.65, 0x8a623c, { tex: 'metal' });
-    bb.box(bSpot.x, 0.95, bSpot.z, 0.9, 0.25, 0.9, 0x22140a);
-    bb.box(bSpot.x, 1.08, bSpot.z, 0.7, 0.18, 0.7, 0xff5510, { tex: 'flame' });
+    bb.box(bSpot.x, 0, bSpot.z, 0.65, 0.9, 0.65, 0x8a623c, { tex: 'metal' });
+    bb.box(bSpot.x, 0.9, bSpot.z, 0.9, 0.25, 0.9, 0x22140a);
+    bb.box(bSpot.x, 1.15, bSpot.z, 0.7, 0.18, 0.7, 0xff5510, { tex: 'flame' });
     root.add(bb.build());
 
     const bLight = new THREE.PointLight(0xff6610, 2.0, 10);
@@ -340,6 +371,70 @@ export function buildUrFurnaceStage(): FurnaceStage {
     root.add(bLight);
     braziers.push(bLight);
   }
+
+  // ─────────────────────────────────────────────────────────────
+  // 6. 광장 건축: 측면 성벽(청유리 띠·여장), 관람 계단, 열주, 사자상, 배경 지구라트
+  // ─────────────────────────────────────────────────────────────
+  const cy = new VoxelBuilder(9, false);
+  const brickC = reg.brick;
+  for (const sx of [-1, 1]) {
+    const wx = sx * 17.6;
+    cy.box(wx, 0, -1, 1.8, 4.6, 30, brickC, { tex: 'brick' });
+    cy.box(wx, 4.6, -1, 2.1, 0.3, 30.3, 0xd4a024, { tex: 'metal' });
+    cy.box(wx - sx * 0.95, 2.9, -1, 0.1, 0.5, 30, reg.ishtarBlue, { tex: 'stone' });
+    cy.box(wx - sx * 0.95, 1.2, -1, 0.1, 0.18, 30, 0xd4a024, { tex: 'metal' });
+    for (let k = 0; k < 17; k++) cy.box(wx, 4.9, -14.5 + k * 1.75, 1.2, 0.8, 0.9, tintColor(brickC, 1.1 + hash2(k, sx + 2, 881) * 0.1), { tex: 'brick' });
+    // 벽면 사자 부조 (청 바탕 + 금빛 사자)
+    for (let k = 0; k < 5; k++) {
+      const wz2 = -10 + k * 5.6;
+      cy.box(wx - sx * 0.95, 1.4, wz2, 0.12, 2.2, 2.0, reg.ishtarBlue, { tex: 'stone' });
+      cy.box(wx - sx * 1.02, 1.8, wz2, 0.1, 0.8, 1.2, 0xd4a024, { tex: 'metal' });
+      cy.box(wx - sx * 1.02, 2.5, wz2 - 0.35, 0.1, 0.5, 0.45, 0xd4a024, { tex: 'metal' });
+    }
+    col.addBox(wx, -1, 1.8, 30);
+  }
+  // 관람 계단 (동쪽: 북쪽 구간, 서쪽: 남쪽 구간) + 청색 깃발
+  const tiers = [{ x: 14.4, z0: -4, z1: 8 }, { x: -14.4, z0: 5, z1: 13 }];
+  for (const t of tiers) {
+    const sgn = t.x > 0 ? 1 : -1;
+    for (let r = 0; r < 3; r++) {
+      cy.box(t.x + sgn * r * 0.9, 0, (t.z0 + t.z1) / 2, 1.0, 0.5 + r * 0.5, t.z1 - t.z0, tintColor(brickC, 0.95 + r * 0.08), { tex: 'brick' });
+      cy.box(t.x + sgn * r * 0.9 - sgn * 0.3, 0.5 + r * 0.5, (t.z0 + t.z1) / 2, 0.35, 0.06, t.z1 - t.z0 - 0.4, r % 2 ? 0x7a1c2c : reg.ishtarBlue, { tex: 'wool' });
+    }
+    col.addBox(t.x + sgn * 0.9, (t.z0 + t.z1) / 2, 3.2, t.z1 - t.z0);
+    for (let k = 0; k < 4; k++) {
+      const bz = t.z0 + 1 + k * ((t.z1 - t.z0 - 2) / 3);
+      cy.box(t.x + sgn * 2.3, 0, bz, 0.1, 3.4, 0.1, 0x3d2817);
+      cy.box(t.x + sgn * 2.3, 2.0, bz + 0.45, 0.06, 1.3, 0.8, k % 2 ? 0xb71c1c : reg.ishtarBlue);
+    }
+  }
+  // 입구 쪽 열주 (청유리 기둥 + 금 주두) 두 줄
+  for (const sx of [-1, 1]) {
+    for (let k = 0; k < 4; k++) {
+      const pz = 7.5 + k * 2.8, px2 = sx * 8.2;
+      if (sx < 0 && pz < 5) continue;
+      cy.box(px2, 0, pz, 0.9, 0.5, 0.9, 0x5a3c26, { tex: 'brick' });
+      cy.box(px2, 0.5, pz, 0.7, 3.4, 0.7, reg.ishtarBlue, { tex: 'stone' });
+      cy.box(px2, 3.9, pz, 1.1, 0.35, 1.1, 0xf3c13a, { tex: 'metal' });
+      col.addBox(px2, pz, 0.9, 0.9);
+    }
+    cy.box(sx * 8.2, 4.25, 10.2, 1.0, 0.35, 9.0, tintColor(brickC, 1.1), { tex: 'brick' });
+  }
+  // 카펫 길 입구 황금 사자상 한 쌍 (z=15)
+  for (const sx of [-1, 1]) {
+    cy.box(sx * 3.4, 0, 14.5, 1.4, 0.6, 2.2, 0x5a3c26, { tex: 'brick' });
+    cy.box(sx * 3.4, 0.6, 14.5, 0.9, 0.8, 1.8, 0xd4a024, { tex: 'metal' });
+    cy.box(sx * 3.4, 1.4, 13.8, 0.8, 0.8, 0.8, 0xe6b82c, { tex: 'metal' });
+    cy.box(sx * 3.4, 1.5, 13.3, 0.6, 0.5, 0.3, 0xb88628, { tex: 'metal' });
+    col.addBox(sx * 3.4, 14.5, 1.5, 2.3);
+  }
+  root.add(cy.build());
+
+  // 배경 지구라트 (북쪽 멀리, 실루엣만 — 카메라는 위쪽 일부만 본다)
+  const zig = buildZiggurat();
+  zig.scale.setScalar(0.6);
+  zig.position.set(-9, 0, -30);
+  root.add(zig);
 
   return {
     root,

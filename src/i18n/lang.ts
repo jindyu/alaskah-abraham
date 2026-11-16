@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 // 언어 설정: 'ko'(기본) · 'en'. 브라우저 저장소(abraham.lang.v1)에 기억하고, URL ?lang=en 처럼 고를 수도 있다.
 export type Lang = 'ko' | 'en';
 export const LANGS: readonly Lang[] = ['ko', 'en'];
@@ -13,11 +14,11 @@ function initial(): Lang {
   try {
     const q = new URLSearchParams(typeof location === 'undefined' ? '' : location.search).get('lang');
     if (valid(q)) return q;
-  } catch { /* 주소를 못 읽으면 저장된 값으로 */ }
+  } catch (e) { noteError('lang:1', e); /* 주소를 못 읽으면 저장된 값으로 */ }
   try {
     const s = typeof localStorage === 'undefined' ? null : localStorage.getItem(KEY);
     if (valid(s)) return s;
-  } catch { /* 저장소를 못 쓰면 기본값 */ }
+  } catch (e) { noteError('lang:2', e); /* 저장소를 못 쓰면 기본값 */ }
   // 고른 적이 없으면 브라우저 언어가 지원하는 언어일 때 그 언어 (그 밖에는 한국어, 설정 ‘언어’에서 언제든 바꿈)
   try {
     // 실제 브라우저일 때만 (Node 의 navigator.language 가 'en-US' 라서 테스트가 영어로 도는 일을 막음)
@@ -25,7 +26,7 @@ function initial(): Lang {
     const nav = (globalThis as { navigator?: { languages?: readonly string[]; language?: string } }).navigator;
     const first = (nav?.languages?.[0] ?? nav?.language ?? '').toLowerCase().split(/[-_]/)[0];
     if (valid(first)) return first;
-  } catch { /* 브라우저 언어를 못 읽으면 기본값 */ }
+  } catch (e) { noteError('lang:3', e); /* 브라우저 언어를 못 읽으면 기본값 */ }
   return 'ko';
 }
 
@@ -38,7 +39,7 @@ function applyDocument(l: Lang): void {
     if (typeof document === 'undefined') return;
     document.documentElement.lang = l;
     document.title = TITLE[l];
-  } catch { /* 문서를 못 만지면 무시 */ }
+  } catch (e) { noteError('lang:4', e); /* 문서를 못 만지면 무시 */ }
 }
 applyDocument(cur);
 
@@ -51,13 +52,13 @@ export function setLang(l: Lang, persist = true): void {
   if (!valid(l) || l === cur) return;
   cur = l;
   applyDocument(l);
-  if (persist) { try { localStorage.setItem(KEY, l); } catch { /* 저장소를 못 써도 이번 실행에는 적용 */ } }
-  for (const fn of listeners) { try { fn(l); } catch { /* 듣는 쪽 오류는 무시 */ } }
+  if (persist) { try { localStorage.setItem(KEY, l); } catch (e) { noteError('lang:5', e); /* 저장소를 못 써도 이번 실행에는 적용 */ } }
+  for (const fn of listeners) { try { fn(l); } catch (e) { noteError('lang:6', e); /* 듣는 쪽 오류는 무시 */ } }
 }
 
 /** 언어가 그대로여도 화면 글을 다시 채워야 할 때(번역표를 방금 불러왔을 때) 듣는 쪽에 알림 */
 export function notifyLangChange(): void {
-  for (const fn of listeners) { try { fn(cur); } catch { /* 듣는 쪽 오류는 무시 */ } }
+  for (const fn of listeners) { try { fn(cur); } catch (e) { noteError('lang:7', e); /* 듣는 쪽 오류는 무시 */ } }
 }
 
 /** 언어가 바뀔 때 부를 함수를 등록 (돌려받은 함수를 부르면 해제) */

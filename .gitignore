@@ -3,3 +3,6 @@ dist/
 .DS_Store
 *.local
 output*.png
+
+# 시각 회귀 QA 가 실패할 때만 생기는 비교용 이미지
+docs/qa/baseline/*.actual.png

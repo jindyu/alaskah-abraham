@@ -1,3 +1,4 @@
+import { noteError } from '../core/diagnostics';
 /**
  * 저장 구간을 Web Locks(navigator.locks)로 감싸 여러 탭의 "저장 검사 + 쓰기"가 한 번에 하나씩만 돌게 한다.
  * - 잠금 API 가 없으면(옛 브라우저·비보안 주소) 그냥 바로 실행: 기존 경로(savedAt 충돌 검사 + 'storage' 이벤트)가 지킴
@@ -21,7 +22,7 @@ export const saveLockName = (slot: number) => `abraham.save.${slot}`;
 export async function withSaveLock(locks: LockManagerLike | null, name: string, fn: () => void): Promise<void> {
   let ran = false;
   const once = () => { if (ran) return; ran = true; fn(); };
-  if (!locks) { try { once(); } catch { /* fn 의 예외는 이 약속 밖으로 내지 않음 */ } return; }
-  try { await locks.request(name, once); } catch { /* 잠금 요청 자체가 실패 */ }
-  if (!ran) { try { once(); } catch { /* 호출한 쪽 fn 이 스스로 예외를 삼키지 않았어도 이 약속은 끝냄 */ } }
+  if (!locks) { try { once(); } catch (e) { noteError('saveLock:1', e); /* fn 의 예외는 이 약속 밖으로 내지 않음 */ } return; }
+  try { await locks.request(name, once); } catch (e) { noteError('saveLock:2', e); /* 잠금 요청 자체가 실패 */ }
+  if (!ran) { try { once(); } catch (e) { noteError('saveLock:3', e); /* 호출한 쪽 fn 이 스스로 예외를 삼키지 않았어도 이 약속은 끝냄 */ } }
 }

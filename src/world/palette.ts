@@ -76,7 +76,7 @@ export const PAL_REGION = {
     limestone: 0xd6cfbc,
     oakLeaf: 0x426330,
     oakBark: 0x422c1d,
-    tentBlack: 0x251c18,
+    tentBlack: 0x6c5442, /* 염소털 짙은 갈색 — 검정에 가까우면 한 덩어리 어둠으로 뭉침 */
     tentCream: 0xefe2c2,
     sky: [0x8cc8e8, 0xa6d4ea, 0xc4e2ec, 0xf0dcb4],
   },

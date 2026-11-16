@@ -15,14 +15,23 @@ export interface BoxOpts {
   ao?: boolean;
 }
 
+/** 런타임 설정 (QA 가 devHooks 로 끄고 켜 비교한다. 다음에 짓는 모델부터 적용) */
+export const voxelConfig = { cullInterior: true };
+
 interface Batch { pos: number[]; nrm: number[]; uv: number[]; col: number[]; idx: number[] }
 
 const E = [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)];
 
 const materials = new Map<TexKey, THREE.Material>();
+/** 공유 캐시에 든 재질 (장 전환 시 dispose 하면 안 됨) — 조회가 O(1) 이도록 별도 Set */
+const sharedMaterials = new Set<THREE.Material>();
 /** 특정 텍스처 키의 재질을 교체 (물 셰이더, 발광 재질 등). 빌드 전에 등록해야 함 */
 export function overrideMaterial(key: TexKey, mat: THREE.Material) {
   materials.set(key, mat);
+  sharedMaterials.add(mat);
+}
+export function isSharedMaterial(mat: THREE.Material): boolean {
+  return sharedMaterials.has(mat);
 }
 export function materialFor(key: TexKey): THREE.Material {
   let m = materials.get(key);
@@ -36,6 +45,7 @@ export function materialFor(key: TexKey): THREE.Material {
     }) : new THREE.MeshLambertMaterial({ map: getTexture(key), vertexColors: true });
     if (key === 'canopy' || key.startsWith('stripe') || key === 'leafVine') addFoliageWind(m);
     materials.set(key, m);
+    sharedMaterials.add(m);
   }
   return m;
 }
@@ -54,6 +64,8 @@ export class VoxelBuilder {
   defaultJitter = 0.05;
   /** AO 기준 지면 높이 (언덕 위 소품용) */
   groundY = 0;
+  /** build() 때 마주 붙은 안쪽 면을 뺄지 (dropCoincidentQuads). 모양은 안 바뀌고 삼각형만 준다. 기본값은 voxelConfig.cullInterior */
+  cullInterior = voxelConfig.cullInterior;
 
   constructor(seed = 1, isStatic = true) {
     this.rng = new Rng(seed);
@@ -148,6 +160,7 @@ export class VoxelBuilder {
   build(castShadow = true, receiveShadow = true): THREE.Group {
     const g = new THREE.Group();
     for (const [key, b] of this.batches) {
+      if (this.cullInterior) dropCoincidentQuads(b);
       for (const part of splitByTile(b)) {
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.Float32BufferAttribute(part.pos, 3));
@@ -165,6 +178,59 @@ export class VoxelBuilder {
     this.batches.clear();
     return g;
   }
+}
+
+/**
+ * 같은 배치 안에서 서로 마주 붙은 면(위치·크기가 똑같고 법선이 반대인 두 사각형)을 둘 다 뺀다 — 쌓은 박스 사이의 안쪽 면이라 어디서도 안 보인다.
+ * 사각형은 연속 4정점·6인덱스(box 가 이렇게 쌓음). 모서리 좌표를 1/4096 로 맞춰 비교하므로 정확히 맞닿은 면만 걸린다 (살짝 어긋난 면은 그대로 둠 → 보이는 모양은 안 바뀐다).
+ * 빌드 때 한 번만 도는 코드 (step 과 무관).
+ */
+export function dropCoincidentQuads(b: Batch): number {
+  const nv = b.pos.length / 3;
+  if (nv < 8 || nv % 4 !== 0 || b.idx.length !== (nv / 4) * 6) return 0;
+  const quads = nv / 4;
+  const seen = new Map<string, number>();
+  const dead = new Uint8Array(quads);
+  let drop = 0;
+  const Q = 4096;
+  for (let q = 0; q < quads; q++) {
+    let x0 = Infinity, y0 = Infinity, z0 = Infinity, x1 = -Infinity, y1 = -Infinity, z1 = -Infinity;
+    for (let k = 0; k < 4; k++) {
+      const o = (q * 4 + k) * 3, x = b.pos[o], y = b.pos[o + 1], z = b.pos[o + 2];
+      if (x < x0) x0 = x; if (x > x1) x1 = x;
+      if (y < y0) y0 = y; if (y > y1) y1 = y;
+      if (z < z0) z0 = z; if (z > z1) z1 = z;
+    }
+    const key = `${Math.round(x0 * Q)},${Math.round(y0 * Q)},${Math.round(z0 * Q)},${Math.round(x1 * Q)},${Math.round(y1 * Q)},${Math.round(z1 * Q)}`;
+    const other = seen.get(key);
+    if (other !== undefined) {
+      const a = other * 12, c = q * 12; // 첫 정점의 법선 (4정점 × 3)
+      if (b.nrm[a] * b.nrm[c] + b.nrm[a + 1] * b.nrm[c + 1] + b.nrm[a + 2] * b.nrm[c + 2] < -0.99) {
+        dead[q] = 1; dead[other] = 1; drop += 2;
+        seen.delete(key);
+        continue;
+      }
+    }
+    seen.set(key, q);
+  }
+  if (!drop) return 0;
+  const pos: number[] = [], nrm: number[] = [], uv: number[] = [], col: number[] = [], idx: number[] = [];
+  let w = 0;
+  for (let q = 0; q < quads; q++) {
+    if (dead[q]) continue;
+    for (let k = 0; k < 4; k++) {
+      const v = q * 4 + k;
+      pos.push(b.pos[v * 3], b.pos[v * 3 + 1], b.pos[v * 3 + 2]);
+      nrm.push(b.nrm[v * 3], b.nrm[v * 3 + 1], b.nrm[v * 3 + 2]);
+      uv.push(b.uv[v * 2], b.uv[v * 2 + 1]);
+      col.push(b.col[v * 3], b.col[v * 3 + 1], b.col[v * 3 + 2]);
+    }
+    const base = q * 4, start = w * 4;
+    for (let k = 0; k < 6; k++) idx.push(b.idx[q * 6 + k] - base + start);
+    w++;
+  }
+  b.pos = pos; b.nrm = nrm; b.uv = uv; b.col = col; b.idx = idx;
+  return drop;
 }
 
 /** 타일 분할 규칙 (docs/ARCHITECTURE.md 성능 예산 '타일 청크'): 타일 한 변(월드 유닛)과 분할을 시작하는 최소 정점 수 */

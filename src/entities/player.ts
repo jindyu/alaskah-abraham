@@ -180,6 +180,7 @@ export class Player {
   private readonly head = new THREE.Group();
   private readonly eyes = new THREE.Group();
   readonly radius = 0.28;
+  private readonly nextPos = { x: 0, z: 0 };
   facing = 0;
   /** 커스터마이징 화면에서 천천히 도는 턴테이블 모드 */
   turntable = false;
@@ -212,7 +213,7 @@ export class Player {
     this.rebuildHeld();
   }
   private rebuildHeld() {
-    for (const c of [...this.heldTool.children]) { this.heldTool.remove(c); c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); }
+    for (let ci = this.heldTool.children.length - 1; ci >= 0; ci--) { const c = this.heldTool.children[ci]; this.heldTool.remove(c); c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); }
     this.heldTool.parent?.remove(this.heldTool);
     if (!this.heldId) return;
     this.heldTool.add(part((b) => heldToolModel(b, this.heldId!), 70));
@@ -238,7 +239,7 @@ export class Player {
   private buildTools() {
     for (const g of [this.hammer, this.saw, this.plank, this.brush]) {
       g.parent?.remove(g);
-      for (const c of [...g.children]) { g.remove(c); c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); }
+      for (let ci = g.children.length - 1; ci >= 0; ci--) { const c = g.children[ci]; g.remove(c); c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); }); }
     }
     this.hammer.add(part((b) => {
       // 원점 = 손. 팔 방향(아래, -y)으로 자루, 끝에 쇠망치 머리
@@ -286,7 +287,7 @@ export class Player {
   /** 외형을 바꿔 모델을 다시 지음 */
   setAppearance(app: Appearance) {
     for (const g of [this.torso, this.legL, this.legR, this.armL, this.armR, this.head, this.eyes]) {
-      for (const c of [...g.children]) {
+      for (let ci = g.children.length - 1; ci >= 0; ci--) { const c = g.children[ci];
         if (c === this.eyes) continue;
         g.remove(c);
         c.traverse((o) => { if (o instanceof THREE.Mesh) o.geometry.dispose(); });
@@ -457,7 +458,7 @@ export class Player {
 
   update(dt: number, input: MoveInput, col: Collision, dynamic: { x: number; z: number; r: number }[]) {
     this.time += dt;
-    const len = Math.hypot(input.x, input.z);
+    const len = Math.sqrt(input.x * input.x + input.z * input.z);
     const speed = (input.run ? 6.2 : 3.6) * this.speedMul;
     const moving = len > 0.01 && !this.turntable;
     this.moving = moving;
@@ -465,11 +466,14 @@ export class Player {
     if (moving) {
       const nx = input.x / len, nz = input.z / len;
       const p = this.root.position;
-      const next = { x: p.x + nx * speed * dt, z: p.z + nz * speed * dt };
+      const next = this.nextPos;
+      next.x = p.x + nx * speed * dt;
+      next.z = p.z + nz * speed * dt;
       col.resolve(next, this.radius);
-      for (const d of dynamic) {
+      for (let di = 0; di < dynamic.length; di++) {
+        const d = dynamic[di];
         const dx = next.x - d.x, dz = next.z - d.z, m = this.radius + d.r;
-        const dd = Math.hypot(dx, dz);
+        const dd = Math.sqrt(dx * dx + dz * dz);
         if (dd < m && dd > 1e-4) { next.x = d.x + (dx / dd) * m; next.z = d.z + (dz / dd) * m; }
       }
       col.resolve(next, this.radius);
