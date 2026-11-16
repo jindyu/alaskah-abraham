@@ -10,7 +10,7 @@ import { createCodexEntries } from './hudCodex';
 import { layoutCaption, type CaptionLayout } from './hudLayout';
 import { NO_INSETS, safeAreaCss, toUiInsets, type Insets } from './safeArea';
 import { touchSideClearCss } from './touchControls';
-import { narrationLife } from './dialogueLayout';
+import { narrationLife, clearsOnChapterChange } from './dialogueLayout';
 import { touchWording } from './touchWording';
 import { newOnboard, onboardSeen, type OnboardState } from './onboarding';
 import type { ActiveDialogue, CodexEntry, DialogueChoice, DialogueOption, GoalProgress, Heart, Prompt, Speech, Toast } from './hudTypes';
@@ -365,7 +365,11 @@ export class Hud {
   }
 
   /** 떠 있는 알림을 모두 지움 (장이 바뀔 때 이전 장의 알림이 남지 않게) */
-  clearToasts() { this.toasts.length = 0; }
+  clearToasts() {
+    this.toasts.length = 0;
+    // 도감 기록처럼 작은 배너(compact)도 새 장 화면에 남지 않게 한다 — 장 완료·결말 같은 큰 배너는 그대로 둔다
+    if (clearsOnChapterChange(this.banner)) this.banner = null;
+  }
 
   /** 떠 있는 알림을 지움 (다 이룬 목표 등) */
   clearToast(key: string) {

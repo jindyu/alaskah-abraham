@@ -33,3 +33,8 @@ export function narrationLife(requested: number, chars: number): number {
   const need = 2.2 + chars * 0.045;
   return Math.max(2.5, Math.min(requested, need, 5));
 }
+
+/** 장이 바뀔 때 지워야 하는 배너인가 — 도감 기록 같은 작은(compact) 배너만. 장 완료·결말 같은 큰 배너는 남긴다 */
+export function clearsOnChapterChange(banner: { compact?: boolean } | null): boolean {
+  return !!banner && banner.compact === true;
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { avoidPrompt, boxesOverlap, narrationLife } from '../src/ui/dialogueLayout';
+import { avoidPrompt, boxesOverlap, narrationLife, clearsOnChapterChange } from '../src/ui/dialogueLayout';
 import { recommendedNext, visibleRows, scrollStart, scrollThumb } from '../src/ui/chapterHints';
 import { advanceOnboard, newOnboard, onboardAlpha, ONBOARD_STEPS, ONBOARD_STEP_SECONDS, ONBOARD_START_DELAY } from '../src/ui/onboarding';
 import { textPolicyFor, goalPx, DESKTOP_MIN_CSS_PX, TOUCH_MIN_CSS_PX } from '../src/ui/textSize';
@@ -101,5 +101,14 @@ describe('legibility policy', () => {
   it('goal text is larger in small windows', () => {
     expect(goalPx(1)).toBe(14);
     expect(goalPx(2)).toBe(13);
+  });
+});
+
+describe('장이 바뀔 때 배너 정리', () => {
+  it('작은 배너(도감)는 지우고 큰 배너·없음은 남긴다', () => {
+    expect(clearsOnChapterChange({ compact: true })).toBe(true);
+    expect(clearsOnChapterChange({ compact: false })).toBe(false);
+    expect(clearsOnChapterChange({})).toBe(false);
+    expect(clearsOnChapterChange(null)).toBe(false);
   });
 });

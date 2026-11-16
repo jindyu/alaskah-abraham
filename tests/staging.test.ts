@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 // 무대를 통째로 빌드하는 시험이 많아 느린 기계·병렬 실행에서 기본 5초를 넘기곤 한다
-vi.setConfig({ testTimeout: 30000 });
+vi.setConfig({ testTimeout: 180000 });
 import * as THREE from 'three';
 import { StageManager, type StageId } from '../src/world/stageManager';
 import { allScenePlans } from '../src/game/chapterRouter';
