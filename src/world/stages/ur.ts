@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { ridgeMound } from './scenery36';
-import { scatterGroundCover, groundVariation } from './common';
+import { buildFarField, scatterGroundCover, groundVariation } from './common';
 import { Collision } from '../collision';
 import { PAL, PAL_REGION } from '../palette';
 import { VoxelBuilder } from '../voxel';
@@ -182,18 +182,8 @@ export function buildUrStage(): UrStage {
     b.box(x, 0, -36, 3.4, h2, 9.0, 0x8a5e38, { tex: 'brick', jitter: 0.05 });
   }
 
-  // 남쪽 외곽 모래 언덕 (z: 24 ~ 40)
-  for (let x = -44; x <= 44; x += 1.7) {
-    // 남쪽은 카메라에 가장 가까워 화면 아래를 크게 가리므로 낮게 (다른 무대의 남쪽 능선과 같은 이유)
-    const h = (2.2 + Math.cos(x * 0.22) * 0.9 + Math.sin(x * 0.8) * 0.15) * 0.55;
-    ridgeMound(b, x, 26, 1.9, 8.0, h, reg.ground, 0xb89258, 'dune');
-  }
-
-  // 서쪽 외곽 고지대 (x: -28 ~ -44)
-  for (let z = -24; z <= 24; z += 3.2) {
-    const h = 2.6 + Math.sin(z * 0.18) * 0.7;
-    ridgeMound(b, -30, z, 7.0, 3.4, h, reg.ground, 0xb89258, 'dune');
-  }
+  // 남·서쪽 원경은 블록 능선 대신 다른 무대와 같은 부드러운 사구 원경으로 (줄무늬 띠가 화면 아래를 덮지 않게)
+  buildFarField(root, 24, { seed: 11, pal: [reg.ground, 0xb89258, 0xc8a66a, 0xa88450], tex: 'dune', accents: [0x8a7650], depth: 40, haze: 0xd0b890 });
 
   // 동쪽 고대 도시 성벽 라인 (x: 28 ~ 38)
   for (let z = -24; z <= 24; z += 3.6) {

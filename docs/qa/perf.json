@@ -3,14 +3,14 @@
     "ur_workshop": {
       "book": 1,
       "chapter": 0,
-      "calls": 125,
+      "calls": 120,
       "minCalls": 68,
-      "triangles": 172416,
-      "geometries": 173,
-      "textures": 43,
-      "meshes": 229,
-      "mergedMeshes": 20,
-      "mergedSources": 117,
+      "triangles": 190706,
+      "geometries": 167,
+      "textures": 45,
+      "meshes": 220,
+      "mergedMeshes": 18,
+      "mergedSources": 112,
       "unmerged": 0
     },
     "ur_palace": {
@@ -121,7 +121,7 @@
       "book": 3,
       "chapter": 1,
       "calls": 131,
-      "minCalls": 88,
+      "minCalls": 89,
       "triangles": 142686,
       "geometries": 74,
       "textures": 49,
@@ -185,49 +185,49 @@
   },
   "heap": {
     "ur_workshop": {
-      "seconds": 8,
-      "retainedGrowthMB": 0.07,
-      "allocRateMBs": 0.94
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.05,
+      "allocRateMBs": 0.92
     },
     "ur_palace": {
-      "seconds": 8,
-      "retainedGrowthMB": 0.05,
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.09,
       "allocRateMBs": 1.71
     },
     "ur_furnace": {
-      "seconds": 8,
-      "retainedGrowthMB": 0.01,
-      "allocRateMBs": 1.53
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.04,
+      "allocRateMBs": 1.36
     },
     "haran": {
-      "seconds": 8,
-      "retainedGrowthMB": 0.01,
-      "allocRateMBs": 0.96
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.02,
+      "allocRateMBs": 0.97
     },
     "esau_camp": {
-      "seconds": 8,
-      "retainedGrowthMB": 0.08,
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.09,
       "allocRateMBs": 1.36
     },
     "shechem_bethel": {
       "seconds": 8.1,
-      "retainedGrowthMB": 0.02,
-      "allocRateMBs": 0.57
+      "retainedGrowthMB": 0.04,
+      "allocRateMBs": 0.72
     },
     "egypt": {
-      "seconds": 178.4,
+      "seconds": 8.1,
       "retainedGrowthMB": 0.08,
-      "allocRateMBs": 0.03
+      "allocRateMBs": 0.81
     },
     "siddim_hobah": {
       "seconds": 8.1,
-      "retainedGrowthMB": 0.01,
-      "allocRateMBs": 1.55
+      "retainedGrowthMB": 0.03,
+      "allocRateMBs": 1.54
     },
     "mamre": {
-      "seconds": 47.6,
-      "retainedGrowthMB": 0.06,
-      "allocRateMBs": 0.01
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.08,
+      "allocRateMBs": 1.03
     },
     "beersheba": {
       "seconds": 8.1,
@@ -235,24 +235,24 @@
       "allocRateMBs": 0.89
     },
     "sodom": {
-      "seconds": 910.7,
-      "retainedGrowthMB": 0.05,
-      "allocRateMBs": 0
+      "seconds": 8.1,
+      "retainedGrowthMB": 0.06,
+      "allocRateMBs": 1.01
     },
     "moriah": {
-      "seconds": 8.1,
-      "retainedGrowthMB": 0.02,
-      "allocRateMBs": 0.77
+      "seconds": 980.4,
+      "retainedGrowthMB": 0.01,
+      "allocRateMBs": 0
     },
     "hebron_machpelah": {
       "seconds": 8.1,
-      "retainedGrowthMB": 0.01,
-      "allocRateMBs": 0.73
+      "retainedGrowthMB": 0.03,
+      "allocRateMBs": 0.71
     },
     "nahor_well": {
-      "seconds": 8.1,
-      "retainedGrowthMB": 0.02,
-      "allocRateMBs": 0.83
+      "seconds": 152.2,
+      "retainedGrowthMB": -0.01,
+      "allocRateMBs": 0
     }
   },
   "budget": {
