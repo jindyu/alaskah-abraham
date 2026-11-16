@@ -1,0 +1,209 @@
+{
+  "stages": {
+    "ur_workshop": {
+      "book": 1,
+      "chapter": 0,
+      "calls": 125,
+      "minCalls": 68,
+      "triangles": 171924,
+      "geometries": 170,
+      "textures": 43,
+      "meshes": 226,
+      "mergedMeshes": 20,
+      "mergedSources": 114,
+      "unmerged": 0
+    },
+    "ur_palace": {
+      "book": 1,
+      "chapter": 6,
+      "calls": 105,
+      "minCalls": 59,
+      "triangles": 4762,
+      "geometries": 52,
+      "textures": 43,
+      "meshes": 96,
+      "mergedMeshes": 10,
+      "mergedSources": 35,
+      "unmerged": 10
+    },
+    "ur_furnace": {
+      "book": 1,
+      "chapter": 7,
+      "calls": 142,
+      "minCalls": 79,
+      "triangles": 49450,
+      "geometries": 86,
+      "textures": 46,
+      "meshes": 134,
+      "mergedMeshes": 14,
+      "mergedSources": 53,
+      "unmerged": 7
+    },
+    "haran": {
+      "book": 1,
+      "chapter": 9,
+      "calls": 112,
+      "minCalls": 64,
+      "triangles": 155484,
+      "geometries": 102,
+      "textures": 47,
+      "meshes": 158,
+      "mergedMeshes": 10,
+      "mergedSources": 71,
+      "unmerged": 3
+    },
+    "esau_camp": {
+      "book": 1,
+      "chapter": 11,
+      "calls": 96,
+      "minCalls": 56,
+      "triangles": 95800,
+      "geometries": 48,
+      "textures": 47,
+      "meshes": 90,
+      "mergedMeshes": 6,
+      "mergedSources": 18,
+      "unmerged": 6
+    },
+    "shechem_bethel": {
+      "book": 2,
+      "chapter": 0,
+      "calls": 105,
+      "minCalls": 46,
+      "triangles": 142390,
+      "geometries": 59,
+      "textures": 48,
+      "meshes": 106,
+      "mergedMeshes": 3,
+      "mergedSources": 28,
+      "unmerged": 0
+    },
+    "egypt": {
+      "book": 2,
+      "chapter": 1,
+      "calls": 90,
+      "minCalls": 53,
+      "triangles": 152982,
+      "geometries": 63,
+      "textures": 49,
+      "meshes": 98,
+      "mergedMeshes": 5,
+      "mergedSources": 13,
+      "unmerged": 0
+    },
+    "siddim_hobah": {
+      "book": 2,
+      "chapter": 5,
+      "calls": 106,
+      "minCalls": 61,
+      "triangles": 81928,
+      "geometries": 66,
+      "textures": 49,
+      "meshes": 103,
+      "mergedMeshes": 12,
+      "mergedSources": 26,
+      "unmerged": 8
+    },
+    "mamre": {
+      "book": 2,
+      "chapter": 8,
+      "calls": 104,
+      "minCalls": 61,
+      "triangles": 173828,
+      "geometries": 64,
+      "textures": 49,
+      "meshes": 100,
+      "mergedMeshes": 8,
+      "mergedSources": 18,
+      "unmerged": 5
+    },
+    "beersheba": {
+      "book": 3,
+      "chapter": 1,
+      "calls": 125,
+      "minCalls": 86,
+      "triangles": 142518,
+      "geometries": 71,
+      "textures": 49,
+      "meshes": 119,
+      "mergedMeshes": 7,
+      "mergedSources": 39,
+      "unmerged": 3
+    },
+    "sodom": {
+      "book": 4,
+      "chapter": 1,
+      "calls": 68,
+      "minCalls": 42,
+      "triangles": 82234,
+      "geometries": 38,
+      "textures": 49,
+      "meshes": 73,
+      "mergedMeshes": 0,
+      "mergedSources": 0,
+      "unmerged": 0
+    },
+    "moriah": {
+      "book": 5,
+      "chapter": 5,
+      "calls": 72,
+      "minCalls": 44,
+      "triangles": 101012,
+      "geometries": 43,
+      "textures": 49,
+      "meshes": 78,
+      "mergedMeshes": 1,
+      "mergedSources": 2,
+      "unmerged": 0
+    },
+    "hebron_machpelah": {
+      "book": 6,
+      "chapter": 0,
+      "calls": 67,
+      "minCalls": 42,
+      "triangles": 165900,
+      "geometries": 40,
+      "textures": 49,
+      "meshes": 75,
+      "mergedMeshes": 1,
+      "mergedSources": 2,
+      "unmerged": 0
+    },
+    "nahor_well": {
+      "book": 6,
+      "chapter": 4,
+      "calls": 91,
+      "minCalls": 54,
+      "triangles": 130526,
+      "geometries": 66,
+      "textures": 49,
+      "meshes": 101,
+      "mergedMeshes": 4,
+      "mergedSources": 16,
+      "unmerged": 0
+    }
+  },
+  "heap": {
+    "shechem_bethel": {
+      "seconds": 20.1,
+      "retainedGrowthMB": 0.03,
+      "allocRateMBs": 0.69
+    },
+    "sodom": {
+      "seconds": 20,
+      "retainedGrowthMB": 0.11,
+      "allocRateMBs": 0.91
+    },
+    "hebron_machpelah": {
+      "seconds": 20,
+      "retainedGrowthMB": 0.03,
+      "allocRateMBs": 0.67
+    }
+  },
+  "budget": {
+    "maxCallsPerStage": 170,
+    "maxTrianglesPerStage": 300000,
+    "maxRetainedGrowthMB": 0.5,
+    "maxAllocRateMBs": 1.2
+  }
+}

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import puppeteer from 'puppeteer-core';
+import { waitFor } from './lib.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../..');
@@ -10,7 +11,7 @@ const QA_DIR = path.join(ROOT, 'docs/qa/furnace');
 fs.mkdirSync(QA_DIR, { recursive: true });
 
 const CHROME_PATH = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
-const PORT = 5174;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 5174;
 
 async function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -32,6 +33,7 @@ async function runQa() {
   });
 
   await page.goto(`http://localhost:${PORT}`, { waitUntil: 'domcontentloaded', timeout: 15000 });
+  await waitFor(page, () => !!window.__abraham && !!window.__AGY_DEBUG__, { timeout: 20000 });
 
   // 1. 인트로 자막 스킵
   for (let i = 0; i < 7; i++) {
