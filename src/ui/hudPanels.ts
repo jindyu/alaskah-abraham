@@ -69,7 +69,9 @@ export function goalPanel(hud: Hud, text: string, y0: number) {
 
   const base = Math.max(160, Math.min(hud.wide(320), Math.round(hud.w * 0.44)) - 18);
   const floor = hud.touch ? hud.h - hud.edge.bottom - Math.ceil(touchClusterTopCss(hud.cssH, hud.cssH > hud.cssW * 1.15) / hud.cssScale) - 4 : Infinity;
-  const translatedGoal = tr(text), translatedHint = hud.hint ? tr(hud.hint) : '';
+  // 세로 터치 화면은 위쪽을 덜 차지하도록 보조 힌트를 숨기고 목표 줄 수를 줄인다 (탭하면 도움말에서 다시 볼 수 있다)
+  const compact = hud.touch && hud.cssH > hud.cssW * 1.15;
+  const translatedGoal = tr(text), translatedHint = hud.hint && !compact ? tr(hud.hint) : '';
   // 레이아웃 캐시 키: 문자열을 매 프레임 만들지 않고 숫자·문자열 필드를 직접 비교한다 (프레임당 할당 금지)
   const pc = prog ? prog.current : -1, pt = prog ? prog.total : -1;
   const k = goalKeyParts;
@@ -84,10 +86,10 @@ export function goalPanel(hud: Hud, text: string, y0: number) {
       return { goal, hint };
     };
     const avail = floor - y0;
-    let r = lay(base, GOAL_MAX_LINES);
+    let r = lay(base, compact ? 3 : GOAL_MAX_LINES);
     if (panelHeight(top, LH, HL, progH, r.goal.length, r.hint.length) > avail) {
       const wider = Math.max(base, Math.min(Math.round(hud.w * 0.55), hud.wide(400)) - 18);
-      if (wider > base) r = lay(wider, GOAL_MAX_LINES);
+      if (wider > base) r = lay(wider, compact ? 3 : GOAL_MAX_LINES);
       const fitGoal = Math.max(1, Math.floor((avail - top - 6 - progH) / LH));
       if (r.goal.length > fitGoal) r = { goal: wrapParagraphs(text, wider, (s) => hud.tw(hud.txt(s, GOAL_PX, INK)), fitGoal), hint: r.hint };
       const fitHint = Math.max(0, Math.floor((avail - panelHeight(top, LH, HL, progH, r.goal.length, 0)) / HL));
